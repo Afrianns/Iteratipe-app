@@ -1,0 +1,190 @@
+
+@import "tailwindcss";
+@layer base {
+  @import "@xyflow/react/dist/style.css";
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@theme inline {
+  /* colors */
+  --color-purplish: #B63EEE;
+  --color-purplish-blue: #793EEE;
+  --color-purple-dark: #1C0830;
+  --color-lightish: #EFEFEE;
+  --color-light-purple: #F7E5FB;
+  --color-light-green: #D8FF5F;
+  --color-lime-yellow: #FFF36F;
+  --color-light-red: #F56476;
+  --color-grayish: #DDD;
+  --color-light-gray: #F8F8FA;
+  --color-whitish: #fefefe; 
+  --color-light-blue: #EFF0FF;
+  /* font */
+  --font-raleway: var(--font-raleway);
+  --font-instrument: var(--font-instrument-sans);
+  --font-epilogue: var(--font-epilogue);
+}
+
+body{
+  @apply bg-white text-purple-dark;
+}
+
+h1, h2, h3{
+  @apply font-raleway;
+}
+
+.limit-breaker {
+  @apply md:max-w-360 mx-2 md:mx-auto;
+}
+/* button */
+.button-style {
+  @apply bg-purplish text-whitish font-medium text-sm hover:bg-purplish/80 cursor-pointer py-2 px-10;
+}
+
+.button-style-secondary {
+  @apply bg-light-purple text-purplish font-medium text-sm hover:bg-purplish/20 cursor-pointer py-2 px-10;
+}
+
+.button-style-tertiary {
+  @apply border-2 border-purplish text-purplish font-medium text-sm hover:bg-purplish/20 cursor-pointer py-2 px-5;
+}
+
+.timeline-btn-style{
+  @apply py-2 px-5 rounded-lg text-xs flex items-center justify-center gap-x-1 w-full;
+}
+
+.timeline-btn-accent {
+  @apply text-purplish bg-light-purple/50 hover:bg-light-purple cursor-pointer;
+}
+
+.timeline-btn-accent-disable {
+  @apply text-purple-dark/40 bg-grayish/50 hover:bg-grayish/20 cursor-not-allowed;
+}
+
+/*  */
+.stack-style{
+  @apply w-30 inline-block rounded-t-sm border border-light-purple absolute bottom-0;
+}
+
+.card-style{
+  @apply bg-white shadow-md rounded-xl space-y-3 border border-grayish;
+}
+
+.card-style-secondary{
+  @apply bg-white shadow-xs rounded-xl space-y-4 border border-grayish p-6;
+}
+
+.h-three-style{
+  @apply font-bold text-lg;
+}
+
+.h-four-style{
+  @apply text-sm my-5 font-bold text-purple-dark/30 font-raleway uppercase;
+}
+
+.p-style{
+  @apply text-sm text-purple-dark/60;
+}
+
+.span-style{
+  @apply text-xs text-purple-dark/50;
+}
+
+.hr-style{
+  @apply border-b border-grayish/90;
+}
+
+.tag-style{
+  @apply bg-light-gray hover:bg-grayish py-1 px-3 hover:underline whitespace-nowrap;
+}
+
+.scroll-edge-style{
+  @apply absolute top-0 h-full w-15 z-1 transition-opacity duration-300;
+}
+
+.scroll-container-style{
+  @apply flex items-center gap-2 flex-nowrap w-full relative overflow-x-scroll scrollbar-none;
+}
+
+.right-gradient-edge-style{
+  @apply right-0 bg-linear-to-l from-whitish from-45% to-transparent to-90%;
+}
+
+.left-gradient-edge-style{
+  @apply left-0 bg-linear-to-r from-whitish from-45% to-transparent to-90%;
+}
+
+.detail-list-style{
+  @apply border-b-4 pb-3 px-3 hover:border-purplish cursor-pointer transition-all ease-in-out;
+}
+
+
+/* icon style */
+
+.icon-style{
+  @apply w-9 h-9 p-2 hover:bg-light-gray rounded-full cursor-pointer;
+}
+.icon-style-secondary{
+  @apply w-9 h-9 p-2.5 hover:bg-light-purple cursor-pointer rounded-full text-xl text-purplish;
+}
+
+
+/* input style */
+
+.label-style{
+  @apply block text-purple-dark/80 font-semibold font-raleway;
+}
+
+.input-style{
+  @apply py-3 px-5 text-purple-dark bg-light-gray w-full border border-grayish rounded-lg outline-purplish;
+}
+
+.input-radio-style{
+  @apply h-5 w-5 accent-purplish;
+}
+
+/* menu setting style */
+
+.menu-setting-style{
+  @apply cursor-pointer hover:bg-grayish/50 py-2 px-3 rounded-md font-raleway font-medium;
+}
+
+/* sidebar */
+
+.sidebar-card-style{
+  @apply bg-whitish border-r border-gray-200 shadow-xs px-2 py-5 flex flex-col justify-between top-0 sticky h-screen;
+}
+
+.hovering-detail{
+  @apply cursor-pointer py-2 px-5 rounded-lg;
+}
+
+.flex-centering{
+  @apply flex items-center;
+}
+
+.menu-name-style{
+  @apply transition-all ease-in-out text-xs font-medium font-raleway overflow-hidden;
+}
+
+.menu-icon-style{
+  @apply font-bold shrink-0 transition-colors duration-300 w-5 h-5;
+}
+
+.badge-style{
+  @apply py-1 px-3 rounded-full text-[9px];
+}
+
+
+/* transition style */
+
+.transition-style{
+  @apply transition-all ease-in-out duration-300;
+}
