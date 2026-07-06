@@ -1,3 +1,5 @@
+import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
+import { modeEnum } from '@/types/enum';
 import { BaseEdge, Handle, NodeProps, Position } from '@xyflow/react';
 import { CalendarDays, MoveRight, Timer } from 'lucide-react';
 
@@ -7,12 +9,30 @@ enum handleEnum {
     END = "end"
 }
 
-export default function Card({data}: NodeProps) {
+export default function Card({data, selected}: NodeProps) {
+
+    const { mode } = useTimelineStateStore();
+
     let handleType = data.handleType;
+
+    const activeSelectNodeFn = () => {
+        if(selected){
+            switch (mode) {
+                case modeEnum.DELETE:
+                    return "border-light-red!"
+                case modeEnum.EDIT:
+                    return "border-lime-yellow!"
+                case modeEnum.SPECTATOR:
+                    return "border-light-green!"
+                default:
+                    break;
+            }
+        }
+    }
     return (
         <>
             {(handleType == handleEnum.START || handleType == handleEnum.MAIN) && <Handle type="source" position={Position.Right} />}
-                <div className="card-style p-5 w-70">
+                <div className={`card-style p-5 w-70 ${activeSelectNodeFn()}`}>
                     <div className="flex items-center justify-between">
                         <h3 className="h-three-style">Initial Spark & Brief</h3>
                         <span className="badge-style bg-light-green">Research</span>
