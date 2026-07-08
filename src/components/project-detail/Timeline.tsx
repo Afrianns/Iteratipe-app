@@ -2,8 +2,8 @@
 
 import { ReactFlow, Background, Controls, applyNodeChanges, addEdge, useEdgesState, MiniMap, ReactFlowProvider, Node, Edge, NodeChange, Connection } from '@xyflow/react';
 import { useCallback, useEffect, useState } from 'react';
-import Card from '../Card';
-import TimelineMenu from '../TimelineMenu';
+import Card from './timeline/Card';
+import TimelineMenu from './timeline/TimelineMenu';
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
 import { modeEnum } from '@/types/enum';
 
@@ -33,8 +33,6 @@ let initialEdges: Edge[] = [];
 export default function Timeline() {
     const {mode, setFirstNode, setEndNode, deleteNode, setNodesChange, setConnection, setEdgesChange, Nodes, Edges } = useTimelineStateStore()
 
-    const [initialNodes, setInitialNodes] = useState<Node[]>([]);
- 
     // const [nodes, setNodes] = useState<Node[]>(Nodes);
 
     

@@ -1,5 +1,5 @@
-import Header from "@/components/dashboard/Header";
-import Sidebar from "@/components/dashboard/Sidebar";
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import { createClerkSupabaseClient } from "@/lib/supabase";
 
 import { cookies } from 'next/headers'

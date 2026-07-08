@@ -12,4 +12,12 @@ enum modeEnum {
 
 }
 
-export {handleEnum, modeEnum};
+
+enum subMenuEnum {
+    TIMELINE = "timeline",
+    OVERVIEW = "overview",
+    COMMENTS = "comments",
+    SETTINGS = "settings",
+}
+
+export {handleEnum, modeEnum, subMenuEnum};

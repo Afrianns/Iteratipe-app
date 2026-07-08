@@ -1,3 +1,5 @@
+"use client"
+
 import Toggle from "@/components/toggle";
 import { ChevronDown } from "lucide-react";
 import React, { useState } from "react";

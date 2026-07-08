@@ -1,7 +1,9 @@
-import Detail from "@/components/dashboard/Detail/Detail";
+import Main from "@/components/project-detail/Main";
+import { PagePropsType } from "@/types/types";
 
-export default function DetailPage() {
+
+export default function DetailPage({searchParams}: PagePropsType) {
     return (
-        <Detail />
+        <Main searchParams={searchParams} />
     )
 } 

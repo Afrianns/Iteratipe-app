@@ -4,10 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Timeline from "@/components/Landing/timeline";
-import Features from "@/components/Landing/features";
+import Timeline from "@/components/landing/timeline";
+import Features from "@/components/landing/features";
 import { ArrowUpRight, Menu } from "lucide-react";
-import DotsPattern from "@/components/Landing/DotsPattern";
+import DotsPattern from "@/components/landing/DotsPattern";
 import GridPattern from "@/components/Landing/GridPattern";
 
 // Register once globally on the client side

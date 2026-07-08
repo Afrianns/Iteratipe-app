@@ -33,7 +33,7 @@
 }
 
 body{
-  @apply bg-white text-purple-dark;
+  @apply text-purple-dark;
 }
 
 h1, h2, h3{
@@ -159,7 +159,7 @@ h1, h2, h3{
 /* sidebar */
 
 .sidebar-card-style{
-  @apply bg-whitish border-r border-gray-200 shadow-xs px-2 py-5 flex flex-col justify-between top-0 sticky h-screen;
+  @apply bg-whitish border-r border-gray-200 shadow-xs px-2 py-5 flex flex-col justify-between top-0 sticky h-full min-h-screen;
 }
 
 .hovering-detail{

@@ -18,5 +18,19 @@ interface TimelineStateType {
   setEndNode: (end: boolean) => void
 }
 
+interface PagePropsType {
+  searchParams: Promise<{ menu?: string | undefined }>;
+}
 
-export {type TimelineStateType}
+type ToolsType = {
+    id: number,
+    name: string,
+    logo?: string
+}
+
+type TagsType = string[]
+
+
+type subMenuType = "timeline" | "overview" | "comments" | "settings";
+
+export type {TimelineStateType, subMenuType, PagePropsType, TagsType, ToolsType}
