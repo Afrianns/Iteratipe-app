@@ -11,6 +11,8 @@ export const useTimelineStateStore = create<TimelineStateType>((set) => ({
   MainNodeLeft: 3,
   Nodes: [],
   Edges: [],
+  showSidebar: false,
+  setShowSidebar: () => set((state) => ({ showSidebar: !state.showSidebar})),
   changeMode: (mode: modeEnum) => set({ mode: mode}),
   setNodes: (newNode: Node) => set((state) => ({Nodes: [...state.Nodes, newNode]})),
   setNodesChange: (changes: NodeChange[]) => {

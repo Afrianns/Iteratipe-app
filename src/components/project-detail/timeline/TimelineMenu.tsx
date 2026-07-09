@@ -84,40 +84,44 @@ export default function TimelineMenu() {
     }
 
     return (
-        <div className='absolute top-5 left-5 card-style p-2 w-50 h-fit transition-style'>
-            <div onClick={menuDropdownFn} className='flex items-center justify-between hover:bg-light-gray rounded cursor-pointer'>
-                <h3 className='p-style font-bold text-md pl-1'>Menu</h3>
-                <ChevronDown className='icon-style' />
+        <div className='absolute top-5 left-5 card-style w-35 h-fit transition-style'>
+            <div className='p-1'>
+                <div onClick={menuDropdownFn} className='flex items-center justify-between hover:bg-light-gray rounded-lg cursor-pointer'>
+                    <h3 className='p-style font-bold text-md p-2'>Menu</h3>
+                    <ChevronDown className='icon-style' />
+                </div>
             </div>
             {isExpand &&
-                <div className='space-y-3'>
-                    <div onClick={changeModeFn} className='cursor-pointer'>
+                <div className='space-y-2'>
+                    <div onClick={changeModeFn} className='cursor-pointer p-1'>
                         {mode == modeEnum.DELETE &&
-                            <button className='timeline-btn-style text-light-red font-bold bg-light-red/20 cursor-pointer hover:bg-light-red/10'>Delete Mode</button>
+                            <button className='timeline-btn-style text-light-red font-semibold bg-light-red/20 cursor-pointer hover:bg-light-red/10'>Delete Mode</button>
                         }
                         {mode == modeEnum.EDIT &&
-                            <button className='timeline-btn-style text-green-500 font-bold bg-light-green/20 cursor-pointer hover:bg-light-green/10'>Edit Mode</button>
+                            <button className='timeline-btn-style text-green-500 font-semibold bg-light-green/20 cursor-pointer hover:bg-light-green/10'>Edit Mode</button>
                         }
                         {mode == modeEnum.SPECTATOR &&
-                            <button className='timeline-btn-style text-yellow-500 font-bold bg-lime-yellow/20 cursor-pointer hover:bg-lime-yellow/10'>Spectator Mode</button>
+                            <button className='timeline-btn-style text-yellow-500 font-semibold bg-lime-yellow/20 cursor-pointer hover:bg-lime-yellow/10'>Spectator Mode</button>
                         }
                     </div>
                     
-                    <hr className='hr-style' />
-                    <button onClick={() => newNode(handleEnum.START)} className={`timeline-btn-style ${disableStartNode ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
-                        <Plus className="w-4 h-4 stroke-3" />
-                        <p className='font-bold'>Start Node</p>
-                    </button>
-                    
-                    <button onClick={() => newNode(handleEnum.END)} className={`timeline-btn-style ${disableEndNode ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
-                        <Plus className="w-4 h-4 stroke-3" />
-                        <p className='font-bold'>End Node</p>
-                    </button>
+                    <hr className="hr-style" />
+                    <div className="p-1 space-y-2">
+                        <button onClick={() => newNode(handleEnum.START)} className={`timeline-btn-style ${disableStartNode ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
+                            <Plus className="w-4 h-4 stroke-3" />
+                            <p className='font-semibold'>Start Node</p>
+                        </button>
+                        
+                        <button onClick={() => newNode(handleEnum.END)} className={`timeline-btn-style ${disableEndNode ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
+                            <Plus className="w-4 h-4 stroke-3" />
+                            <p className='font-semibold'>End Node</p>
+                        </button>
 
-                    <button onClick={() => newNode(handleEnum.MAIN)} className="timeline-btn-style bg-light-purple/50 hover:bg-light-purple cursor-pointer text-purplish">
-                        <Plus className="w-4 h-4 stroke-3" />
-                        <p className='font-bold'>New Node</p>
-                    </button>
+                        <button onClick={() => newNode(handleEnum.MAIN)} className="timeline-btn-style bg-light-purple/50 hover:bg-light-purple cursor-pointer text-purplish">
+                            <Plus className="w-4 h-4 stroke-3" />
+                            <p className='font-semibold'>New Node</p>
+                        </button>
+                    </div>
                 </div>
             }
         </div>

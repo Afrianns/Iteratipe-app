@@ -14,7 +14,7 @@ export default function DropdownList({ type, children, placeholder }: {type: str
           onBlur={() => setIsOpen(false)}
         />
         {isOpen && (
-            <div className={`bg-red-100 w-full max-h-50 rounded-md card-style overflow-y-auto absolute z-2 ${type == "tags" ? "top-25" : "bottom-25" }`}>
+            <div className={`w-full max-h-50 rounded-md card-style overflow-y-auto absolute z-2 ${type == "tags" ? "top-25" : "bottom-25" }`}>
                 {children}
             </div>
         )}

@@ -30,7 +30,7 @@ export default function CommentsDropdown({ children }: {children: React.ReactNod
             </div>
 
             {stepDropdown && 
-                <div className="card-style p-5 absolute right-0 left-0 z-1" ref={menuRef}>
+                <div className="card-style overflow-hidden absolute right-0 left-0 z-1" ref={menuRef}>
                     {children}
                 </div>
             }

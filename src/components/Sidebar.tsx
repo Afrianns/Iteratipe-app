@@ -11,7 +11,7 @@ export default function Sidebar({ current }: { current: string }) {
     const [isOpen, setIsOpen] = useState(true);
 
     return (
-        <div className={`sidebar-card-style transition-all duration-300 ease-in-out ${isOpen ? 'w-60' : 'w-20'}`}>
+        <div className={`sidebar-card-style transition-[width] duration-300 ease-in-out ${isOpen ? 'w-60' : 'w-20'}`}>
             <div className="absolute -right-5 top-20 py-2 px-2 card-style cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
                 <SquareChevronRight className="w-4 h-4" />
             </div>

@@ -23,6 +23,7 @@
   --color-lime-yellow: #FFF36F;
   --color-light-red: #F56476;
   --color-grayish: #DDD;
+  --color-grayish-dark:#333;
   --color-light-gray: #F8F8FA;
   --color-whitish: #fefefe; 
   --color-light-blue: #EFF0FF;
@@ -57,7 +58,7 @@ h1, h2, h3{
 }
 
 .timeline-btn-style{
-  @apply py-2 px-5 rounded-lg text-xs flex items-center justify-center gap-x-1 w-full;
+  @apply py-1 px-5 rounded-lg text-xs flex items-center justify-center gap-x-1 w-full;
 }
 
 .timeline-btn-accent {

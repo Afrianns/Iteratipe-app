@@ -21,7 +21,6 @@ export default function GeneralSettings() {
                         {AllTags.map((tag: string, idx: number) => <p key={idx} className="w-full block py-2 px-5 cursor-pointer hover:bg-gray-100">{tag}</p>)}
                     </div>
                 </DropdownList>
-                {/* <input type="text" name="tags" placeholder="Type your relevant tags." className="input-style" required/> */}
                 <Suspense fallback={<ListSettingLoading />}>
                     <ListTagsSetting />
                 </Suspense>
@@ -42,10 +41,8 @@ export default function GeneralSettings() {
             <div className="space-y-3 relative">
                 <label htmlFor="tools" className="label-style">Tools</label>
                 <DropdownList placeholder="Type your relevant Tools." type="tools">
-                    {AllTools.map((tool: string, idx: number) => <p key={idx} className="w-full block py-2 px-5 cursor-pointer hover:bg-gray-100">{tool}</p>)}
+                    {AllTools.map((tool: string, idx: number) => <p key={idx} className="hover:bg-light-gray cursor-pointer py-2 px-4">{tool}</p>)}
                 </DropdownList>
-                {/* <input type="text" name="tools" placeholder="Type your relevant Tools." className="input-style" required/> */}
-
                 <div className="flex items-center gap-x-2">
                     <Suspense fallback={<ListSettingLoading />}>
                         <ListToolsSetting />

@@ -1,17 +1,11 @@
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
-import { modeEnum } from '@/types/enum';
+import { handleEnum, modeEnum } from '@/types/enum';
 import { BaseEdge, Handle, NodeProps, Position } from '@xyflow/react';
 import { CalendarDays, MoveRight, Timer } from 'lucide-react';
 
-enum handleEnum {
-    START = "start",
-    MAIN = "main",
-    END = "end"
-}
-
 export default function Card({data, selected}: NodeProps) {
 
-    const { mode } = useTimelineStateStore();
+    const { mode, setShowSidebar } = useTimelineStateStore();
 
     let handleType = data.handleType;
 
@@ -51,7 +45,7 @@ export default function Card({data, selected}: NodeProps) {
                     <hr className="hr-style"/>
                     <div className="flex items-center justify-between text-purple-dark/50 text-xs m-0">
                         <p>2 Items</p>
-                        <button className="py-1 px-3 bg-light-purple/50 hover:bg-light-purple cursor-pointer rounded-lg">
+                        <button onClick={setShowSidebar} className="py-1 px-3 bg-light-purple/50 hover:bg-light-purple cursor-pointer rounded-lg">
                             <MoveRight className="w-5 h-5" />
                         </button>
                     </div>

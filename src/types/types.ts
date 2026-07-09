@@ -8,6 +8,8 @@ interface TimelineStateType {
   MainNodeLeft: number,
   Nodes: Node[] | [],
   Edges: Edge[] | [],
+  showSidebar: boolean,
+  setShowSidebar: () => void,
   setNodesChange: (changes: NodeChange[]) => void,
   setEdgesChange: (changes: EdgeChange[]) => void,
   setConnection: (connection: Connection) => void,

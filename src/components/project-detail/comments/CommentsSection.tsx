@@ -13,9 +13,9 @@ export default async function CommentsSection() {
         <>
         <CommentsDropdown>
             <ul className="space-y-3">
-                <li className="hover:bg-light-purple cursor-pointer py-1 px-3 rounded">All</li>
-                <li className="hover:bg-light-purple cursor-pointer py-1 px-3 rounded">First Step</li>
-                <li className="hover:bg-light-purple cursor-pointer py-1 px-3 rounded">Second Step</li>
+                <li className="hover:bg-light-gray cursor-pointer py-2 px-4">All</li>
+                <li className="hover:bg-light-gray cursor-pointer py-2 px-4">First Step</li>
+                <li className="hover:bg-light-gray cursor-pointer py-2 px-4">Second Step</li>
             </ul>
         </CommentsDropdown>
         </>
