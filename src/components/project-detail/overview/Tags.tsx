@@ -7,9 +7,6 @@ export default async function Tags({tags}: TagsInterface) {
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
     await delay(3000);
-    setTimeout(() => {
-        console.log("Waiting...")
-    }, 10000)
    
     return (
         <>

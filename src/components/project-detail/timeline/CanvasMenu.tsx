@@ -2,28 +2,29 @@
 
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
 import { modeEnum, handleEnum } from '@/types/enum';
-import { Node, useReactFlow } from '@xyflow/react';
+import { timelineNodeType } from '@/types/types';
+import { useReactFlow } from '@xyflow/react';
 import { ChevronDown, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 
-export default function TimelineMenu() {
+export default function CanvasMenu() {
 
     const [mode, setMode] = useState<modeEnum>(modeEnum.EDIT);
     const [modePosCount, setModePosCount] = useState<number>(0);
-    const {changeMode, setFirstNode, setEndNode, setNodes, isEndNodeUsed, isFirstNodeUsed, Nodes } = useTimelineStateStore();
+    const {changeMode, setFirstNode, setEndNode, setNodes, isEndNodeUsed, isFirstNodeUsed } = useTimelineStateStore();
 
     const [disableStartNode, setDisableStartNode] = useState<boolean>(false);
     const [disableEndNode, setDisableEndNode] = useState<boolean>(false);
 
-    const {addNodes, getNode, getNodes, screenToFlowPosition } = useReactFlow();
+    const { getNode, screenToFlowPosition } = useReactFlow();
 
     const [isExpand, setIsExpand] = useState(false);
 
+    // it will be change in the future
     let nodeID = 0;
 
     useEffect(() => {
-        console.log('bello',isFirstNodeUsed, Nodes)
         setDisableStartNode(isFirstNodeUsed)
         setDisableEndNode(isEndNodeUsed)
     }, [isEndNodeUsed, isFirstNodeUsed])
@@ -35,7 +36,6 @@ export default function TimelineMenu() {
         if(handleType == handleEnum.START && getNode("start")) return;
         if(handleType == handleEnum.END && getNode("end")) return;
 
-        let id = (handleType != handleEnum.MAIN) ? handleType : `step-${++nodeID}`;
 
         if(!reactFlow) return;
 
@@ -46,8 +46,8 @@ export default function TimelineMenu() {
             y:  bounds.top + (bounds.height / 2),
         });
 
-        const newNode: Node = {
-            id: id,
+        const newNode: timelineNodeType = {
+            id: `step-${++nodeID}`,
             position: flowPosition,
             data: { 
                 handleType: handleType
@@ -58,7 +58,6 @@ export default function TimelineMenu() {
 
         setNodes(newNode);
 
-        console.log(newNode)
         if(handleType == handleEnum.START) {
             setFirstNode(true);
             setDisableStartNode(true);
@@ -70,14 +69,13 @@ export default function TimelineMenu() {
 
     }
 
-    const menuDropdownFn = () => {
-        setIsExpand(!isExpand); 
-    }
+    const menuDropdownFn = () => setIsExpand(!isExpand); 
 
     const changeModeFn = () => {
         const nextCount = (modePosCount >= 2) ? 0 : modePosCount + 1;
-        setModePosCount(nextCount)
-        let modes = [modeEnum.EDIT, modeEnum.DELETE, modeEnum.SPECTATOR]
+        const modes = [modeEnum.EDIT, modeEnum.DELETE, modeEnum.SPECTATOR]
+        
+        setModePosCount(nextCount);
         changeMode(modes[nextCount]);
         setMode(modes[nextCount]);
 

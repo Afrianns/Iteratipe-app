@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/components/project-detail/settings/General"  ],
   "exclude": ["node_modules"]
 }

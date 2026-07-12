@@ -1,13 +1,15 @@
+import CanvasTimeline from './timeline/Canvas';
+import SidebarContentWrapper from './timeline/SidebarContentWrapper';
 
-import CanvasTimeline from './timeline/CanvasTimeline';
-import TimelineSidebar from './timeline/TimelineSidebar';
+interface paramType {
+    menu?: string | undefined,
+    node?: string | undefined,
+}
 
-
-export default function Timeline() {
-    
+export default function Timeline({params}: {params: paramType}) { 
     return (
         <CanvasTimeline>
-            <TimelineSidebar />
+            <SidebarContentWrapper params={params} />
         </CanvasTimeline>
     )
 }

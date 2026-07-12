@@ -21,18 +21,12 @@ export default async function Main({searchParams}: PagePropsType) {
 
     const params = await searchParams;
 
-    let subMenu = <Timeline />;
-    let isLoading = false;
-
-
-    setTimeout(() => {
-        isLoading = true
-    }, 5000)
+    let subMenu = <Timeline params={params} />;
 
     const changeSubMenuFn = (menu: string) => {
         switch (menu) {
             case "timeline":
-                subMenu = <Timeline />
+                subMenu = <Timeline params={params} />
                 break;
             case "overview":
                 subMenu = <Overview />
@@ -44,14 +38,14 @@ export default async function Main({searchParams}: PagePropsType) {
                 subMenu = <Settings params={params} />
                 break;        
             default:
-                subMenu = <Timeline />
+                subMenu = <Timeline params={params} />
                 break;
         }
     }
 
     if(params?.menu != undefined) changeSubMenuFn(params?.menu)
 
-
+    let key = `${params.menu || "empty-tl"}-${params.node|| "empty-nd"}-${params.tab || "empty-tb"}`
     return (
         <div className="flex bg-light-gray min-h-screen">
             <Sidebar current="explore" />
@@ -62,13 +56,13 @@ export default async function Main({searchParams}: PagePropsType) {
                         <div className="my-5 flex items-center justify-between">
                             <div>
                                 <div className="flex-centering gap-x-2">
-                                    <Suspense key={params.menu} fallback={<ProjectTitleLoading />}>
+                                    <Suspense key={key} fallback={<ProjectTitleLoading />}>
                                         <ProjectTitle />
                                     </Suspense>
                                 </div>
                                 <p className="text-gray-600 text-xs mt-1.5 flex items-center gap-x-1">
                                     <span>By</span>
-                                    <Suspense key={params.menu} fallback={<span className="block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>}>
+                                    <Suspense key={key} fallback={<span className="block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>}>
                                         <AuthorName />
                                     </Suspense>
                                 </p>
@@ -84,13 +78,13 @@ export default async function Main({searchParams}: PagePropsType) {
                             <div className="flex items-center gap-x-5 text-purple-dark/60 text-sm mt-2 pb-3">
                                 <p className="text-xs font-light flex items-center gap-x-2">
                                     Published on 
-                                    <Suspense key={params.menu} fallback={<span className="inline-block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>}>
+                                    <Suspense key={key} fallback={<span className="inline-block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>}>
                                         <Published />
                                     </Suspense>
                                 </p>
                                 <p className="text-xs font-light flex items-center gap-x-2">
                                     Last updated on 
-                                    <Suspense key={params.menu} fallback={<span className="inline-block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>}>
+                                    <Suspense key={key} fallback={<span className="inline-block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>}>
                                         <LastUpdated />
                                     </Suspense>
                                 </p>
@@ -100,6 +94,7 @@ export default async function Main({searchParams}: PagePropsType) {
                 </div>
                 <div className="w-full h-fit bg-light-gray border-b border-gray-200 shadow-xs flex-1">
                     {subMenu}
+                    <div id="date-picker-root"></div>
                 </div>
             </div>
         </div>
