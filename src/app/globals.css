@@ -103,7 +103,7 @@ h1, h2, h3{
 }
 
 .tag-style{
-  @apply bg-light-gray hover:bg-grayish py-1 px-3 hover:underline whitespace-nowrap;
+  @apply border border-grayish bg-light-gray hover:bg-grayish py-1 px-3 hover:underline whitespace-nowrap;
 }
 
 .scroll-edge-style{

@@ -17,7 +17,6 @@ export default function Sidebar({ current }: { current: string }) {
             </div>
             <div>
                 <div className="relative flex justify-center items-center h-10 mb-5">
-                    {/* Large Logo */}
                     <div 
                         className={`absolute transition-all duration-300 ease-in-out ${
                         isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
@@ -26,7 +25,6 @@ export default function Sidebar({ current }: { current: string }) {
                         <Image alt="Iteratipe Logo" src="/Logo.svg" width={130} height={130} priority />
                     </div>
 
-                    {/* Small/Short Logo */}
                     <div 
                         className={`absolute transition-all duration-300 ease-in-out ${
                         !isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
@@ -37,7 +35,7 @@ export default function Sidebar({ current }: { current: string }) {
                 </div>
 
                 <div className="flex justify-center">
-                    <button className="flex-centering hovering-detail duration-300 bg-light-purple text-purplish font-medium hover:bg-light-purple hover:underline w-4/5 justify-center whitespace-nowrap">
+                    <Link href="/new" className="flex-centering hovering-detail duration-300 bg-light-purple text-purplish font-medium hover:bg-light-purple hover:underline w-4/5 justify-center whitespace-nowrap">
                         <Plus className="menu-icon-style" /> 
                         <span 
                             className={`menu-name-style ${
@@ -46,7 +44,7 @@ export default function Sidebar({ current }: { current: string }) {
                         >
                             New Design
                         </span>
-                    </button>
+                    </Link>
                 </div>
                 
                 <ul className="space-y-3 gap-y-3 mt-10 w-full mx-auto">

@@ -8,6 +8,7 @@ import { initialStateType } from "@/types/types";
 import { DatePickerRange } from "./DatePickerRange";
 import { useTimelineStateStore } from "@/hooks/useTimelineStateStore";
 import { formatFlexibleDuration } from "@/lib/convertDateinDuration";
+import { ErrorMessageList } from "@/components/ErrorMessageList";
 
 const initialState: initialStateType = {
   success: false,
@@ -61,20 +62,5 @@ export default function SidebarFormEdit() {
                 </div>
             </section>
         </form>
-    )
-}
-
-const ErrorMessageList = ({ inputName, messages }: {inputName: string, messages: string[] | undefined}) => {
-    return (
-        <>
-            {messages &&
-                <div className="bg-light-red/20 py-1 text-xs rounded px-2">
-                    <p className="text-light-red font-bold capitalize">{inputName}</p>
-                    <ul>
-                        {messages?.map((msg,idx) =><li key={idx} className="list-disc list-inside error-msg-style">{msg}</li>)}
-                    </ul>
-                </div> 
-            }
-        </>
     )
 }

@@ -1,4 +1,4 @@
-import TagsSetting from "./TagsSetting";
+import TagsSetting from "./project-detail/TagsSetting";
 
 export default async function ListTagsSetting() {
 

@@ -1,5 +1,5 @@
+import TagsList from "@/components/TagsList";
 import { TagsType } from "@/types/types";
-import TagsList from "./TagsList";
 
 interface TagsInterface { tags: TagsType }
 
@@ -11,7 +11,7 @@ export default async function Tags({tags}: TagsInterface) {
     return (
         <>
             <h3 className="h-three-style z-2 relative">Tags</h3> 
-            <TagsList tags={tags} />
+            <TagsList colorFrom="from-whitish" tags={tags} />
         </>
     )
 }

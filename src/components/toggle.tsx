@@ -39,6 +39,7 @@ export default function Toggle({ label = "Enable", onToggle }: ToggleProps) {
       {/* Hidden checkbox for browser accessibility */}
       <input
         type="checkbox"
+        name="disable_comments"
         checked={isChecked}
         onChange={handleToggle}
         className="sr-only"

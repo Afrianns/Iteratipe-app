@@ -1,9 +1,9 @@
 import { Connection, Edge, EdgeChange, Node, NodeChange } from "@xyflow/react";
 import { handleEnum, modeEnum } from "./enum";
 
-type setNode<T> = T | T[]
+export type setNode<T> = T | T[]
 
-interface TimelineStateType {
+export interface TimelineStateType {
   mode: modeEnum;
   isFirstNodeUsed: boolean,
   isEndNodeUsed: boolean,
@@ -26,7 +26,7 @@ interface TimelineStateType {
   setEndNode: (end: boolean) => void
 }
 
-interface nodeDataEditType {
+export interface nodeDataEditType {
   title: string
   type: string
   startDate: string
@@ -34,11 +34,11 @@ interface nodeDataEditType {
   content: string
 }
 
-interface timelineNodeType extends Omit<Node, "data">{
+export interface timelineNodeType extends Omit<Node, "data">{
   data: timelineNodeDataType
 }
 
-interface timelineNodeDataType {
+export interface timelineNodeDataType {
     handleType?: handleEnum
     title?: string
     type?: string
@@ -49,22 +49,22 @@ interface timelineNodeDataType {
 }
 
 
-interface PagePropsType {
+export interface PagePropsType {
   searchParams: Promise<{ menu?: string | undefined, tab?: string | undefined, node?: string | undefined }>;
 }
 
-interface initialStateType {
+export interface initialStateType {
     success: boolean
     message: { title?: string[], type?: string[], content?: string[], start_at?: string[], end_at?: string[]}
 }
 
-type ToolsType = {
+export type ToolsType = {
     id: number,
     name: string,
     logo?: string
 }
 
-type InputSelectPropsType = {
+export type InputSelectPropsType = {
   start_at: Date | null,
   end_at: Date | null,
   className?: string;
@@ -72,10 +72,48 @@ type InputSelectPropsType = {
   onClick?: () => void;
 };
 
+export type Step = "SETUP" | "VISIBILITY" | "SUMMARY"
+export type VISIBLE = "" | "PUBLIC" | "SEMI" | "PRIVATE"
 
-type TagsType = string[]
+
+export interface SetupType {
+  name: string,
+  summary: string,
+  status: string,
+  tags: string[],
+  tools: string[],
+}
+
+export interface VisibilityType {
+  visibility: VISIBLE,
+  disable_comments: boolean,
+  client_name: string
+}
+
+export interface VisibilityErrorsType {
+  visibility?: string[] | undefined
+  disable_comments?: string[] | undefined
+  client_name?: string[] | undefined
+}
+
+export interface SetupErrorsType {
+    name?: string[] | undefined
+    summary?: string[] | undefined
+    status?: string[] | undefined
+    tags?: string[] | undefined
+    tools?: string[] | undefined
+}
+
+export interface FormActionStateType {
+    success: boolean
+    next_step: Step
+    step_one_fields?: SetupType
+    step_one_errors?: SetupErrorsType
+    step_two_fields?: VisibilityType
+    step_two_errors?: VisibilityErrorsType
+}
 
 
-type subMenuType = "timeline" | "overview" | "comments" | "settings";
+export type TagsType = string[]
 
-export type {TimelineStateType, subMenuType, timelineNodeType, timelineNodeDataType, initialStateType, InputSelectPropsType, nodeDataEditType, setNode, PagePropsType, TagsType, ToolsType}
+export type subMenuType = "timeline" | "overview" | "comments" | "settings";

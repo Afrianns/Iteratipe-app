@@ -1,5 +1,5 @@
+import ToolsList from "@/components/ToolsList";
 import { ToolsType } from "@/types/types";
-import ToolsList from "./ToolsList";
 
 interface ToolsInterface { tools: ToolsType[] }
 
@@ -15,7 +15,7 @@ export default async function Tools({tools}: ToolsInterface) {
     return (
         <>
             <h3 className="h-three-style z-2 relative">Tools</h3>
-            <ToolsList tools={tools} />
+            <ToolsList colorFrom="from-whitish" tools={tools} />
         </>
     )
 }
