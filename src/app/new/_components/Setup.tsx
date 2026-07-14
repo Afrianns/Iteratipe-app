@@ -47,7 +47,7 @@ export default function Setup({ setupData, errors, setSetupData }: {setupData: S
                 </DropdownList>
                 <div className="flex gap-x-2">
                     {tags.map((tag, idx) => <div key={idx}>
-                        <span className="tag-style">{tag}</span>
+                        <span className="badge-style-secondary">{tag}</span>
                         <input name="tags[]" defaultValue={tag} hidden />
                     </div> )}
                 </div>
@@ -61,7 +61,7 @@ export default function Setup({ setupData, errors, setSetupData }: {setupData: S
                 </DropdownList>
                 <div className="flex gap-x-2">
                     {tools.map((tool, idx) => <div key={idx}>
-                        <span className="tag-style">{tool}</span>
+                        <span className="badge-style-secondary">{tool}</span>
                         <input type="hidden" name="tools[]" defaultValue={tool} />
                     </div> )}
                 </div>

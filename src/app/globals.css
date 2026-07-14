@@ -1,5 +1,7 @@
+@layer clerk;
 
 @import "tailwindcss";
+
 @layer base {
   @import "@xyflow/react/dist/style.css";
 }
@@ -10,6 +12,10 @@
     margin: 0;
     padding: 0;
   }
+}
+
+:root {
+  color-scheme: light;
 }
 
 @theme inline {
@@ -102,7 +108,7 @@ h1, h2, h3{
   @apply border-b border-grayish/90;
 }
 
-.tag-style{
+.badge-style-secondary {
   @apply border border-grayish bg-light-gray hover:bg-grayish py-1 px-3 hover:underline whitespace-nowrap;
 }
 

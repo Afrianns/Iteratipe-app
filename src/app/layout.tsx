@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Raleway, Instrument_Sans, Epilogue } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const raleway = Raleway({
   variable: "--font-raleway",
@@ -32,7 +33,15 @@ export default function RootLayout({
       lang="en"
       className={`${instrumentSans.variable} ${raleway.variable} ${epilogue.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col  font-instrument">{children}</body>
+      <body className="min-h-full flex flex-col  font-instrument">
+        <ClerkProvider
+          appearance={{
+            cssLayerName: 'clerk',
+            
+          }}
+        >{children}
+        </ClerkProvider>
+      </body>
     </html>
   );
 }

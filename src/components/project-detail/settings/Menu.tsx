@@ -1,10 +1,6 @@
 "use client"
 
-import Toggle from "@/components/toggle";
-import { ChevronDown } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
-import GeneralSetting from "./GeneralSettings";
 import { useSearchParams } from "next/navigation";
 
 export default function Menu() {

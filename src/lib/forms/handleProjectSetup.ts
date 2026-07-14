@@ -4,6 +4,7 @@ import z from "zod";
 import { SetupSchema, VisibilitySchema } from "../validations";
 import next from "next";
 import { FormActionStateType, Step, VISIBLE } from "@/types/types";
+import { redirect } from "next/navigation";
 
  export const handleProjectSetupFn = async (_: any, formData: FormData): Promise<FormActionStateType | undefined> => {
         
@@ -76,6 +77,10 @@ import { FormActionStateType, Step, VISIBLE } from "@/types/types";
                 },
                 step_two_errors: stepTwoErrors
             }
+        }
+
+        if(STEP == "SUMMARY") {
+            return redirect("/explore/andreas-ideas-logo")
         }
 
         console.log(stepTwoInput, STEP)

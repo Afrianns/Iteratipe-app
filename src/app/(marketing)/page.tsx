@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Timeline from "@/components/landing/timeline";
-import Features from "@/components/landing/features";
+import Timeline from "@/app/(marketing)/_components/timeline";
+import Features from "@/app/(marketing)/_components/features";
 import { ArrowUpRight, Menu } from "lucide-react";
-import DotsPattern from "@/components/landing/DotsPattern";
-import GridPattern from "@/components/Landing/GridPattern";
+import DotsPattern from "@/app/(marketing)/_components/DotsPattern";
+import GridPattern from "@/app/(marketing)/_components/GridPattern";
+import { SignInButton } from "@clerk/nextjs";
 
 // Register once globally on the client side
 if (typeof window !== "undefined") {
@@ -59,7 +60,9 @@ export default function LandingPage() {
                     <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
                     <li className="cursor-pointer hover:underline"><Link href="/about">About</Link></li>
                 </ul>
-                <Link href="#" className="max-md:hidden button-style rounded-full">Get Started</Link>
+                 <SignInButton>
+                    <Link href="#" className="max-md:hidden button-style rounded-full">Get Started</Link>
+                 </SignInButton>
                 {headerDropdown && 
                     <div className="gap-x-5 bg-white absolute p-5 top-10 right-5 card-style my-5">
                         <ul className="md:flex space-y-3 gap-x-5 md:text-sm items-center">

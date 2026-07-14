@@ -55,9 +55,9 @@
 //                 <input type="text" name="tags" placeholder="Type your relevant tags." className="input-style" required/>
 
 //                 <div className="flex items-center gap-x-2">
-//                     <span className="tag-style">UI Design</span>
-//                     <span className="tag-style">Design</span>
-//                     <span className="tag-style">Logo</span>
+//                     <span className="badge-style-secondary">UI Design</span>
+//                     <span className="badge-style-secondary">Design</span>
+//                     <span className="badge-style-secondary">Logo</span>
 //                 </div>
 //             </div>
 //             <div className="space-y-3">
@@ -78,9 +78,9 @@
 //                 <input type="text" name="tools" placeholder="Type your relevant Tools." className="input-style" required/>
 
 //                 <div className="flex items-center gap-x-2">
-//                     <span className="tag-style">Illustration</span>
-//                     <span className="tag-style">Photoshop</span>
-//                     <span className="tag-style">Figma</span>
+//                     <span className="badge-style-secondary">Illustration</span>
+//                     <span className="badge-style-secondary">Photoshop</span>
+//                     <span className="badge-style-secondary">Figma</span>
 //                 </div>
 //             </div>
 

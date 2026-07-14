@@ -48,7 +48,7 @@ export default async function Main({searchParams}: PagePropsType) {
     let key = `${params.menu || "empty-tl"}-${params.node|| "empty-nd"}-${params.tab || "empty-tb"}`
     return (
         <div className="flex bg-light-gray min-h-screen">
-            <Sidebar current="explore" />
+            <Sidebar />
             <div className="h-min-screen w-full flex flex-col">
                 <div className="w-full h-fit bg-whitish pt-5 px-10 border-b border-gray-200 shadow-xs">
                     <div className='max-w-360 mx-auto'>

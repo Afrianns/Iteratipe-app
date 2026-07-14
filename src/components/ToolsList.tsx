@@ -20,7 +20,7 @@ export default function ToolsList({tools, colorFrom}: ToolsInterface) {
 
             <div className="scroll-container-style" ref={scrollToolsRef}>
                     {tools.map((tools: ToolsType) =>
-                        <span key={tools.id} className="tag-style">{tools.name}</span>
+                        <span key={tools.id} className="badge-style-secondary">{tools.name}</span>
                     )}
             </div>
         </>

@@ -3,11 +3,14 @@
 import { CircleUser, Compass, FileStack, House, Plus, SquareChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 
-export default function Sidebar({ current }: { current: string }) {
+export default function Sidebar() {
 
+    const pathname = usePathname();
+    const path = pathname.split('/').filter((path) => path != "")[0]
     const [isOpen, setIsOpen] = useState(true);
 
     return (
@@ -16,7 +19,7 @@ export default function Sidebar({ current }: { current: string }) {
                 <SquareChevronRight className="w-4 h-4" />
             </div>
             <div>
-                <div className="relative flex justify-center items-center h-10 mb-5">
+                <Link href="/" className="relative flex justify-center items-center h-10 mb-5">
                     <div 
                         className={`absolute transition-all duration-300 ease-in-out ${
                         isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
@@ -32,7 +35,7 @@ export default function Sidebar({ current }: { current: string }) {
                     >
                         <Image alt="Iteratipe Logo" src="/sort-logo.svg" width={40} height={40} priority />
                     </div>
-                </div>
+                </Link>
 
                 <div className="flex justify-center">
                     <Link href="/new" className="flex-centering hovering-detail duration-300 bg-light-purple text-purplish font-medium hover:bg-light-purple hover:underline w-4/5 justify-center whitespace-nowrap">
@@ -48,13 +51,13 @@ export default function Sidebar({ current }: { current: string }) {
                 </div>
                 
                 <ul className="space-y-3 gap-y-3 mt-10 w-full mx-auto">
-                    <li className={`hovering-detail duration-300 hover:bg-light-purple group transition-colors ${current === 'home' ? 'bg-light-purple' : ''} whitespace-nowrap `}>
-                        <Link className="flex-centering overflow-hidden" href="/">
-                            <House className={`menu-icon-style ${current === 'home' ? 'text-purplish' : ''}`} />
+                    <li className={`hovering-detail duration-300 hover:bg-light-purple group transition-colors ${path === 'home' ? 'bg-light-purple' : ''} whitespace-nowrap `}>
+                        <Link className="flex-centering overflow-hidden" href="/home">
+                            <House className={`menu-icon-style ${path === 'home' ? 'text-purplish' : ''}`} />
                             
                             <span 
                             className={`menu-name-style ${
-                                current === 'home' ? 'text-purplish' : 'group-hover:text-purplish'
+                                path === 'home' ? 'text-purplish' : 'group-hover:text-purplish'
                             } ${
                                 isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'
                             }`}
@@ -63,18 +66,18 @@ export default function Sidebar({ current }: { current: string }) {
                             </span>
                         </Link>
                     </li>
-                    <li className={`hovering-detail duration-300 hover:bg-light-purple group ${current === 'explore' ? 'bg-light-purple' : ''}`}><Link className="flex-centering" href="/explore">
-                        <Compass className={`menu-icon-style ${current == 'explore' ? 'text-purplish' : ''}`} />
+                    <li className={`hovering-detail duration-300 hover:bg-light-purple group ${path === 'explore' ? 'bg-light-purple' : ''}`}><Link className="flex-centering" href="/explore">
+                        <Compass className={`menu-icon-style ${path == 'explore' ? 'text-purplish' : ''}`} />
                         <span className={`menu-name-style ${
-                            current === 'explore' ? 'text-purplish' : 'group-hover:text-purplish'
+                            path === 'explore' ? 'text-purplish' : 'group-hover:text-purplish'
                         } ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>
                             Explore
                         </span>
                     </Link></li>
-                    <li className={`hovering-detail duration-300 hover:bg-light-purple group ${current === 'collections' ? 'bg-light-purple' : ''}`}><Link className="flex-centering" href="/collections">
-                        <FileStack className={`menu-icon-style ${current == 'collections' ? 'text-purplish' : ''}`} />
+                    <li className={`hovering-detail duration-300 hover:bg-light-purple group ${path === 'collections' ? 'bg-light-purple' : ''}`}><Link className="flex-centering" href="/collections">
+                        <FileStack className={`menu-icon-style ${path == 'collections' ? 'text-purplish' : ''}`} />
                         <span className={`menu-name-style ${
-                            current === 'collections' ? 'text-purplish' : 'group-hover:text-purplish'
+                            path === 'collections' ? 'text-purplish' : 'group-hover:text-purplish'
                         } ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>
                             Collections
                         </span>

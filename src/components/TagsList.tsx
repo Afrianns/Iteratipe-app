@@ -20,7 +20,7 @@ export default function TagsList({tags, colorFrom}: TagsInterface) {
 
             <div className="scroll-container-style" ref={scrollTagsRef}>
                     {tags.map((tag: string, index: number) =>
-                        <span key={index} className="tag-style">{tag}</span>
+                        <span key={index} className="badge-style-secondary">{tag}</span>
                     )}
             </div>
         </>

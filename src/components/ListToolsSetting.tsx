@@ -12,7 +12,7 @@ export default async function ListToolsSetting() {
 
     return (
         <div className="flex items-center gap-x-2">
-            {tags.map((tag, idx) => <span key={idx} className="tag-style">{tag}</span>)}
+            {tags.map((tag, idx) => <span key={idx} className="badge-style-secondary">{tag}</span>)}
         </div>
     )
 }
