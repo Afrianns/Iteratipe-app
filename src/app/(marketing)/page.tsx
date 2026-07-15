@@ -9,7 +9,7 @@ import Features from "@/app/(marketing)/_components/features";
 import { ArrowUpRight, Menu } from "lucide-react";
 import DotsPattern from "@/app/(marketing)/_components/DotsPattern";
 import GridPattern from "@/app/(marketing)/_components/GridPattern";
-import { SignInButton } from "@clerk/nextjs";
+
 
 // Register once globally on the client side
 if (typeof window !== "undefined") {
@@ -60,9 +60,7 @@ export default function LandingPage() {
                     <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
                     <li className="cursor-pointer hover:underline"><Link href="/about">About</Link></li>
                 </ul>
-                 <SignInButton>
-                    <Link href="#" className="max-md:hidden button-style rounded-full">Get Started</Link>
-                 </SignInButton>
+                <Link href="/auth" className="max-md:hidden button-style rounded-full">Get Started</Link>
                 {headerDropdown && 
                     <div className="gap-x-5 bg-white absolute p-5 top-10 right-5 card-style my-5">
                         <ul className="md:flex space-y-3 gap-x-5 md:text-sm items-center">
@@ -70,7 +68,7 @@ export default function LandingPage() {
                             <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
                             <li className="cursor-pointer hover:underline"><Link href="/about">About</Link></li>
                         </ul>
-                        <Link href="#" className="button-style rounded-full">Get Started</Link>
+                        <Link href="/auth" className="button-style rounded-full">Get Started</Link>
                     </div>
                 }
             </>
@@ -91,8 +89,8 @@ export default function LandingPage() {
                     <h1 className="text-center font-black text-4xl md:text-6xl font-raleway">DESIGNING IS NOT JUST THE  RESULT BUT ALSO THE PROCESS.</h1>
                     <p className="max-w-150 text-purplish">Appreciate the designing process from start to finished and get insight from other designer around the world.</p>
                     <div className="flex gap-x-5">
-                        <Link href='' className="button-style rounded-md">Get Started</Link>
-                        <Link href='' className="button-style-secondary rounded-md">Explore Now</Link>
+                        <Link href='/auth' className="button-style rounded-md">Get Started</Link>
+                        <Link href='/explore' className="button-style-secondary rounded-md">Explore Now</Link>
                     </div>
                 </div>
             </section>
@@ -110,7 +108,7 @@ export default function LandingPage() {
                             <h1 className="text-3xl font-bold text-whitish">EVERY DESIGNING PROCESS YOU MAKE ARE DESIGN WORTH TO SHOW.</h1>
                             <p className="text-lg text-light-purple/90 max-w-100">Discover how professional designer workflow. showcase your process of your own to the world.</p>
                         </div>
-                        <Link href="" className="w-10 h-10 border border-light-purple hover:bg-light-purple rounded-full cursor-pointer mt-5">
+                        <Link href="/explore" className="w-10 h-10 border border-light-purple hover:bg-light-purple rounded-full cursor-pointer mt-5">
                             <ArrowUpRight className="p-2 w-10 h-10 text-light-purple hover:text-purplish" />
                         </Link>
                     </div>
@@ -125,9 +123,9 @@ export default function LandingPage() {
                         <div>
                             <h3 className="h-three-style mb-5">Menu</h3>
                             <ul className="space-y-3">
-                                <li className="cursor-pointer hover:underline">Home</li>
-                                <li className="cursor-pointer hover:underline">Explore</li>
-                                <li className="cursor-pointer hover:underline">About</li>
+                                <li className="cursor-pointer hover:underline"><Link href="/home">Home</Link></li>
+                                <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
+                                <li className="cursor-pointer hover:underline"><Link href="/">About</Link></li>
                             </ul>
                         </div>
                         <div>

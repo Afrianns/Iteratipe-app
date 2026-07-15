@@ -76,7 +76,7 @@ export default function Timeline() {
                             </div>
                         </div>
                     </div>
-                    <Link href="" className="w-10 h-10 border border-purplish hover:bg-purplish rounded-full cursor-pointer">
+                    <Link href="/explore" className="w-10 h-10 border border-purplish hover:bg-purplish rounded-full cursor-pointer">
                         <ArrowUpRight className="p-2 w-10 h-10 text-purplish hover:text-light-purple" />
                     </Link>
                 </div>

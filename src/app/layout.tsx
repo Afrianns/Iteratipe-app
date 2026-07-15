@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Raleway, Instrument_Sans, Epilogue } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { dark, neobrutalism } from "@clerk/ui/themes";
+import { NextClerkProviderProps } from "@clerk/nextjs/types";
 
 const raleway = Raleway({
   variable: "--font-raleway",
@@ -28,18 +30,28 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const clerkAppearance: NextClerkProviderProps['appearance'] = {
+    theme: "simple",
+    
+    variables: {
+      colorMuted: "var(--color-light-gray)",
+      colorPrimary: "var(--color-purplish)"
+    },
+    elements: {
+      cardBox: "card-style",
+      card: "shadow-none!",
+      socialButtonsBlockButton: "border! shadow-none!"
+    }
+  };
   return (
     <html
       lang="en"
       className={`${instrumentSans.variable} ${raleway.variable} ${epilogue.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col  font-instrument">
-        <ClerkProvider
-          appearance={{
-            cssLayerName: 'clerk',
-            
-          }}
-        >{children}
+        <ClerkProvider appearance={clerkAppearance}>
+          {children}
         </ClerkProvider>
       </body>
     </html>

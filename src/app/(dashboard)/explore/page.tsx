@@ -1,12 +1,12 @@
 import Header from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
-import Sidebar from "@/components/Sidebar";
+import SidebarWrapper from "@/components/SidebarWrapper";
 
 export default async function ExplorePage() {
 
     return (
         <div className="flex bg-light-gray min-h-screen">
-            <Sidebar />
+            <SidebarWrapper />
             <div className="col-span-5 w-full">
                 <div className="w-full h-fit bg-whitish py-5 px-10 border-b border-gray-200 shadow-xs">
                     <div className="max-w-360 mx-auto">

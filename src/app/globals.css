@@ -88,6 +88,10 @@ h1, h2, h3{
   @apply bg-white shadow-xs rounded-xl space-y-4 border border-grayish p-6;
 }
 
+.h-two-style {
+  @apply font-bold text-xl;
+}
+
 .h-three-style{
   @apply font-bold text-lg;
 }
