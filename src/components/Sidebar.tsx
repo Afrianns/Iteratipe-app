@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useAuth, UserButton, useUser } from "@clerk/nextjs";
 import { CircleUser, Compass, FileStack, House, Plus, SquareChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,7 +21,6 @@ export default function Sidebar() {
         }
     });
 
-    console.log(user)
     const pathname = usePathname();
     
     const openSidebarFn = () => {
@@ -33,12 +32,12 @@ export default function Sidebar() {
 
 
     return (
-        <div className={`sidebar-card-style transition-[width] duration-300 ease-in-out ${isOpen ? 'w-60' : 'w-20'}`}>
-            <div className="absolute -right-5 top-20 py-2 px-2 card-style cursor-pointer" onClick={openSidebarFn}>
+        <div className={`max-md:card-style sidebar-card-style max-md:space-y-0! transition-[width] duration-300 ease-in-out ${isOpen ? 'w-60' : 'w-20'}`}>
+            <div className="max-md:hidden absolute -right-5 top-20 py-2 px-2 card-style cursor-pointer" onClick={openSidebarFn}>
                 <SquareChevronRight className="w-4 h-4" />
             </div>
-            <div>
-                <Link href="/" className="relative flex justify-center items-center h-10 mb-5">
+            <div className="max-md:flex max-md:gap-x-5">
+                <Link href="/" className="hidden relative md:flex justify-center items-center h-10 mb-5">
                     <div 
                         className={`absolute transition-all duration-300 ease-in-out ${
                         isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
@@ -58,10 +57,9 @@ export default function Sidebar() {
 
                 {isSignedIn &&
                     <div className="flex justify-center">
-                        <Link href="/new" className="flex-centering hovering-detail duration-300 bg-light-purple text-purplish font-medium hover:bg-light-purple hover:underline w-4/5 justify-center whitespace-nowrap">
+                        <Link href="/new" className="flex-centering hovering-detail duration-300 bg-light-purple text-purplish font-medium hover:bg-light-purple hover:underline justify-center whitespace-nowrap w-full">
                             <Plus className="menu-icon-style" /> 
-                            <span 
-                                className={`menu-name-style ${
+                            <span className={`max-md:hidden menu-name-style ${
                                 isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'
                                 }`}
                             >
@@ -70,20 +68,13 @@ export default function Sidebar() {
                         </Link>
                     </div>
                 }
-
-                {/* {!isLoaded &&
-                    <div className="flex justify-center">
-                        <div className="h-10 w-4/5 bg-grayish/50 rounded-md animate-pulse"></div>
-                    </div>
-                } */}
                 
-                <ul className="space-y-3 gap-y-3 mt-10 w-full mx-auto">
+                <ul className="max-md:space-x-5 md:space-y-3 gap-y-3 md:mt-10 w-full mx-auto max-md:flex">
                     <li>
                         <Link className={`flex-centering hovering-detail duration-300 hover:bg-light-purple group transition-colors ${path === 'home' ? 'bg-light-purple' : ''} whitespace-nowrap `} href="/home">
                             <House className={`menu-icon-style ${path === 'home' ? 'text-purplish' : ''}`} />
                             
-                            <span 
-                            className={`menu-name-style ${
+                            <span className={`max-md:hidden menu-name-style ${
                                 path === 'home' ? 'text-purplish' : 'group-hover:text-purplish'
                             } ${
                                 isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'
@@ -95,7 +86,7 @@ export default function Sidebar() {
                     </li>
                     <li><Link className={`flex-centering hovering-detail duration-300 hover:bg-light-purple group ${path === 'explore' ? 'bg-light-purple' : ''}`} href="/explore">
                         <Compass className={`menu-icon-style ${path == 'explore' ? 'text-purplish' : ''}`} />
-                        <span className={`menu-name-style ${
+                        <span className={`max-md:hidden menu-name-style ${
                             path === 'explore' ? 'text-purplish' : 'group-hover:text-purplish'
                         } ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>
                             Explore
@@ -103,7 +94,7 @@ export default function Sidebar() {
                     </Link></li>
                     <li><Link className={`flex-centering hovering-detail duration-300 hover:bg-light-purple group ${path === 'collections' ? 'bg-light-purple' : ''}`} href="/collections">
                         <FileStack className={`menu-icon-style ${path == 'collections' ? 'text-purplish' : ''}`} />
-                        <span className={`menu-name-style ${
+                        <span className={`max-md:hidden menu-name-style ${
                             path === 'collections' ? 'text-purplish' : 'group-hover:text-purplish'
                         } ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>
                             Collections
@@ -113,15 +104,22 @@ export default function Sidebar() {
             </div>
             <div className="flex justify-center">
                 {isSignedIn ?   
-                    <Link href="/explore" className="flex-centering hovering-detail duration-100 bg-light-purple/50 text-purplish font-medium hover:bg-light-purple/80 hover:underline whitespace-nowrap w-full justify-center">
-                        <Image alt="user avatar" src={user?.imageUrl || ''} width={25} height={25} className="rounded-full" />
-
-                        <span className={`menu-name-style ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>{user?.firstName}</span>
-                    </Link>
+                    <UserButton userProfileUrl="/profile" appearance={{
+                        elements: {
+                            userButtonPopoverCard: "card-style border-t-none",
+                            userButtonPopoverMain: "border-none mbe-0!",
+                            userButtonPopoverFooter: "hidden",
+                            userButtonPopoverActionButton__signOut: "text-red-500 hover:bg-light-red/10",
+                            rootBox: "w-full flex-centering justify-center",
+                            userButtonTrigger: "block w-full",
+                            userButtonOuterIdentifier: `menu-name-style hidden md:block overflow-hidden ${isOpen ? 'max-w-37.5 opacity-100' : 'max-w-0 opacity-0 p-0 m-0'}`,
+                            userButtonBox: "flex-row-reverse flex-centering hovering-detail duration-300 bg-light-purple text-purplish font-medium hover:bg-light-purple hover:underline justify-center whitespace-nowrap gap-x-0",
+                        }
+                    }} showName={true} />
                 :
                     <Link href="/auth" className="flex-centering hovering-detail duration-100 bg-grayish/50 text-purple-dark font-medium hover:bg-light-grayish/80 hover:underline whitespace-nowrap w-4/5 justify-center">
                         <CircleUser className="menu-icon-style" /> 
-                        <span className={`menu-name-style ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>Get Started</span>
+                        <span className={`max-md:hidden menu-name-style ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>Get Started</span>
                     </Link>
                 }
             </div>

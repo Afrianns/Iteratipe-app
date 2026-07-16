@@ -47,14 +47,14 @@ export default async function Main({searchParams}: PagePropsType) {
 
     let key = `${params.menu || "empty-tl"}-${params.node|| "empty-nd"}-${params.tab || "empty-tb"}`
     return (
-        <div className="flex bg-light-gray min-h-screen">
+        <div className="container-wrapper-style">
             <Sidebar />
             <div className="h-min-screen w-full flex flex-col">
-                <div className="w-full h-fit bg-whitish pt-5 px-10 border-b border-gray-200 shadow-xs">
-                    <div className='max-w-360 mx-auto'>
-                        <Header />
-                        <div className="my-5 flex items-center justify-between">
-                            <div>
+                <div className="container-style container-accent-style mb-0! pb-0!">
+                    <div className='limit-breaker'>
+                        <Header showSearch={false} />
+                        <div className="my-5 flex max-lg:flex-col gap-y-5 items-center justify-between">
+                            <div className='mr-auto'>
                                 <div className="flex-centering gap-x-2">
                                     <Suspense key={key} fallback={<ProjectTitleLoading />}>
                                         <ProjectTitle />
@@ -67,13 +67,13 @@ export default async function Main({searchParams}: PagePropsType) {
                                     </Suspense>
                                 </p>
                             </div>
-                            <div className="flex-centering gap-x-2">
+                            <div className="flex-centering gap-x-2 ml-auto">
                                 <button className="button-style-tertiary"><Heart strokeWidth="3" className="w-4 h-4 text-purplish" /></button>
                                 <button className="button-style-tertiary"><Bookmark strokeWidth="3" className="w-4 h-4 text-purplish" /></button>
                                 <button className="button-style">Follow <span className='underline text-sm'>Andreas Bunchaco</span></button>
                             </div>
                         </div>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between max-lg:flex-col-reverse">
                             <DetailMenu />
                             <div className="flex items-center gap-x-5 text-purple-dark/60 text-sm mt-2 pb-3">
                                 <p className="text-xs font-light flex items-center gap-x-2">
@@ -92,7 +92,7 @@ export default async function Main({searchParams}: PagePropsType) {
                         </div>
                     </div>
                 </div>
-                <div className="w-full h-fit bg-light-gray border-b border-gray-200 shadow-xs flex-1">
+                <div className="w-full h-fit bg-light-gray border-b border-gray-200 shadow-xs flex-1 max-md:mb-20">
                     {subMenu}
                     <div id="date-picker-root"></div>
                 </div>

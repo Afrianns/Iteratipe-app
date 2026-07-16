@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function UnauthorizedInfo() {
     return (
-        <div className="max-w-360 mx-auto card-style-secondary flex flex-col justify-center items-center py-10!">
+        <div className="limit-breaker card-style-secondary flex flex-col justify-center items-center py-10!">
             <div className="p-5 rounded-full bg-grayish/40">
                 <Lock className="w-10 font-bold stroke-3 text-grayish-dark opacity-20"/>
             </div>

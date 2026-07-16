@@ -5,11 +5,11 @@ import SidebarWrapper from "@/components/SidebarWrapper";
 export default async function ExplorePage() {
 
     return (
-        <div className="flex bg-light-gray min-h-screen">
+        <div className="container-wrapper-style">
             <SidebarWrapper />
             <div className="col-span-5 w-full">
-                <div className="w-full h-fit bg-whitish py-5 px-10 border-b border-gray-200 shadow-xs">
-                    <div className="max-w-360 mx-auto">
+                <div className="container-style container-accent-style">
+                    <div className="limit-breaker">
                         <Header showSearch={false} />
                         <div className="mt-10">
                             <h1 className="text-4xl font-bold mb-2">Explore Designs</h1>
@@ -22,9 +22,9 @@ export default async function ExplorePage() {
                         </div>
                     </div>
                 </div>
-                <div className="w-full h-fit py-5 px-10">
-                    <div className="max-w-360 mx-auto">
-                        <div className=" grid grid-cols-3 gap-5">
+                <div className="container-style max-md:mb-20">
+                    <div className="limit-breaker">
+                        <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:grid-cols-2">
                             <ProjectCard currentPath="explore" imageName="project-placeholder-1.png" />
                             <ProjectCard currentPath="explore" imageName="project-placeholder-2.png" />
                             <ProjectCard currentPath="explore" imageName="project-placeholder-3.png" />

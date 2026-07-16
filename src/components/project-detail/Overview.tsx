@@ -45,12 +45,12 @@ export default function Overview() {
     ]
 
     return (
-        <div className="px-10 py-5">
-            <div className="max-w-360 mx-auto w-full grid grid-cols-3 gap-5 items-start">
+        <div className="container-style">
+            <div className="limit-breaker w-full grid md:grid-cols-2 lg:grid-cols-3 max-lg:gap-y-5 lg:gap-5 items-start">
                 <Suspense fallback={<SummaryLoading />}>
                     <Summary />
                 </Suspense>
-                <div className="col-span-1 space-y-5">
+                <div className="sm:col-span-2 md:col-span-3 lg:col-span-1 space-y-5 min-w-0">
                     <div className="card-style-secondary">
                         <Suspense fallback={<AboutDesignLoading />}>
                             <AboutDesigner />
@@ -76,7 +76,7 @@ export default function Overview() {
 
 const SummaryLoading = () => {
     return (
-        <div className="card-style-secondary col-span-2">
+        <div className="card-style-secondary">
             <h3 className="h-three-style">Project Summary</h3>
             
             <div className="space-y-2 pb-4 animate-pulse">

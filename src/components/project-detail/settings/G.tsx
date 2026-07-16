@@ -28,7 +28,7 @@
 //     const activeSubSettingFn = (menu: string) => currentSubSetting == menu && "bg-grayish/50"
 //     return (
 //         <div className="px-10 py-5">
-//             <div className="max-w-360 mx-auto w-full grid grid-cols-4 gap-5 items-start">
+//             <div className="limit-breaker w-full grid grid-cols-4 gap-5 items-start">
 //                 <div className="col-span-1 sticky top-5">
 //                     <ul className="space-y-3">
 //                         <li onClick={() => settingMenuFn('general')} className={`menu-setting-style ${activeSubSettingFn('general')}`}>General</li>

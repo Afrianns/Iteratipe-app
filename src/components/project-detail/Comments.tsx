@@ -1,4 +1,3 @@
-import Image from "next/image";;
 import CommentsSorting from "./comments/CommentsSorting";
 import { Suspense } from "react";
 import CommentsSection from "./comments/CommentsSection";
@@ -6,8 +5,8 @@ import CommentsList from "./comments/CommentsList";
 
 export default function Comments() {
     return (
-        <div className="px-10 py-5">
-            <div className="max-w-360 mx-auto w-full">
+        <div className="container-style">
+            <div className="limit-breaker w-full">
                 <div className="card-style-secondary col-span-2 max-w-200">
                     <div className="flex justify-between items-center">
                         <div className="max-w-90 w-full relative">

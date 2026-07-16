@@ -33,15 +33,10 @@ export default function RootLayout({
 
   const clerkAppearance: NextClerkProviderProps['appearance'] = {
     theme: "simple",
-    
+    cssLayerName: "clerk",
     variables: {
       colorMuted: "var(--color-light-gray)",
       colorPrimary: "var(--color-purplish)"
-    },
-    elements: {
-      cardBox: "card-style",
-      card: "shadow-none!",
-      socialButtonsBlockButton: "border! shadow-none!"
     }
   };
   return (

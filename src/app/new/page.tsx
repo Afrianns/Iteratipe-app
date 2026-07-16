@@ -99,15 +99,15 @@ export default function New() {
     }
 
     return (
-        <div className="flex bg-light-gray min-h-screen">
-            <Sidebar current="new project" />
+        <div className="container-wrapper-style max-md:mb-20">
+            <Sidebar />
             <div className="col-span-5 w-full">
-                <div className="w-full h-fit bg-whitish py-5 px-10 border-b border-gray-200 shadow-xs">
-                    <div className="max-w-360 mx-auto">
+                <div className="container-style container-accent-style">
+                    <div className="limit-breaker">
                         <Header showSearch={false}/>
                     </div>
                 </div>
-                <form action={formAction} className="w-full h-fit py-5 px-10 mx-auto flex flex-col items-center justify-center transition-style">
+                <form action={formAction} className="container-style mx-auto flex flex-col items-center justify-center transition-style">
                     <div className="flex items-center justify-center my-10 gap-x-10 w-fit relative z-2">
                         <div className={`w-10 h-10 rounded-full z-2 flex items-center justify-center ${steps[0] ? "bg-purplish" : "bg-light-purple"}`}>
                             <h3 className={`font-extrabold text-2xl h-9 ${steps[0] ? "text-whitish" : "text-purplish"}`}>1</h3>

@@ -9,6 +9,7 @@ import Features from "@/app/(marketing)/_components/features";
 import { ArrowUpRight, Menu } from "lucide-react";
 import DotsPattern from "@/app/(marketing)/_components/DotsPattern";
 import GridPattern from "@/app/(marketing)/_components/GridPattern";
+import { auth, UserButton, useUser } from "@clerk/nextjs";
 
 
 // Register once globally on the client side
@@ -19,6 +20,8 @@ if (typeof window !== "undefined") {
 export default function LandingPage() {
 
     const [headerDropdown, setHeaderDropdown] = useState<boolean>();
+
+    const { user, isSignedIn, isLoaded } = useUser();
 
     const startRef = useRef<HTMLHeadingElement>(null);
     const headerRef = useRef<HTMLHeadingElement>(null);
@@ -50,6 +53,22 @@ export default function LandingPage() {
         }
     }
 
+    const AuthenticatedUserShowFn = () => {
+        let comps: React.ReactElement;
+        if(isLoaded && isSignedIn){
+            comps = <Link className="flex items-center justify-end gap-x-2 py-2 px-3 hover:bg-light-gray h-full w-fit rounded-full" href="/profile">
+                <span className="p-style">{user.fullName}</span>    
+                <Image alt="current user avatar" src={user.imageUrl} width={30} height={30} className="rounded-full" />
+            </Link>
+        } else if(isLoaded && !isSignedIn) {
+            comps = <Link href="/auth" className="max-md:hidden button-style rounded-full">Get Started</Link>
+        } else{
+            comps = <div className="w-30 h-full bg-grayish animate-pulse rounded-full"></div>
+        }
+
+        return comps;
+    }
+
     const HeaderComp = () => {
         return (
             <>
@@ -60,15 +79,16 @@ export default function LandingPage() {
                     <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
                     <li className="cursor-pointer hover:underline"><Link href="/about">About</Link></li>
                 </ul>
-                <Link href="/auth" className="max-md:hidden button-style rounded-full">Get Started</Link>
+                <AuthenticatedUserShowFn />
                 {headerDropdown && 
                     <div className="gap-x-5 bg-white absolute p-5 top-10 right-5 card-style my-5">
-                        <ul className="md:flex space-y-3 gap-x-5 md:text-sm items-center">
+                        <ul className="md:flex space-y-3 gap-x-5 text-sm font-light items-center">
                             <li className="cursor-pointer hover:underline"><Link href="/">Home</Link></li>
                             <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
                             <li className="cursor-pointer hover:underline"><Link href="/about">About</Link></li>
+                            {isSignedIn && <li className="cursor-pointer hover:underline"><Link href="/about">{user?.fullName}</Link></li>}
                         </ul>
-                        <Link href="/auth" className="button-style rounded-full">Get Started</Link>
+                        {!isSignedIn && <Link href="/auth" className="button-style rounded-full">Get Started</Link>}
                     </div>
                 }
             </>
@@ -82,7 +102,7 @@ export default function LandingPage() {
             </div>
             <section className="bg-light-blue py-10 relative overflow-hidden z-2">
                 <DotsPattern />
-                <div className=" bg-white h-15 max-w-160 mx-5 md:mx-auto rounded-full py-3 px-5 flex items-center justify-between gap-x-5 space-x-10 shadow-sm relative">
+                <div className=" bg-white h-15 max-w-160 mx-5 md:mx-auto rounded-4xl py-3 px-5 flex items-center justify-between gap-x-5 space-x-10 shadow-sm relative">
                     <HeaderComp />
                 </div>
                 <div ref={startRef} className="flex flex-col justify-center items-center text-center max-w-250 mx-10 md:mx-auto space-y-5 md:space-y-10 my-10">
