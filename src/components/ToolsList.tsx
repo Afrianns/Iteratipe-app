@@ -2,9 +2,9 @@
 
 import { useGradientScrollEdge } from "@/hooks/useGradientScrollEdge";
 import { handleScroll } from "@/lib/handleScroll";
-import { ToolsType } from "@/types/types";
+import { labelType } from "@/types/types";
 
-interface ToolsInterface { tools: ToolsType[], colorFrom: string }
+interface ToolsInterface { tools: labelType[], colorFrom: string }
 
 export default function ToolsList({tools, colorFrom}: ToolsInterface) {
     const [scrollToolsRef, showGradientToolsLeft, showGradientToolsRight] = useGradientScrollEdge(handleScroll);
@@ -19,7 +19,7 @@ export default function ToolsList({tools, colorFrom}: ToolsInterface) {
             }`}></span>
 
             <div className="scroll-container-style" ref={scrollToolsRef}>
-                    {tools.map((tools: ToolsType) =>
+                    {tools.map((tools: labelType) =>
                         <span key={tools.id} className="badge-style-secondary">{tools.name}</span>
                     )}
             </div>

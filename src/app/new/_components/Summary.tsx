@@ -1,36 +1,15 @@
 import TagsList from "@/components/TagsList";
 import ToolsList from "@/components/ToolsList";
-import { SetupType, Step, TagsType, ToolsType, VisibilityType } from "@/types/types";
+import { labelType, SetupType, Step, VisibilityType } from "@/types/types";
 
 export default function Summary({ changeStepFn, setupData, visibilityData }: {setupData: SetupType, visibilityData: VisibilityType, changeStepFn: (step: Step) => void }) {
 
-    let tools: ToolsType[] = [
-        {
-            "id": 1,
-            "name": "figma",
-            "logo": ".."
-        },
-        {
-            "id": 2,
-            "name": "sketch",
-            "logo": ".."
-        },
-        {
-            "id": 3,
-            "name": "illustrator",
-            "logo": ".."
-        },
-        {
-            "id": 4,
-            "name": "illustrator",
-            "logo": ".."
-        },
-        {
-            "id": 5,
-            "name": "illustrator",
-            "logo": ".."
-        }
-    ]
+    const parseArrayOfObjectStrFn = (labelStrs: string[]) => {
+        let labels: labelType[] = []
+        labelStrs.map((labelStr) => labels.push(JSON.parse(labelStr)))
+
+        return labels;
+    }
     return (
         <div className="card-style w-full px-4 py-5 max-w-200 mx-auto">
             <h1 className="text-xl font-bold">Review Your Project Setup</h1>
@@ -43,7 +22,7 @@ export default function Summary({ changeStepFn, setupData, visibilityData }: {se
                     </div>
                     <div className="my-2">
                         <span className="text-sm text-grayish-dark">Status</span>
-                        <p className="label-style">{setupData.status}</p>
+                        <p className="label-style">{(setupData.status) ? JSON.parse(setupData.status).name : ""}</p>
                     </div>
                 </div>
                 <div className="my-2">
@@ -51,14 +30,18 @@ export default function Summary({ changeStepFn, setupData, visibilityData }: {se
                     <p className="label-style">{setupData.summary}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-x-5">
-                    <div className="my-2 relative">
-                        <span className="text-sm text-grayish-dark relative z-5">Tags</span>
-                        <TagsList colorFrom="from-light-gray" tags={setupData.tags} />
-                    </div>
-                    <div className="my-2 relative">
-                        <span className="text-sm text-grayish-dark relative z-5">Tools</span>
-                        <ToolsList colorFrom="from-light-gray" tools={tools} />
-                    </div>
+                    {setupData.tags &&
+                        <div className="my-2 relative">
+                            <span className="text-sm text-grayish-dark relative z-5">Tags</span>
+                            <TagsList colorFrom="from-light-gray" tags={parseArrayOfObjectStrFn(setupData.tags)} />
+                        </div>
+                    }
+                    {setupData.tools &&
+                        <div className="my-2 relative">
+                            <span className="text-sm text-grayish-dark relative z-5">Tools</span>
+                            <ToolsList colorFrom="from-light-gray" tools={parseArrayOfObjectStrFn(setupData.tools)} />
+                        </div>
+                    }
                 </div>
                 <hr className="hr-style my-5" />
                 <div className="my-2 space-y-2">

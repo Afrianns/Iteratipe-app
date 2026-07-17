@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import Visibility from "./_components/Visibility";
 import Setup from "./_components/Setup";
-import { handleProjectSetupFn } from "@/lib/forms/handleProjectSetup";
+import { handleProjectSetupFn } from "@/actions/setProjectSetupFn";
 import Summary from "./_components/Summary";
 import { useActionState, useEffect, useState } from "react";
 import { FormActionStateType, SetupErrorsType, SetupType, Step, VisibilityErrorsType, VisibilityType } from "@/types/types";

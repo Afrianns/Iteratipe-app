@@ -58,11 +58,10 @@ export interface initialStateType {
     message: { title?: string[], type?: string[], content?: string[], start_at?: string[], end_at?: string[]}
 }
 
-export type ToolsType = {
-    id: number,
-    name: string,
-    logo?: string
-}
+// export type ToolsType = {
+//     id: number,
+//     name: string,
+// }
 
 export type InputSelectPropsType = {
   start_at: Date | null,
@@ -113,7 +112,11 @@ export interface FormActionStateType {
     step_two_errors?: VisibilityErrorsType
 }
 
+// tag and tools type
+export interface labelType {
+    id: number
+    name: string
+}
 
-export type TagsType = string[]
 
 export type subMenuType = "timeline" | "overview" | "comments" | "settings";

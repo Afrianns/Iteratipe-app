@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AdditionalUserInfo {
+  id            Int         @id @default(autoincrement())
+  clerk_user_id String      @unique @db.Uuid
+  description   String?
+  facebook_link String?     @db.VarChar(200)
+  twitter_link  String?     @db.VarChar(200)
+  website_link  String?     @db.VarChar(200)
+  Bookmarks     Bookmarks[]
+  Likes         Likes[]
+  Projects      Projects[]
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model Bookmarks {
+  id                 Int                 @id @default(autoincrement())
+  project_id         Int?
+  user_id            Int?
+  Projects           Projects?           @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  AdditionalUserInfo AdditionalUserInfo? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([project_id, user_id], map: "Bookmarks_project_id_user_id_idx")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model Likes {
+  id                 Int                 @id @default(autoincrement())
+  project_id         Int?
+  user_id            Int?
+  Projects           Projects?           @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  AdditionalUserInfo AdditionalUserInfo? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([project_id, user_id], map: "Likes_project_id_user_id_idx")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model Project_tags {
+  id         Int       @id @default(autoincrement())
+  project_id Int?
+  tag_id     Int?
+  created_at DateTime? @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  Projects   Projects? @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Tags       Tags?     @relation(fields: [tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model Project_tools {
+  id         Int       @id @default(autoincrement())
+  project_id Int?
+  tool_id    Int?
+  created_at DateTime? @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  Projects   Projects? @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Tools      Tools?    @relation(fields: [tool_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model Projects {
+  id                 Int                 @id @default(autoincrement())
+  uid                String              @unique @db.Uuid
+  user_id            Int?
+  type_id            Int?
+  status_id          Int?                @unique
+  Status             Status?             @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)             
+  title              String              @db.VarChar(100)
+  summary            String
+  visibility         visibility
+  disable_comments   Boolean
+  client_name        String?             @db.VarChar(255)
+  created_at         DateTime?           @default(now()) @db.Timestamp(6)
+  updated_at         DateTime?           @db.Timestamp(6)
+  Bookmarks          Bookmarks[]
+  Likes              Likes[]
+  Project_tags       Project_tags[]
+  Project_tools      Project_tools[]
+  Types              Types?              @relation(fields: [type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  AdditionalUserInfo AdditionalUserInfo? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Timelines          Timelines[]
+}
+
+model Status {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique @db.VarChar(60)
+  projects     Projects[]
+}
+
+model Tags {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique @db.VarChar(30)
+  created_at   DateTime?      @default(now()) @db.Timestamp(6)
+  Project_tags Project_tags[]
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model Timelines {
+  id           Int            @id @default(autoincrement())
+  uid          String?        @unique @db.Uuid
+  project_id   Int?
+  thumbnail    String?        @db.VarChar(255)
+  Title        String?        @db.VarChar(60)
+  type         String?        @db.VarChar(20)
+  start_at     DateTime?      @db.Timestamp(6)
+  end_at       DateTime?      @db.Timestamp(6)
+  summary      String?
+  published_at DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?      @db.Timestamp(6)
+  timeline_id  String         @db.VarChar
+  position_x   Int
+  position_y   Int
+  handle_type  handleTypeEnum
+  edge_source  String?        @db.VarChar(50)
+  edge_target  String?        @db.VarChar(50)
+  Projects     Projects?      @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Tools {
+  id            Int             @id @default(autoincrement())
+  name          String          @unique @db.VarChar(30)
+  created_at    DateTime?       @default(now()) @db.Timestamp(6)
+  Project_tools Project_tools[]
+}
+
+model Types {
+  id         Int        @id @default(autoincrement())
+  name       String     @db.VarChar(50)
+  created_at DateTime?  @default(now()) @db.Timestamp(6)
+  Projects   Projects[]
+}
+
+enum handleTypeEnum {
+  start
+  main
+  end
+}
+
+enum visibility {
+  private
+  public
+  hybrid
+}

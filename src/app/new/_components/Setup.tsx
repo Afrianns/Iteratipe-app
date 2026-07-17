@@ -1,22 +1,42 @@
 import { ChevronDown } from "lucide-react"
 import DropdownList from "@/components/DropdownList";
-import { SetupErrorsType, SetupType, Step } from "@/types/types";
+import { labelType, SetupErrorsType, SetupType, Step } from "@/types/types";
 import { ErrorMessageList } from "@/components/ErrorMessageList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {getAllStatus, getAllTags, getAllTools} from "@/actions/getAllLabels";
+import { stringify } from "querystring";
 
 export default function Setup({ setupData, errors, setSetupData }: {setupData: SetupType, errors: SetupErrorsType | undefined, setSetupData: (data: SetupType) => void}) {
 
-    const AllTags: string[] = ["Identity", "Vintage"]
-    const AllTools: string[] = ["Indesign", "Sketch", "Blender", "Inkscape", "Adobe XD", "Adobe Illustrator"]
+    
+    let [allTags, setAllTags] = useState<labelType[]>([])
+    let [allTools, setAllTools] = useState<labelType[]>([])
+    let [allStatus, setAllStatus] = useState<labelType[]>([])
+    
+    useEffect(() => {
+        Promise.all([getAllTags(), getAllTools(), getAllStatus()])
+        .then(([tags, tools, status]) => {
+            setAllTags(tags);
+            setAllTools(tools);
+            setAllStatus(status);
+        })
+        .catch((error) => {
+            console.error("Failed to load initial setup data:", error);
+        })
+    },[])
 
-    const [tags, setTags] = useState<string[]>(["design", "logo", "illustration"])
-    const [tools, setTools] = useState<string[]>(["Inkscape", "Adobe XD"])
-    const addThisTags = (tag: string) => {
-        setTags([...tags, tag])
+    const [selectedTags, setSelectedTags] = useState<labelType[]>([])
+    const [selectedTools, setSelectedTools] = useState<labelType[]>([])
+    const addThisTags = (tag: labelType) => {
+        setSelectedTags([...selectedTags, tag])
     }
 
-    const addThisTools = (tool: string) => {
-        setTools([...tools, tool])
+    const addThisTools = (tool: labelType) => {
+        setSelectedTools([...selectedTools, tool])
+    }
+
+    const changeToThisStatus = (status: labelType) => {
+        setSetupData(({...setupData, status: JSON.stringify(status)}))
     }
     return (
         <div className="card-style-secondary col-span-3 w-full max-w-200 mx-auto">
@@ -31,24 +51,32 @@ export default function Setup({ setupData, errors, setSetupData }: {setupData: S
                 <textarea name="summary" id="summary" onChange={(e) => setSetupData(({...setupData, summary: e.target.value}))} value={setupData.summary} placeholder="Type your project summary." className="input-style min-h-20"></textarea>
                 <ErrorMessageList inputName="Summary" messages={errors?.summary} />
             </div>
-            <div className="space-y-3">
+            <div className="space-y-3 relative">
                 <label htmlFor="status" className="label-style">Status</label>
-                <div className="relative">
+                <DropdownList setupData={setupData} valueFn={setSetupData} name="status-name" placeholder="Type your relevant tags." type="status">
+                    {allStatus.map((status: labelType, idx: number) => (
+                        <div key={idx}>
+                            <p onMouseDown={() => changeToThisStatus(status)} className="w-full block py-2 px-5 cursor-pointer hover:bg-gray-100">{status.name}</p>
+                        </div>)
+                    )}
+                </DropdownList>
+                <input type="hidden" name="status" value={setupData.status} />
+                {/* <div className="relative">
                     <input type="text" name="status" onChange={(e) => setSetupData(({...setupData, status: e.target.value}))} value={setupData.status} placeholder="Select relevant project status." className="input-style" />
                     <ChevronDown className="absolute right-5 top-2 icon-style" />
-                </div>
+                </div> */}
                 <ErrorMessageList inputName="Status" messages={errors?.status} />
             </div>
 
             <div className="space-y-3 relative">
                 <label htmlFor="tags" className="label-style">Tags</label>
                 <DropdownList name="tag_input" placeholder="Type your relevant tags." type="tags">
-                    {AllTags.map((tag: string, idx: number) => <p key={idx} onMouseDown={() => addThisTags(tag)} className="w-full block py-2 px-5 cursor-pointer hover:bg-gray-100">{tag}</p>)}
+                    {allTags.map((tag: labelType, idx: number) => <p key={idx} onMouseDown={() => addThisTags(tag)} className="w-full block py-2 px-5 cursor-pointer hover:bg-gray-100">{tag.name}</p>)}
                 </DropdownList>
                 <div className="flex gap-x-2">
-                    {tags.map((tag, idx) => <div key={idx}>
-                        <span className="badge-style-secondary">{tag}</span>
-                        <input name="tags[]" defaultValue={tag} hidden />
+                    {selectedTags.map((tag, idx) => <div key={idx}>
+                        <span className="badge-style-secondary">{tag.name}</span>
+                        <input name="tags[]" defaultValue={JSON.stringify(tag)} hidden />
                     </div> )}
                 </div>
                 <ErrorMessageList inputName="Tags" messages={errors?.tags} />
@@ -57,12 +85,12 @@ export default function Setup({ setupData, errors, setSetupData }: {setupData: S
             <div className="space-y-3 relative">
                 <label htmlFor="tools" className="label-style">Tools</label>
                 <DropdownList name="tool_input" placeholder="Type your relevant Tools." type="tools">
-                    {AllTools.map((tool: string, idx: number) => <p key={idx} onMouseDown={() => addThisTools(tool)} className="w-full block py-3 px-5 cursor-pointer hover:bg-gray-100">{tool}</p>)}
+                    {allTools.map((tool: labelType, idx: number) => <p key={idx} onMouseDown={() => addThisTools(tool)} className="w-full block py-3 px-5 cursor-pointer hover:bg-gray-100">{tool.name}</p>)}
                 </DropdownList>
                 <div className="flex gap-x-2">
-                    {tools.map((tool, idx) => <div key={idx}>
-                        <span className="badge-style-secondary">{tool}</span>
-                        <input type="hidden" name="tools[]" defaultValue={tool} />
+                    {selectedTools.map((tool, idx) => <div key={idx}>
+                        <span className="badge-style-secondary">{tool.name}</span>
+                        <input type="hidden" name="tools[]" defaultValue={JSON.stringify(tool)} />
                     </div> )}
                 </div>
                 <ErrorMessageList inputName="Tools" messages={errors?.tools} />

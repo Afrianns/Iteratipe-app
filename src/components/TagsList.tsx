@@ -2,9 +2,9 @@
 
 import { useGradientScrollEdge } from "@/hooks/useGradientScrollEdge";
 import { handleScroll } from "@/lib/handleScroll";
-import { TagsType } from "@/types/types";
+import { labelType } from "@/types/types";
 
-interface TagsInterface { tags: TagsType, colorFrom: string }
+interface TagsInterface { tags: labelType[], colorFrom: string }
 
 export default function TagsList({tags, colorFrom}: TagsInterface) {
     const [scrollTagsRef, showGradientTagsLeft, showGradientTagsRight] = useGradientScrollEdge(handleScroll);
@@ -19,8 +19,8 @@ export default function TagsList({tags, colorFrom}: TagsInterface) {
             }`}></span>
 
             <div className="scroll-container-style" ref={scrollTagsRef}>
-                    {tags.map((tag: string, index: number) =>
-                        <span key={index} className="badge-style-secondary">{tag}</span>
+                    {tags.map((tag: labelType, index: number) =>
+                        <span key={index} className="badge-style-secondary">{tag.name}</span>
                     )}
             </div>
         </>

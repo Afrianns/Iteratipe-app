@@ -5,8 +5,30 @@ import { CircleCheck, Clock4, Layers } from "lucide-react";
 import UnauthorizedInfo from "../_components/UnauthorizedInfo";
 import SidebarWrapper from "@/components/SidebarWrapper";
 
+// import Types from "@/../resources/Types.json";
+
 export default async function Home() {
+
+
+    // const users = await prisma.additionalUserInfo.findMany();
+    
     const { isAuthenticated } = await auth()
+
+    // const insertData = async () => {
+    //     try {
+    //         // createMany inserts the entire array into your Neon table in a single query
+    //         const result = await prisma.types.createMany({
+    //             data: Types, 
+    //             skipDuplicates: true, // Optional: ignores errors if a unique key matches
+    //         });
+
+    //         console.log(`Successfully inserted ${result.count} rows!`);
+    //         return result;
+    //     } catch (error) {
+    //         console.error("Failed to insert data:", error);
+    //     }
+    // }
+    // insertData()
     return (
          <div className="container-wrapper-style">
             <SidebarWrapper />
