@@ -1,12 +1,12 @@
 import Header from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
-import SidebarWrapper from "@/components/SidebarWrapper";
+import Sidebar from "@/components/Sidebar";
 
 export default async function ExplorePage() {
 
     return (
         <div className="container-wrapper-style">
-            <SidebarWrapper />
+            <Sidebar />
             <div className="col-span-5 w-full">
                 <div className="container-style container-accent-style">
                     <div className="limit-breaker">

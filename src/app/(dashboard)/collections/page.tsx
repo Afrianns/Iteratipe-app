@@ -2,13 +2,13 @@ import Header from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
 import { auth } from "@clerk/nextjs/server";
 import UnauthorizedInfo from "../_components/UnauthorizedInfo";
-import SidebarWrapper from "@/components/SidebarWrapper";
+import Sidebar from "@/components/Sidebar";
 
 export default async function Collections() {
     const { isAuthenticated } = await auth()
     return (
         <div className="container-wrapper-style">
-            <SidebarWrapper />
+            <Sidebar />
             <div className="col-span-5 w-full">
                 <div className="container-style container-accent-style">
                     <div className="limit-breaker">

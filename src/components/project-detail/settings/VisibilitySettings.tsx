@@ -1,4 +1,4 @@
-import VisibilitySettingsForm from "@/components/VisibilitySettings"
+import VisibilitySettingsForm from "./VisibilitySettingsForm";
 
 export default function VisibilitySetting() {
     return (

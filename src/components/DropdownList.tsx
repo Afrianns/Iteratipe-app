@@ -1,10 +1,10 @@
 "use client";
-import { labelType, SetupType } from "@/types/types";
+import { labelType, generalSettingType } from "@/types/types";
 import { useState } from "react";
 
 interface DropdownListType {
-  setupData?: SetupType
-  valueFn?: (data: SetupType) => void
+  setupData?: generalSettingType
+  valueFn?: (data: generalSettingType) => void
   type: string
   name: string
   placeholder: string 
@@ -14,14 +14,14 @@ interface DropdownListType {
 export default function DropdownList({setupData, valueFn, type, name, children, placeholder }: DropdownListType) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const bindInput = (stateValue?: SetupType, setStateFn?: (data: SetupType) => void) => {
+  const bindInput = (stateValue?: generalSettingType, setStateFn?: (data: generalSettingType) => void) => {
     if(stateValue && setStateFn){
-      let status = (stateValue.status) ? JSON.parse(stateValue.status).name : ""
+      let selectedValue = stateValue[type as keyof typeof setupData]
 
       return {
-        value:  status,
+        value: (selectedValue) ? JSON.parse(selectedValue).name : "",
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => setStateFn((
-          {...stateValue, status: stateValue.status}
+          {...stateValue, [type]: selectedValue}
         ))
       };
     }
@@ -36,6 +36,7 @@ export default function DropdownList({setupData, valueFn, type, name, children, 
           className="input-style" 
           onFocus={() => setIsOpen(true)}
           onBlur={() => setIsOpen(false)}
+          autoComplete="off"
           {...bindInput(setupData, valueFn)}
         />
         {isOpen && (

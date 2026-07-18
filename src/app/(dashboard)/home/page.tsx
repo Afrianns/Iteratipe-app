@@ -3,7 +3,7 @@ import ProjectCard from "@/components/ProjectCard";
 import { auth } from "@clerk/nextjs/server";
 import { CircleCheck, Clock4, Layers } from "lucide-react";
 import UnauthorizedInfo from "../_components/UnauthorizedInfo";
-import SidebarWrapper from "@/components/SidebarWrapper";
+import Sidebar from "@/components/Sidebar";
 
 // import Types from "@/../resources/Types.json";
 
@@ -31,7 +31,7 @@ export default async function Home() {
     // insertData()
     return (
          <div className="container-wrapper-style">
-            <SidebarWrapper />
+            <Sidebar />
             <div className="col-span-5 w-full">
                 <div className="container-style container-accent-style">
                     <div className="limit-breaker">

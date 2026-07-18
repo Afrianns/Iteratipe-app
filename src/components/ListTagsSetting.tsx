@@ -1,9 +1,9 @@
 import TagsSetting from "./project-detail/TagsSetting";
 
-export default async function ListTagsSetting() {
+export default function ListTagsSetting() {
 
-    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-    await delay(3000);
+    // const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    // await delay(3000);
 
     const tags = ["Logo", "Design", "Branding"]
 

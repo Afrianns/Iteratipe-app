@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import SidebarWrapper from "@/components/SidebarWrapper";
+import Sidebar from "@/components/Sidebar";
 import { UserProfile } from "@clerk/nextjs";
 import { dark, neobrutalism } from "@clerk/ui/themes";
 import { headers } from "next/headers";
@@ -11,7 +11,7 @@ export default async function User() {
 
     return (
         <div className="container-wrapper-style">
-            <SidebarWrapper />
+            <Sidebar />
             <div className="col-span-5 w-full">
                 <div className="container-style container-accent-style">
                     <div className="limit-breaker">

@@ -1,42 +1,26 @@
-"use client"
+"use server"
 
-import { useAuth, UserButton, useUser } from "@clerk/nextjs";
-import { CircleUser, Compass, FileStack, House, Plus, SquareChevronRight } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
+import { CircleUser, Plus } from "lucide-react";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import SidebarMenu from "./SidebarMenu";
+import { auth } from "@clerk/nextjs/server";
 
 
-export default function Sidebar() {
+export default async function Sidebar() {
     
-    const { isSignedIn } = useAuth()
+    const { isAuthenticated } = await auth()
 
-    const { user } = useUser()
+    const cookieStore = await cookies()
     
-    const [isOpen, setIsOpen] = useState(() => {
-        if(typeof window !== "undefined"){
-            const saved = localStorage.getItem("sidebar_open");
-            return saved ? JSON.parse(saved) : false;
-        }
-    });
-
-    const pathname = usePathname();
-    
-    const openSidebarFn = () => {
-        localStorage.setItem("sidebar_open",JSON.stringify(!isOpen))
-        setIsOpen(!isOpen)
-    }
-
-    const path = pathname.split('/').filter((path) => path != "")[0]
-
+    const isOpen = cookieStore.get('sidebar_collapsed')?.value === 'true'
 
     return (
         <div className={`max-md:card-style sidebar-card-style max-md:space-y-0! transition-[width] duration-300 ease-in-out ${isOpen ? 'w-60' : 'w-20'}`}>
-            <div className="max-md:hidden absolute -right-5 top-20 py-2 px-2 card-style cursor-pointer" onClick={openSidebarFn}>
-                <SquareChevronRight className="w-4 h-4" />
-            </div>
-            <div className="max-md:flex max-md:gap-x-5">
+            
+            <div className="max-md:flex max-md:gap-x-5 max-md:justify-center">
                 <Link href="/" className="hidden relative md:flex justify-center items-center h-10 mb-5">
                     <div 
                         className={`absolute transition-all duration-300 ease-in-out ${
@@ -55,7 +39,7 @@ export default function Sidebar() {
                     </div>
                 </Link>
 
-                {isSignedIn &&
+                {isAuthenticated &&
                     <div className="flex justify-center">
                         <Link href="/new" className="flex-centering hovering-detail duration-300 bg-light-purple text-purplish font-medium hover:bg-light-purple hover:underline justify-center whitespace-nowrap w-full">
                             <Plus className="menu-icon-style" /> 
@@ -68,52 +52,21 @@ export default function Sidebar() {
                         </Link>
                     </div>
                 }
-                
-                <ul className="max-md:space-x-5 md:space-y-3 gap-y-3 md:mt-10 w-full mx-auto max-md:flex">
-                    <li>
-                        <Link className={`flex-centering hovering-detail duration-300 hover:bg-light-purple group transition-colors ${path === 'home' ? 'bg-light-purple' : ''} whitespace-nowrap `} href="/home">
-                            <House className={`menu-icon-style ${path === 'home' ? 'text-purplish' : ''}`} />
-                            
-                            <span className={`max-md:hidden menu-name-style ${
-                                path === 'home' ? 'text-purplish' : 'group-hover:text-purplish'
-                            } ${
-                                isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'
-                            }`}
-                            >
-                            Home
-                            </span>
-                        </Link>
-                    </li>
-                    <li><Link className={`flex-centering hovering-detail duration-300 hover:bg-light-purple group ${path === 'explore' ? 'bg-light-purple' : ''}`} href="/explore">
-                        <Compass className={`menu-icon-style ${path == 'explore' ? 'text-purplish' : ''}`} />
-                        <span className={`max-md:hidden menu-name-style ${
-                            path === 'explore' ? 'text-purplish' : 'group-hover:text-purplish'
-                        } ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>
-                            Explore
-                        </span>
-                    </Link></li>
-                    <li><Link className={`flex-centering hovering-detail duration-300 hover:bg-light-purple group ${path === 'collections' ? 'bg-light-purple' : ''}`} href="/collections">
-                        <FileStack className={`menu-icon-style ${path == 'collections' ? 'text-purplish' : ''}`} />
-                        <span className={`max-md:hidden menu-name-style ${
-                            path === 'collections' ? 'text-purplish' : 'group-hover:text-purplish'
-                        } ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>
-                            Collections
-                        </span>
-                    </Link></li>
-                </ul>
+                <SidebarMenu isOpen={isOpen} />
             </div>
             <div className="flex justify-center">
-                {isSignedIn ?   
+                {isAuthenticated ?   
                     <UserButton userProfileUrl="/profile" appearance={{
                         elements: {
                             userButtonPopoverCard: "card-style border-t-none",
                             userButtonPopoverMain: "border-none mbe-0!",
                             userButtonPopoverFooter: "hidden",
                             userButtonPopoverActionButton__signOut: "text-red-500 hover:bg-light-red/10",
-                            rootBox: "w-full flex-centering justify-center",
+                            rootBox: "w-full flex-centering justify-center max-w-full",
                             userButtonTrigger: "block w-full",
                             userButtonOuterIdentifier: `menu-name-style hidden md:block overflow-hidden ${isOpen ? 'max-w-37.5 opacity-100' : 'max-w-0 opacity-0 p-0 m-0'}`,
                             userButtonBox: "flex-row-reverse flex-centering hovering-detail duration-300 bg-light-purple text-purplish font-medium hover:bg-light-purple hover:underline justify-center whitespace-nowrap gap-x-0",
+                            avatarBox: `${isOpen ? 'h-7 w-7' :'w-5 h-5'}`
                         }
                     }} showName={true} />
                 :

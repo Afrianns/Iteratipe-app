@@ -78,6 +78,10 @@ h1, h2, h3{
   @apply border-2 border-purplish text-purplish font-medium text-sm hover:bg-purplish/20 cursor-pointer py-2 px-5;
 }
 
+.button-style-loading{
+  @apply bg-light-purple/50 text-purplish-blue/50 font-medium text-sm cursor-not-allowed py-2 px-10;
+}
+
 .timeline-btn-style{
   @apply py-1 px-5 rounded-lg text-xs flex items-center justify-center gap-x-1 w-full;
 }

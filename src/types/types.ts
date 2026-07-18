@@ -72,15 +72,28 @@ export type InputSelectPropsType = {
 };
 
 export type Step = "SETUP" | "VISIBILITY" | "SUMMARY"
-export type VISIBLE = "" | "PUBLIC" | "SEMI" | "PRIVATE"
+export type VISIBLE = "PUBLIC" | "SEMI" | "PRIVATE"
 
 
-export interface SetupType {
+export interface generalSettingType {
   name: string,
   summary: string,
+  type: string,
   status: string,
   tags: string[],
   tools: string[],
+}
+
+export interface InitialProjectType {
+  title: string
+  summary: string
+  type: {id: number}
+  status: {id: number}
+  tags: {tag_id: number}[]
+  tools: {tool_id: number}[]
+  visibility: VISIBLE
+  disable_comments: boolean
+  client_name: string
 }
 
 export interface VisibilityType {
@@ -95,9 +108,10 @@ export interface VisibilityErrorsType {
   client_name?: string[] | undefined
 }
 
-export interface SetupErrorsType {
+export interface generalSettingErrorsType {
     name?: string[] | undefined
     summary?: string[] | undefined
+    type?: string[] | undefined
     status?: string[] | undefined
     tags?: string[] | undefined
     tools?: string[] | undefined
@@ -106,8 +120,8 @@ export interface SetupErrorsType {
 export interface FormActionStateType {
     success: boolean
     next_step: Step
-    step_one_fields?: SetupType
-    step_one_errors?: SetupErrorsType
+    step_one_fields?: generalSettingType
+    step_one_errors?: generalSettingErrorsType
     step_two_fields?: VisibilityType
     step_two_errors?: VisibilityErrorsType
 }

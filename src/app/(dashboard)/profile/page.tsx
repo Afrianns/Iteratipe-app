@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import SidebarWrapper from "@/components/SidebarWrapper";
+import Sidebar from "@/components/Sidebar";
 import { UserAvatar, UserProfile } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { formatDistance, formatDistanceStrict, formatDistanceToNow } from "date-fns";
@@ -9,7 +9,7 @@ export default async function Profile() {
     const user = await currentUser();
     return (
         <div className="container-wrapper-style">
-            <SidebarWrapper />
+            <Sidebar />
             <div className="col-span-5 w-full">
                 <div className="container-style container-accent-style">
                     <div className="limit-breaker">
