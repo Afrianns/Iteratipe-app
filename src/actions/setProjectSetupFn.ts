@@ -3,8 +3,9 @@
 import z from "zod";
 import { generalSettingSchema, VisibilitySchema } from "../lib/validations";
 import { FormActionStateType, InitialProjectType, Step, VISIBLE } from "@/types/types";
-import saveProject from "@/services/project.service";
+import { saveProject } from "@/services/project.service";
 import { redirect } from "next/navigation";
+import syncUser from "./syncUser";
 
 export const handleProjectSetupFn = async (_: any, formData: FormData): Promise<FormActionStateType | undefined> => {
 
@@ -92,8 +93,12 @@ export const handleProjectSetupFn = async (_: any, formData: FormData): Promise<
             disable_comments: stepTwoValidation.data.disable_comments,
             client_name: stepTwoValidation.data.client_name,
         }
-        await saveProject(initialProjectsSetup)
+
+        // await syncUser();
+        let result = await saveProject(initialProjectsSetup)
         
-        return redirect("/explore/andreas-ideas-logo")
+        if(result.status == 200){
+            return redirect("/explore/andreas-ideas-logo")
+        }
     }
 }

@@ -25,9 +25,7 @@ export default async function ExplorePage() {
                 <div className="container-style max-md:mb-20">
                     <div className="limit-breaker">
                         <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:grid-cols-2">
-                            <ProjectCard currentPath="explore" imageName="project-placeholder-1.png" />
-                            <ProjectCard currentPath="explore" imageName="project-placeholder-2.png" />
-                            <ProjectCard currentPath="explore" imageName="project-placeholder-3.png" />
+                            
                         </div>
                     </div>
                 </div>

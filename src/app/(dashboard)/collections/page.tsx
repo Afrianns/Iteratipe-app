@@ -21,8 +21,6 @@ export default async function Collections() {
                     :
                         <div className="limit-breaker">
                             <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                                <ProjectCard currentPath="collections" imageName="project-placeholder-4.png" />
-                                <ProjectCard currentPath="collections" imageName="project-placeholder-5.png" />
                             </div>
                         </div>
                     }

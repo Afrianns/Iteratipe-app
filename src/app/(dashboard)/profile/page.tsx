@@ -1,9 +1,10 @@
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
-import { UserAvatar, UserProfile } from "@clerk/nextjs";
-import { auth, currentUser } from "@clerk/nextjs/server";
-import { formatDistance, formatDistanceStrict, formatDistanceToNow } from "date-fns";
+import { UserAvatar } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
+import { formatDistanceStrict } from "date-fns";
 import Link from "next/link";
+import { SignOut } from "./_components/SignOut";
 
 export default async function Profile() {
     const user = await currentUser();
@@ -35,8 +36,11 @@ export default async function Profile() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex justify-center gap-x-5">
-                                <Link href="/profile/settings" className="button-style-secondary rounded-full">Edit Profile</Link>
+                            <div className="flex gap-x-5 justify-center items-center">
+                                <div className="flex justify-center gap-x-5">
+                                    <Link href="/profile/settings" className="button-style-secondary rounded-full">Edit Profile</Link>
+                                </div>
+                                <SignOut />
                             </div>
                         </div>
                     </div>

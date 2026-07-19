@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 
-import DropdownList from "@/components/DropdownList";
-import { ErrorMessageList } from "@/components/ErrorMessageList";
 import { labelType, generalSettingErrorsType, generalSettingType, Step } from "@/types/types";
 import { getAllStatus, getAllTags, getAllTools, getAllTypes } from "@/actions/getAllLabels";
 import GeneralForm from "@/components/GeneralForm";

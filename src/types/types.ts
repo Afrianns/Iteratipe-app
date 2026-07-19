@@ -3,6 +3,13 @@ import { handleEnum, modeEnum } from "./enum";
 
 export type setNode<T> = T | T[]
 
+// tag and tools type
+export interface labelType {
+    id: number
+    name: string
+}
+
+// timeline
 export interface TimelineStateType {
   mode: modeEnum;
   isFirstNodeUsed: boolean,
@@ -24,6 +31,24 @@ export interface TimelineStateType {
   changeMode: (mode: modeEnum) => void,
   setFirstNode: (first: boolean) => void,
   setEndNode: (end: boolean) => void
+}
+
+// project type
+export interface ProjectType { 
+  id: number; 
+  created_at: Date | null; 
+  uid: string; 
+  user_id: number | null; 
+  type_id: number; 
+  title: string; 
+  summary: string; 
+  visibility: VISIBLE; 
+  disable_comments: boolean; 
+  client_name: string | null; 
+  updated_at: Date | null; 
+  status_id: number | null;
+  Status: labelType | null
+  Type: labelType | null
 }
 
 export interface nodeDataEditType {
@@ -126,11 +151,22 @@ export interface FormActionStateType {
     step_two_errors?: VisibilityErrorsType
 }
 
-// tag and tools type
-export interface labelType {
-    id: number
-    name: string
+
+// user type
+export interface userDataType {
+    id: string
+    first_name: string
+    last_name: string
+    full_name: string
+    email: string
+    image_url: string
 }
 
+// return data type function 
+export interface returnDataType<T> {
+    status: number
+    message: string
+    data?: T
+}
 
 export type subMenuType = "timeline" | "overview" | "comments" | "settings";

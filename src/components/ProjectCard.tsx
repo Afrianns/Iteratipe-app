@@ -1,8 +1,9 @@
+import { ProjectType } from "@/types/types";
 import { Bookmark, Eye, Heart, Layers } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function ProjectCard({currentPath, imageName}: {currentPath: string, imageName: string}) {
+export default function ProjectCard({currentPath, projectData, imageName}: {currentPath: string, projectData: ProjectType, imageName: string}) {
     return (
         <div className="card-style-secondary p-0! w-full transition-style hover:shadow-lg! hover:-translate-y-1 relative h-full max-h-80 overflow-hidden">
             <div className="h-30 relative">
@@ -14,12 +15,12 @@ export default function ProjectCard({currentPath, imageName}: {currentPath: stri
             </div>
             <div className="p-4 pt-0 space-y-3">
                 <div className="flex items-center justify-between">
-                    <p className="badge-style bg-green-100">Logo</p>
-                    <p className="badge-style bg-amber-100">In-progress</p>
+                    <p className="badge-style bg-green-100">{projectData.Type?.name}</p>
+                    <p className="badge-style bg-amber-100">{projectData.Status?.name}</p>
                 </div>
                 <div className="flex items-center justify-between">
                     <div>
-                        <Link href={`./${currentPath}/this-the-projects`} className="h-three-style capitalize hover:underline cursor-pointer">this the projects</Link>
+                        <Link href={`./${currentPath}/this-the-projects`} className="h-three-style capitalize hover:underline cursor-pointer">{projectData.title}</Link>
                         <p className="span-style flex items-center gap-x-1 text-xs">
                             By
                             <span className="p-style hover:underline hover:cursor-pointer text-xs!">Andreas Bjorn</span>

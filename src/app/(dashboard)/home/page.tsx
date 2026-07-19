@@ -1,9 +1,12 @@
 import Header from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { CircleCheck, Clock4, Layers } from "lucide-react";
 import UnauthorizedInfo from "../_components/UnauthorizedInfo";
 import Sidebar from "@/components/Sidebar";
+import { getCurrentUserProjects } from "@/services/project.service";
+import AuthenticatedProjectLists from "./_components/AuthenticatedProjectLists";
+import { Suspense } from "react";
 
 // import Types from "@/../resources/Types.json";
 
@@ -75,8 +78,9 @@ export default async function Home() {
                             <div className="grid lg:grid-cols-3 gap-5 mt-5">
                                 <div className="col-span-2 grid md:grid-cols-2 gap-5">
                                     <h3 className="col-span-full h-three-style">Your Recent Projects</h3>
-                                    <ProjectCard currentPath="home" imageName="project-placeholder-5.png" />
-                                    <ProjectCard currentPath="home" imageName="project-placeholder-4.png" />
+                                    <Suspense fallback={<ProjectCardSkeleton />}>
+                                        <AuthenticatedProjectLists />
+                                    </Suspense>
                                 </div>
                                 <div className="max-md:row-start-1 card-style-secondary shadow! h-fit max-md:col-span-2">
                                     <h3 className="h-three-style">Recent Activities</h3>
@@ -90,3 +94,42 @@ export default async function Home() {
         </div>
     )
 }
+
+
+function ProjectCardSkeleton() {
+    let counts = [1,2,3]
+  return (
+    <>
+        {counts.map((_, key) => {
+            return <div key={key}>
+                <div className="card-style-secondary p-0! w-full relative h-full max-h-80 overflow-hidden animate-pulse">
+                    <div className="h-30 bg-gray-200 relative">
+                        <div className="absolute bottom-2 left-2 bg-gray-300 h-5 w-20 rounded" />
+                    </div>
+
+                    <div className="p-4 pt-0 space-y-3">
+                        <div className="flex items-center justify-between pt-2">
+                        <div className="h-4 w-14 bg-gray-200 rounded-full" />
+                        <div className="h-4 w-20 bg-gray-200 rounded-full" />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                        <div className="space-y-2 flex-1">
+                            <div className="h-4 w-3/5 bg-gray-200 rounded" />
+                            <div className="h-2 w-1/3 bg-gray-200 rounded" />
+                        </div>
+                        <div className="h-5 w-9 bg-gray-200 rounded-full" />
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1">
+                        <div className="h-4 w-10 bg-gray-200 rounded" />
+                        <div className="h-5 w-9 bg-gray-200 rounded-full" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        })}
+    </>
+  );
+}
+
