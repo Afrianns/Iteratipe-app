@@ -1,13 +1,13 @@
 "use server"
 
 import { prisma } from "@/lib/db";
-import { returnDataType, userDataType } from "@/types/types";
+import { returnDataType, UserWebhookType } from "@/types/types";
 
 interface actionDataType {
     clerk_user_id: string
 }
 
-export default async function syncUser(params: userDataType): Promise<returnDataType<actionDataType>> {
+export default async function syncUser(params: UserWebhookType): Promise<returnDataType<actionDataType>> {
     let resultAction: returnDataType<actionDataType>
 
     try {

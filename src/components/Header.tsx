@@ -12,7 +12,7 @@ export default function Header({ showSearch = true }: {showSearch?: boolean}) {
             <div className="flex items-center">
                 {paths.map((path, idx) => {
                     return <div key={idx} className="flex items-center">
-                        <Link href={`/${getRouteLinkFn(paths, idx)}`} className="hover:underline text-sm text-gray-500">{path}
+                        <Link href={`/${getRouteLinkFn(paths, idx)}`} className="hover:underline text-sm text-gray-500">{getTitleUrlFn(path)}
                         </Link>
                         {(idx < paths.length-1) && 
                         <ChevronRight className="w-4 h-4 font-extralight text-grayish mx-2" /> }
@@ -30,13 +30,20 @@ export default function Header({ showSearch = true }: {showSearch?: boolean}) {
     )
 }
 
+const getTitleUrlFn = (path: string) => {
+    if(path.match("%E2%80%94")){
+        return path.split("%E2%80%94")[0].split("-").join(" ")
+    } else{
+        return path
+    }
+}
 
 const getRouteLinkFn = (paths: string[], idx: number) => {
     let pathLink = [];
-    
+
     for (let i = 0; i <= idx; i++) {
         pathLink.push(paths[i])
     }
-
+    
     return pathLink.join("/");
 }

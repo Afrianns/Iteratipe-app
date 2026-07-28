@@ -1,5 +1,5 @@
 import syncUser from '@/actions/syncUser';
-import { userDataType } from '@/types/types';
+import { UserPreviewType, UserWebhookType } from '@/types/types';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
 
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     switch (evt.type) {
       case "user.created":
         const userData = evt.data
-        const user: userDataType = {
+        const user: UserWebhookType = {
             id: userData.id,
             first_name: userData.first_name || "-",
             last_name: userData.last_name || "-",

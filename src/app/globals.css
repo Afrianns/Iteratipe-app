@@ -104,7 +104,7 @@ h1, h2, h3{
 }
 
 .card-style-secondary{
-  @apply bg-white shadow-xs rounded-xl space-y-4 border border-grayish p-6;
+  @apply bg-white shadow-xs rounded-xl border border-grayish p-6;
 }
 
 .h-two-style {

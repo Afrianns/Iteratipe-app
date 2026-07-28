@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark, neobrutalism } from "@clerk/ui/themes";
 import { NextClerkProviderProps } from "@clerk/nextjs/types";
+import { Toaster } from "sonner";
 
 const raleway = Raleway({
   variable: "--font-raleway",
@@ -45,6 +46,7 @@ export default function RootLayout({
       className={`${instrumentSans.variable} ${raleway.variable} ${epilogue.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col  font-instrument">
+        <Toaster position="top-center" richColors />
         <ClerkProvider appearance={clerkAppearance}>
           {children}
         </ClerkProvider>

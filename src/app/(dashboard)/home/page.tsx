@@ -1,12 +1,11 @@
 import Header from "@/components/Header";
-import ProjectCard from "@/components/ProjectCard";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { CircleCheck, Clock4, Layers } from "lucide-react";
 import UnauthorizedInfo from "../_components/UnauthorizedInfo";
 import Sidebar from "@/components/Sidebar";
-import { getCurrentUserProjects } from "@/services/project.service";
 import AuthenticatedProjectLists from "./_components/AuthenticatedProjectLists";
 import { Suspense } from "react";
+import HeaderHome from "./_components/HeaderHome";
 
 // import Types from "@/../resources/Types.json";
 
@@ -46,34 +45,8 @@ export default async function Home() {
                         <UnauthorizedInfo />
                     :
                         <div className="limit-breaker max-md:mb-20">
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                                <div className="card-style-secondary card-home-list-style">
-                                    <div>
-                                        <p className="text-sm text-purple-dark/40 font-epilogue font-bold">Total Projects.</p>
-                                        <h2 className="text-4xl font-semibold font-raleway">23</h2>
-                                    </div>
-                                    <div className="p-2 bg-light-gray rounded-full text-light-red">
-                                        <Layers strokeWidth={3} width={50} />
-                                    </div>
-                                </div>
-                                <div className="card-style-secondary card-home-list-style">
-                                    <div>
-                                        <p className="text-sm text-purple-dark/40 font-epilogue font-bold">Completed Projects.</p>
-                                        <h2 className="text-4xl font-semibold font-raleway">14</h2>
-                                    </div>
-                                    <div className="p-2 bg-light-gray rounded-full text-lime-yellow">
-                                        <CircleCheck strokeWidth={3} width={50} />
-                                    </div>
-                                </div>
-                                <div className="card-style-secondary card-home-list-style">
-                                    <div>
-                                        <p className="text-sm text-purple-dark/40 font-epilogue font-bold">Pending Projects.</p>
-                                        <h2 className="text-4xl font-semibold font-raleway">9</h2>
-                                    </div>
-                                    <div className="p-2 bg-light-gray rounded-full text-light-green">
-                                        <Clock4 strokeWidth={3} width={50} />
-                                    </div>
-                                </div>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+                                <HeaderHome />
                             </div>
                             <div className="grid lg:grid-cols-3 gap-5 mt-5">
                                 <div className="col-span-2 grid md:grid-cols-2 gap-5">

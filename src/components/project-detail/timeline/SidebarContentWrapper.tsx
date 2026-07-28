@@ -3,12 +3,7 @@ import { Suspense } from "react";
 import Sidebar from "./Sidebar";
 import SidebarContent from "./SidebarContent";
 
-interface paramType {
-    menu?: string | undefined,
-    node?: string | undefined,
-}
-
-export default function SidebarContentWrapper({params}: {params: paramType}) {
+export default function SidebarContentWrapper({params}: {params: {node?: string | undefined}}) {
 
     const currentNodeId = params.node || "empty"
     return (

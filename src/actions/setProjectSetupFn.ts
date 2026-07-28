@@ -2,10 +2,9 @@
 
 import z from "zod";
 import { generalSettingSchema, VisibilitySchema } from "../lib/validations";
-import { FormActionStateType, InitialProjectType, Step, VISIBLE } from "@/types/types";
-import { saveProject } from "@/services/project.service";
+import { FormActionStateType, ProjectStoreType, labelType, Step, VISIBLE } from "@/types/types";
+import { saveProject } from "@/services/projects.service";
 import { redirect } from "next/navigation";
-import syncUser from "./syncUser";
 
 export const handleProjectSetupFn = async (_: any, formData: FormData): Promise<FormActionStateType | undefined> => {
 
@@ -41,16 +40,17 @@ export const handleProjectSetupFn = async (_: any, formData: FormData): Promise<
             success: successSetupStep,
             next_step: nextStep,
             step_one_fields: {
-                name : stepOneInput.name as string,
-                summary : stepOneInput.summary as string,
-                type : stepOneInput.type as string,
-                status : stepOneInput.status as string,
-                tags : stepOneInput.tags as string[],
-                tools : stepOneInput.tools as string[]
+                name : stepOneValidation.name as string,
+                summary : stepOneValidation.summary as string,
+                type : stepOneValidation.type as labelType,
+                status : stepOneValidation.status as labelType,
+                tags : stepOneValidation.tags as labelType[],
+                tools : stepOneValidation.tools as labelType[]
             },
             step_one_errors: stepOneErrors
         }
     }
+
 
     const stepTwoInput = {
         visibility: formData.get("visibility"),
@@ -82,7 +82,7 @@ export const handleProjectSetupFn = async (_: any, formData: FormData): Promise<
     }
 
     if(STEP == "SUMMARY") {
-        let initialProjectsSetup: InitialProjectType = {
+        let initialProjectsSetup: ProjectStoreType = {
             title: stepOneValidation.data.name,
             summary: stepOneValidation.data.summary,
             type: { id: stepOneValidation.data.type.id },

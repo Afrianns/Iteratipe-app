@@ -1,45 +1,79 @@
-"use server"
+"use client";
 
-import updateGeneralSetting from "@/actions/updateGeneralSetting"
-import GeneralSettingForm from "./GeneralSettingsForm"
-import { getAllStatus, getAllTags, getAllTools, getAllTypes } from "@/actions/getAllLabels"
-import { generalSettingErrorsType, labelType } from "@/types/types"
+import { useContext, useState } from "react"
+import { SettingContext } from "@/lib/settingContext"
+import GeneralForm from "@/components/GeneralForm"
+import axios from "axios";
+import { updateGeneralSchema } from "@/lib/validations";
+import z from "zod";
+import SubmitButton from "@/components/SubmitButton";
+import { toast } from "sonner";
+import { redirect, usePathname, useSearchParams, useRouter } from "next/navigation";
 
-let generalSettingErrors: generalSettingErrorsType = {
-    name: [],
-    summary: [],
-    type: [],
-    status: [],
-    tags: [],
-    tools: [],
-}
+export default function GeneralSettings() {
 
-export default async function GeneralSettings() {
+    const { generalSettings, setGeneralSettingErrors } = useContext(SettingContext)
 
-    let allTags: labelType[] = []
-    let allTools: labelType[] = []
-    let allTypes: labelType[] = []
-    let allStatus: labelType[] = []
+    const [loading, setLoading] = useState(false);
 
+    const router = useRouter()
 
-    const [tags, tools, status, types] = await Promise.all([
-        getAllTags(),
-        getAllTools(),
-        getAllStatus(),
-        getAllTypes()
-    ]);
+    let pth = usePathname()
 
-    allTypes = types;
-    allStatus = status;
-    allTools = tools;
-    allTags = tags;
-    
+    const arrayOfUrl = pth.split('/')
+
+    const updateSetting = () => {
+        setLoading(true)
+        validateAndUpdateGeneralSetting()
+    }
+
+    const validateAndUpdateGeneralSetting = async () => {
+        const updateValidation = updateGeneralSchema.safeParse(generalSettings)
+
+        if(!updateValidation.success){
+            return setGeneralSettingErrors({...z.flattenError(updateValidation.error).fieldErrors})
+        }
+        
+        
+        
+        try {
+            if(generalSettings.id){
+                const result = await axios.patch("http://localhost:3000/api/project",
+                    updateValidation.data
+                )
+                
+                if(result.status == 200){
+                    toast.success(result.statusText)
+
+                    if(updateValidation.data.title){
+                        const projectName = arrayOfUrl[2].split("%E2%80%94")
+                        const updatedUrl = `/${arrayOfUrl[1]}/${updateValidation.data.title.toLowerCase().split(" ").join("-")}%E2%80%94${projectName[1]}?menu=settings`
+                        router.push(updatedUrl)
+                    }
+                } else{
+                    throw new Error("An error occur while updating your project, please try again later!");
+                    
+                }
+            }
+        } catch (error: unknown) {
+            if(axios.isAxiosError<{ errors_message: Record<string, string[]> }>(error)) {
+                if(error.response)
+                    setGeneralSettingErrors(error.response.data.errors_message)
+                
+                toast.error(error.message)
+            }
+
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
-        <form className="card-style-secondary col-span-3 w-full" action={updateGeneralSetting}>
-            <GeneralSettingForm allTypes={allTypes} allStatus={allStatus} allTools={allTools} allTags={allTags} errors={generalSettingErrors} />
+        <form className="card-style-secondary col-span-3 w-full space-y-5" action={updateSetting}>
+            <input type="hidden" name="project_id" value={generalSettings.id} />
+            <GeneralForm />
             <div className="text-right">
-                <button type="submit" className="button-style rounded-md">Save</button>
+                <SubmitButton loading={loading} name="Save" />
             </div>
         </form> 
     )

@@ -9,7 +9,7 @@ import Overview from './Overview';
 import Comments from './Comments';
 import Settings from './Settings';
 import DetailMenu from '@/components/project-detail/main/DetailMenu';
-import { PagePropsType } from '@/types/types';
+import { PagePropsType, WithPivotDataType } from '@/types/types';
 import { Suspense } from 'react';
 import Published from './main/Published';
 import LastUpdated from './main/LastUpdated';
@@ -17,35 +17,71 @@ import ProjectTitle from './main/ProjectTitle';
 import AuthorName from './main/AuthorName';
 
 
-export default async function Main({searchParams}: PagePropsType) {
+interface MainType extends PagePropsType {
+    project: WithPivotDataType
+}
 
-    const params = await searchParams;
+export default async function Main({searchParams, project}: MainType) {
 
-    let subMenu = <Timeline params={params} />;
+    const searchParam = await searchParams
+
+
+    let projectTitleInfo = {
+        title: project.title,
+        Type: project.Type,
+    }
+
+    const initialData = {
+        summary: project.summary,
+        type: project.Type,
+        client_name: project.client_name,
+        tags: project.Project_tags,
+        tools: project.Project_tools,
+    }
+
+    let overviewDataInfo = {
+        id: project.id,
+        user: project.Users,
+        ...initialData
+    }
+    
+    let settingData = {
+        tab: searchParam.tab,
+        data: {
+            id: project.id,
+            title: project.title,
+            status: project.Status,
+            visibility: project.visibility,
+            disable_comments: project.disable_comments,
+            ...initialData
+        }
+    }
+
+    let subMenu = <Timeline params={searchParam} />;
 
     const changeSubMenuFn = (menu: string) => {
         switch (menu) {
             case "timeline":
-                subMenu = <Timeline params={params} />
+                subMenu = <Timeline params={searchParam} />
                 break;
             case "overview":
-                subMenu = <Overview />
+                subMenu = <Overview overview={overviewDataInfo} />
                 break;
             case "comments":
                 subMenu = <Comments />
                 break;
             case "settings":
-                subMenu = <Settings params={params} />
+                subMenu = <Settings setting={settingData} />
                 break;        
             default:
-                subMenu = <Timeline params={params} />
+                subMenu = <Timeline params={searchParam} />
                 break;
         }
     }
 
-    if(params?.menu != undefined) changeSubMenuFn(params?.menu)
+    if(searchParam?.menu != undefined) changeSubMenuFn(searchParam?.menu)
 
-    let key = `${params.menu || "empty-tl"}-${params.node|| "empty-nd"}-${params.tab || "empty-tb"}`
+    let key = `${searchParam.menu || "empty-tl"}-${searchParam.node|| "empty-nd"}-${searchParam.tab || "empty-tb"}`
     return (
         <div className="container-wrapper-style">
             <Sidebar />
@@ -57,13 +93,13 @@ export default async function Main({searchParams}: PagePropsType) {
                             <div className='mr-auto'>
                                 <div className="flex-centering gap-x-2">
                                     <Suspense key={key} fallback={<ProjectTitleLoading />}>
-                                        <ProjectTitle />
+                                        <ProjectTitle data={projectTitleInfo} />
                                     </Suspense>
                                 </div>
                                 <p className="text-gray-600 text-xs mt-1.5 flex items-center gap-x-1">
                                     <span>By</span>
                                     <Suspense key={key} fallback={<span className="block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>}>
-                                        <AuthorName />
+                                        <AuthorName full_name={project.Users?.full_name} />
                                     </Suspense>
                                 </p>
                             </div>
@@ -79,13 +115,13 @@ export default async function Main({searchParams}: PagePropsType) {
                                 <p className="text-xs font-light flex items-center gap-x-2">
                                     Published on 
                                     <Suspense key={key} fallback={<span className="inline-block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>}>
-                                        <Published />
+                                        <Published created_at={project.created_at || new Date()} />
                                     </Suspense>
                                 </p>
                                 <p className="text-xs font-light flex items-center gap-x-2">
                                     Last updated on 
                                     <Suspense key={key} fallback={<span className="inline-block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>}>
-                                        <LastUpdated />
+                                        <LastUpdated updated_at={project.updated_at || new Date()} />
                                     </Suspense>
                                 </p>
                             </div>

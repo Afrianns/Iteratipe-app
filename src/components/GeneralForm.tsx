@@ -1,101 +1,53 @@
-import DropdownList from "@/components/DropdownList";
 import { ErrorMessageList } from "@/components/ErrorMessageList";
-import { generalSettingErrorsType, generalSettingType, labelType, Step } from "@/types/types";
+import DropdownListSearchable from "./DropdownListSearchable";
+import { useContext } from "react";
+import { SettingContext } from "@/lib/settingContext";
+import LabelsList from "./LabelsList";
 
-interface generalFormTypes {
-    generalData: generalSettingType
-    allTags: labelType[]
-    allTools: labelType[]
-    allStatus: labelType[]
-    allTypes: labelType[]
-    
-    setSelectedTags: (params: labelType[]) => void
-    selectedTags: labelType[]
+export default function GeneralForm() {
 
-    setSelectedTools: (params: labelType[]) => void
-    selectedTools: labelType[]
-    
-    setGeneralData: (params: generalSettingType) => void
-    errors: generalSettingErrorsType | undefined
-}
-
-export default function GeneralForm({
-    allTags, allTools, allStatus, allTypes, generalData, 
-    setGeneralData, 
-    selectedTags,
-    setSelectedTags,
-    selectedTools,
-    setSelectedTools,
-    errors }: generalFormTypes) {
-
-    const changeToThis = (key: string, value: labelType) =>
-        setGeneralData(({...generalData, [key]: JSON.stringify(value)}))
-
+    const { generalSettings, generalSettingErrors, setGeneralSettings } = useContext(SettingContext)
     return (
         <>
             <h1 className="text-xl font-bold">Project Setup</h1>
             <div className="space-y-3">
-                <label htmlFor="name" className="label-style">Name</label>
-                <input type="text" name="name" onChange={(e) => setGeneralData(({...generalData, name: e.target.value}))} value={generalData.name} placeholder="Type your project name." className="input-style" />
-                <ErrorMessageList inputName="Name" messages={errors?.name} />
+                <label htmlFor="title" className="label-style">Title</label>
+                <input type="text" name="title" onChange={(e) => setGeneralSettings(({...generalSettings, title: e.target.value}))} value={generalSettings.title} placeholder="Type your project title." className="input-style" />
+                <ErrorMessageList inputName="title" messages={generalSettingErrors?.title} />
             </div>
             <div className="space-y-3">
                 <label htmlFor="summary" className="label-style">Summary</label>
-                <textarea name="summary" id="summary" onChange={(e) => setGeneralData(({...generalData, summary: e.target.value}))} value={generalData.summary} placeholder="Type your project summary." className="input-style min-h-20"></textarea>
-                <ErrorMessageList inputName="Summary" messages={errors?.summary} />
+                <textarea name="summary" id="summary" onChange={(e) => setGeneralSettings(({...generalSettings, summary: e.target.value}))} value={generalSettings.summary} placeholder="Type your project summary." className="input-style min-h-20"></textarea>
+                <ErrorMessageList inputName="Summary" messages={generalSettingErrors?.summary} />
             </div>
             <div className="space-y-3 relative">
                 <label htmlFor="type" className="label-style">Type</label>
-                <DropdownList setupData={generalData} valueFn={setGeneralData} name="type-name" placeholder="Type your relevant type." type="type">
-                    {allTypes.map((type: labelType, idx: number) => (
-                        <div key={idx}>
-                            <p onMouseDown={() => changeToThis("type", type)} className="w-full block py-2 px-5 cursor-pointer hover:bg-gray-100">{type.name}</p>
-                        </div>)
-                    )}
-                </DropdownList>
-                <input type="hidden" name="type" value={generalData.type} />
-                <ErrorMessageList inputName="type" messages={errors?.type} />
+                <DropdownListSearchable setSelectedLabels={setGeneralSettings} selectedLabels={generalSettings} name="type" placeholder="Type your relevant status." type="single" />
+                <ErrorMessageList inputName="type" messages={generalSettingErrors?.type} />
             </div>
 
             <div className="space-y-3 relative">
                 <label htmlFor="status" className="label-style">Status</label>
-                <DropdownList setupData={generalData} valueFn={setGeneralData} name="status-name" placeholder="Type your relevant tags." type="status">
-                    {allStatus.map((status: labelType, idx: number) => (
-                        <div key={idx}>
-                            <p onMouseDown={() => changeToThis("status", status)} className="w-full block py-2 px-5 cursor-pointer hover:bg-gray-100">{status.name}</p>
-                        </div>)
-                    )}
-                </DropdownList>
-                <input type="hidden" name="status" value={generalData.status} />
-                <ErrorMessageList inputName="Status" messages={errors?.status} />
+                <DropdownListSearchable setSelectedLabels={setGeneralSettings} selectedLabels={generalSettings} name="status" placeholder="Type your relevant status." type="single" />
+                <ErrorMessageList inputName="Status" messages={generalSettingErrors?.status} />
             </div>
 
-            <div className="space-y-3 relative">
+            <div className="space-y-3">
                 <label htmlFor="tags" className="label-style">Tags</label>
-                <DropdownList name="tag_input" placeholder="Type your relevant tags." type="tags">
-                    {allTags.map((tag: labelType, idx: number) => <p key={idx} onMouseDown={() => setSelectedTags([...selectedTags, tag])} className="w-full block py-2 px-5 cursor-pointer hover:bg-gray-100">{tag.name}</p>)}
-                </DropdownList>
-                <div className="flex gap-x-2">
-                    {selectedTags.map((tag, idx) => <div key={idx}>
-                        <span className="badge-style-secondary">{tag.name}</span>
-                        <input name="tags[]" defaultValue={JSON.stringify(tag)} hidden />
-                    </div> )}
+                <DropdownListSearchable setSelectedLabels={setGeneralSettings} selectedLabels={generalSettings} name="tags" placeholder="Type your relevant tags." type="multi" />
+                <div className="relative">
+                    <LabelsList colorFrom="from-white" labels={generalSettings.tags} />
                 </div>
-                <ErrorMessageList inputName="Tags" messages={errors?.tags} />
+                <ErrorMessageList inputName="Tags" messages={generalSettingErrors?.tags} />
             </div>
 
-            <div className="space-y-3 relative">
+            <div className="space-y-3">
                 <label htmlFor="tools" className="label-style">Tools</label>
-                <DropdownList name="tool_input" placeholder="Type your relevant Tools." type="tools">
-                    {allTools.map((tool: labelType, idx: number) => <p key={idx} onMouseDown={() => setSelectedTools([...selectedTools, tool])} className="w-full block py-3 px-5 cursor-pointer hover:bg-gray-100">{tool.name}</p>)}
-                </DropdownList>
-                <div className="flex gap-x-2">
-                    {selectedTools.map((tool, idx) => <div key={idx}>
-                        <span className="badge-style-secondary">{tool.name}</span>
-                        <input type="hidden" name="tools[]" defaultValue={JSON.stringify(tool)} />
-                    </div> )}
+                <DropdownListSearchable setSelectedLabels={setGeneralSettings} selectedLabels={generalSettings} name="tools" placeholder="Type your relevant tools." type="multi" />
+                <div className="relative">
+                    <LabelsList colorFrom="from-white" labels={generalSettings.tools} />
                 </div>
-                <ErrorMessageList inputName="Tools" messages={errors?.tools} />
+                <ErrorMessageList inputName="Tools" messages={generalSettingErrors?.tools} />
             </div>
         </>
     )

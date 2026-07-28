@@ -20,11 +20,11 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
                 </div>
                 <div className="flex items-center justify-between">
                     <div>
-                        <Link href={`./${currentPath}/this-the-projects`} className="h-three-style capitalize hover:underline cursor-pointer">{projectData.title}</Link>
+                        <Link href={`./${currentPath}/${(projectData.title).toLowerCase().split(" ").join("-")}—${projectData.uid}`} className="h-three-style capitalize hover:underline cursor-pointer">{projectData.title}</Link>
                         <p className="span-style flex items-center gap-x-1 text-xs">
                             By
-                            <span className="p-style hover:underline hover:cursor-pointer text-xs!">Andreas Bjorn</span>
-                        </p>
+                            <span className="p-style hover:underline hover:cursor-pointer text-xs!">{projectData.Users?.full_name}</span>
+                        </p>    
                     </div>
                     <p className="flex text-xs items-center gap-x-1 hover:bg-light-gray px-3 rounded-full cursor-pointer">
                         <Heart className="w-3" />

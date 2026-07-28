@@ -10,8 +10,6 @@ export default function ProfileNav() {
         const pathArray = pathname.split("/")
         return pathArray[pathArray.length-1]
     }
-
-    console.log(pathname)
     return (
         <ul className="flex gap-x-5 items-center">
             <Link href="/profile/settings" className={`p-style ${getLastOfArray(pathname) == "settings" ? "text-purplish!" : ""}`}>Profile</Link>

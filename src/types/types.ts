@@ -35,21 +35,32 @@ export interface TimelineStateType {
 
 // project type
 export interface ProjectType { 
-  id: number; 
-  created_at: Date | null; 
-  uid: string; 
-  user_id: number | null; 
-  type_id: number; 
-  title: string; 
-  summary: string; 
-  visibility: VISIBLE; 
-  disable_comments: boolean; 
-  client_name: string | null; 
-  updated_at: Date | null; 
-  status_id: number | null;
-  Status: labelType | null
-  Type: labelType | null
+  id: number
+  created_at: Date
+  uid: string
+  user_id: number
+  type_id: number
+  title: string
+  summary: string
+  visibility: VISIBLE
+  disable_comments: boolean
+  client_name: string | null
+  updated_at: Date | null
+  status_id: number
+  Status: labelType
+  Type: labelType
+  Users: {
+    id: number
+    full_name: string
+    clerk_user_id: string
+  }
 }
+
+export interface WithPivotDataType extends ProjectType {
+    Project_tags: labelType[]
+    Project_tools: labelType[]
+}
+
 
 export interface nodeDataEditType {
   title: string
@@ -100,16 +111,24 @@ export type Step = "SETUP" | "VISIBILITY" | "SUMMARY"
 export type VISIBLE = "PUBLIC" | "SEMI" | "PRIVATE"
 
 
-export interface generalSettingType {
-  name: string,
-  summary: string,
-  type: string,
-  status: string,
-  tags: string[],
-  tools: string[],
-}
+// new type for settings
 
-export interface InitialProjectType {
+export interface generalDataType {
+  id?: number
+  title: string
+  summary: string
+  type: labelType
+  status: labelType
+  tags: labelType[]
+  tools: labelType[]
+  visibility: VISIBLE
+  disable_comments: boolean
+  client_name: string
+} 
+
+// end
+
+export interface ProjectStoreType {
   title: string
   summary: string
   type: {id: number}
@@ -133,8 +152,8 @@ export interface VisibilityErrorsType {
   client_name?: string[] | undefined
 }
 
-export interface generalSettingErrorsType {
-    name?: string[] | undefined
+export interface generalSettingErrorsType extends VisibilityErrorsType {
+    title?: string[] | undefined
     summary?: string[] | undefined
     type?: string[] | undefined
     status?: string[] | undefined
@@ -142,18 +161,9 @@ export interface generalSettingErrorsType {
     tools?: string[] | undefined
 }
 
-export interface FormActionStateType {
-    success: boolean
-    next_step: Step
-    step_one_fields?: generalSettingType
-    step_one_errors?: generalSettingErrorsType
-    step_two_fields?: VisibilityType
-    step_two_errors?: VisibilityErrorsType
-}
-
 
 // user type
-export interface userDataType {
+export interface UserWebhookType {
     id: string
     first_name: string
     last_name: string
@@ -162,7 +172,35 @@ export interface userDataType {
     image_url: string
 }
 
-// return data type function 
+// full user 
+export interface UserType {
+ id: number;
+ clerk_user_id: string;
+ first_name: string;
+ last_name: string;
+ full_name: string;
+ email: string;
+ image_url: string;
+ description: string | null;
+ facebook_link: string | null;
+ twitter_link: string | null;
+ website_link: string | null;
+ created_at: Date | null;
+}
+
+export interface UserPreviewType {
+  id: number;
+  clerk_user_id: string
+  first_name: string
+  last_name: string
+  image_url: string
+  description: string | null
+}
+
+
+
+// return data type function for services
+
 export interface returnDataType<T> {
     status: number
     message: string

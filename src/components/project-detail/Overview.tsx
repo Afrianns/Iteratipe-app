@@ -1,70 +1,51 @@
 import AboutDesigner from "@/components/project-detail/overview/AboutDesigner";
-import Tags from "@/components/project-detail/overview/Tags";
-import Tools from "@/components/project-detail/overview/Tools";
-import { TagsType } from "@/types/types";
+
+import { labelType } from "@/types/types";
 
 import { Suspense } from "react";
 import Summary from "./overview/Summary";
+import LabelsList from "../LabelsList";
 
-type toolType = {
-    id: number,
-    name: string,
-    logo?: string
+interface overviewPropsType {
+    id: number
+    summary: string
+    user: {
+        id: number
+        full_name: string
+        clerk_user_id: string
+    }
+    type: labelType
+    client_name: string | null
+    tags: labelType[]
+    tools: labelType[]
 }
 
-export default function Overview() {
-
-    let tags: TagsType = ["UI Design", "Figma", "Brand Design", "Logo"];
-
-    let tools: toolType[] = [
-        {
-            "id": 1,
-            "name": "figma",
-            "logo": ".."
-        },
-        {
-            "id": 2,
-            "name": "sketch",
-            "logo": ".."
-        },
-        {
-            "id": 3,
-            "name": "illustrator",
-            "logo": ".."
-        },
-        {
-            "id": 4,
-            "name": "illustrator",
-            "logo": ".."
-        },
-        {
-            "id": 5,
-            "name": "illustrator",
-            "logo": ".."
-        }
-    ]
-
+export default function Overview({ overview }: { overview: overviewPropsType}) {
     return (
         <div className="container-style">
             <div className="limit-breaker w-full grid md:grid-cols-2 lg:grid-cols-3 max-lg:gap-y-5 lg:gap-5 items-start">
                 <Suspense fallback={<SummaryLoading />}>
-                    <Summary />
+                    <Summary summary={overview.summary} client_name={overview.client_name} />
                 </Suspense>
                 <div className="sm:col-span-2 md:col-span-3 lg:col-span-1 space-y-5 min-w-0">
                     <div className="card-style-secondary">
                         <Suspense fallback={<AboutDesignLoading />}>
-                            <AboutDesigner />
+                            <AboutDesigner designerId={overview.user.id} />
                         </Suspense>
                     </div>
                     <div className="card-style-secondary relative overflow-hidden">
-                        <Suspense fallback={<TagsLoading />}>
-                            <Tags tags={tags} />
-                        </Suspense>
+                        {/* <Suspense fallback={<TagsLoading />}>
+                            <Tags tags={overview.project_tags} />
+                        </Suspense> */}
+                         <h3 className="h-three-style z-2 relative">Tags</h3> 
+                        <LabelsList colorFrom="from-whitish" labels={overview.tags} />
                     </div>
                     <div className="card-style-secondary relative overflow-hidden">
-                        <Suspense fallback={<ToolsLoading />}>
-                            <Tools tools={tools} />
-                        </Suspense>
+                        {/* <Suspense fallback={<ToolsLoading />}>
+                            <Tools projectId={overview.id}/>
+                        </Suspense> */}
+                        <h3 className="h-three-style z-2 relative">Tools</h3>
+                        <LabelsList colorFrom="from-whitish" labels={overview.tools} />
                     </div>
                 </div>
 
@@ -73,10 +54,13 @@ export default function Overview() {
     )
 }
 
+// const mappingLabelList = (labels: {[key: string]: labelType | null}[] | undefined) => {
+//     return labels.map((label: {[key: string]: labelType | null}) => Object.values(label)[0]);
+// }
 
 const SummaryLoading = () => {
     return (
-        <div className="card-style-secondary">
+        <div className="card-style-secondary col-span-2">
             <h3 className="h-three-style">Project Summary</h3>
             
             <div className="space-y-2 pb-4 animate-pulse">

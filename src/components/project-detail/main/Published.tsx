@@ -1,8 +1,7 @@
-export default async function Published() {
-    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-    await delay(3000);
+"use client"
 
+export default function Published({created_at}: {created_at: Date}) {
     return (
-        <span className="ml-2 text-md font-medium">20 January 2025</span>
+        <span className="ml-2 text-md font-medium">{created_at.toDateString()}</span>
     )
 }

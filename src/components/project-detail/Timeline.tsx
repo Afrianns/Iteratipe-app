@@ -1,12 +1,7 @@
 import CanvasTimeline from './timeline/Canvas';
 import SidebarContentWrapper from './timeline/SidebarContentWrapper';
 
-interface paramType {
-    menu?: string | undefined,
-    node?: string | undefined,
-}
-
-export default function Timeline({params}: {params: paramType}) { 
+export default function Timeline({params}: {params: { node?: string | undefined}}) { 
     return (
         <CanvasTimeline>
             <SidebarContentWrapper params={params} />

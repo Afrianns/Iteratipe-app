@@ -9,7 +9,7 @@ import Features from "@/app/(marketing)/_components/features";
 import { ArrowUpRight, Menu } from "lucide-react";
 import DotsPattern from "@/app/(marketing)/_components/DotsPattern";
 import GridPattern from "@/app/(marketing)/_components/GridPattern";
-import { auth, UserButton, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 
 
 // Register once globally on the client side
@@ -75,7 +75,7 @@ export default function LandingPage() {
                 <Image alt="Iteratipe Logo" src="Logo.svg" width={130} height={130}/>
                 <Menu onClick={toggleHeader} className="md:hidden bg-light-purple rounded-full p-1 mx-0 cursor-pointer" />
                 <ul className="hidden md:flex justify-between gap-x-5 md:text-sm items-center">
-                    <li className="cursor-pointer hover:underline"><Link href="/">Home</Link></li>
+                    <li className="cursor-pointer hover:underline"><Link href="/home">Home</Link></li>
                     <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
                     <li className="cursor-pointer hover:underline"><Link href="/about">About</Link></li>
                 </ul>
@@ -83,7 +83,7 @@ export default function LandingPage() {
                 {headerDropdown && 
                     <div className="gap-x-5 bg-white absolute p-5 top-10 right-5 card-style my-5">
                         <ul className="md:flex space-y-3 gap-x-5 text-sm font-light items-center">
-                            <li className="cursor-pointer hover:underline"><Link href="/">Home</Link></li>
+                            <li className="cursor-pointer hover:underline"><Link href="/home">Home</Link></li>
                             <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
                             <li className="cursor-pointer hover:underline"><Link href="/about">About</Link></li>
                             {isSignedIn && <li className="cursor-pointer hover:underline"><Link href="/about">{user?.fullName}</Link></li>}
