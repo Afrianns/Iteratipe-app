@@ -1,16 +1,18 @@
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
+import { formatFlexibleDuration } from '@/lib/convertDateinDuration';
 import { handleEnum, modeEnum } from '@/types/enum';
+import { timelineNodeType } from '@/types/types';
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { CalendarDays, MoveRight, Timer } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
-export default function Card({data, selected}: NodeProps) {
+export default function Card({data, selected, id}: NodeProps<timelineNodeType>) {
 
     const { mode } = useTimelineStateStore();
-    const pathname = usePathname()
 
-    let handleType = data.handleType;
+    const handleType = data.handleType;
+
+    // console.log("in a card: ",data, selected)
 
     const activeSelectNodeFn = () => {
         if(selected){
@@ -29,26 +31,53 @@ export default function Card({data, selected}: NodeProps) {
     return (
         <>
             {(handleType == handleEnum.START || handleType == handleEnum.MAIN) && <Handle type="source" position={Position.Right} />}
-                <div className={`card-style p-5 w-70 ${activeSelectNodeFn()}`}>
+                <div className={`card-style p-5 w-80 ${activeSelectNodeFn()}`}>
                     <div className="flex items-center justify-between">
-                        <h3 className="h-three-style">Initial Spark & Brief</h3>
-                        <span className="badge-style bg-light-green">Research</span>
+                        {data.title ? 
+                            <h3 className="h-three-style">{data.title}</h3>
+                        :
+                            <span className='h-4 max-w-40 w-full bg-slate-200 animate-pulse rounded-sm'></span>
+                        }
+                        {data.type ? 
+                            <span className="badge-style bg-light-green">{data.type}</span>
+                        :    
+                            <span className='h-3 w-10 bg-slate-200 animate-pulse rounded-sm'></span>
+                        }
                     </div>
                     <div className="flex gap-x-5 items-center text-purple-dark/50 text-[10px]">
                         <div className="flex items-center justify-between gap-2">
                             <CalendarDays className="w-3 h-3" />
-                            <p>20 January 2025</p>
+                            {data.start_at && <p>{data.start_at}</p>}
+                            {data.end_at && <span>-</span>}
+                            {data.end_at && <p>{data.end_at}</p>}
+                            {(!data.start_at && !data.end_at) && <span className='h-3 w-18 bg-slate-200 animate-pulse rounded-sm'></span>}
                         </div>
                         <div className="flex items-center justify-between gap-2">
                             <Timer className="w-3 h-3" />
-                            <p>2 Weeks</p>
+                            {(data.start_at && data.end_at) ?
+                                <p>{formatFlexibleDuration(data.start_at as string, data.end_at as string)}</p>
+                            :    
+                                <span className='h-3 w-7 bg-slate-200 animate-pulse rounded-sm'></span>
+                            }
                         </div>
                     </div>
-                    <p className="text-xs text-purple-dark/80">The client wanted a radical departure from traditional 'wellness' tropes. No lotus flowers, no soft pastel gradients.</p>
+                    {data.content ? 
+                        <p className="text-xs text-purple-dark/80">{data.content}</p>
+                    :
+                        <div className='flex flex-col space-y-2'>
+                            <span className='h-2 w-full bg-slate-200 animate-pulse rounded-sm'></span>
+                            <div className='flex items-center gap-x-2'>
+                                <span className='h-2 w-2/5 bg-slate-200 animate-pulse rounded-sm'></span>
+                                <span className='h-2 w-3/5 bg-slate-200 animate-pulse rounded-sm'></span>
+                            </div>
+                            <span className='h-2 w-full bg-slate-200 animate-pulse rounded-sm'></span>
+                            <span className='h-2 w-1/2 bg-slate-200 animate-pulse rounded-sm'></span>
+                        </div>
+                    }
                     <hr className="hr-style"/>
                     <div className="flex items-center justify-between text-purple-dark/50 text-xs m-0">
-                        <p>2 Items</p>
-                        <Link href="?menu=timeline&node=5bK10sk-s510BSKoi6" className="py-1 px-3 bg-light-purple/50 hover:bg-light-purple cursor-pointer rounded-lg">
+                        <p>0 Items</p>
+                        <Link href={`?menu=timeline&node=${id}`} className="py-1 px-3 bg-light-purple/50 hover:bg-light-purple cursor-pointer rounded-lg">
                             <MoveRight className="w-5 h-5" />
                         </Link>
                     </div>

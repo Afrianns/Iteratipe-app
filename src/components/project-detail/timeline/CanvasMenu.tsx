@@ -7,12 +7,13 @@ import { useReactFlow } from '@xyflow/react';
 import { ChevronDown, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+let nodeID = 0;
 
 export default function CanvasMenu() {
 
     const [mode, setMode] = useState<modeEnum>(modeEnum.EDIT);
     const [modePosCount, setModePosCount] = useState<number>(0);
-    const {changeMode, setFirstNode, setEndNode, setNodes, isEndNodeUsed, isFirstNodeUsed } = useTimelineStateStore();
+    const { changeMode, setFirstNode, setEndNode, setNodes, isEndNodeUsed, isFirstNodeUsed } = useTimelineStateStore();
 
     const [disableStartNode, setDisableStartNode] = useState<boolean>(false);
     const [disableEndNode, setDisableEndNode] = useState<boolean>(false);
@@ -22,14 +23,13 @@ export default function CanvasMenu() {
     const [isExpand, setIsExpand] = useState(false);
 
     // it will be change in the future
-    let nodeID = 0;
 
     useEffect(() => {
         setDisableStartNode(isFirstNodeUsed)
         setDisableEndNode(isEndNodeUsed)
     }, [isEndNodeUsed, isFirstNodeUsed])
 
-    const newNode = (handleType: handleEnum) => {
+    const newNodeFn = async (handleType: handleEnum) => {
 
         const reactFlow = document.getElementById("ReactFlow");
 
@@ -46,11 +46,18 @@ export default function CanvasMenu() {
             y:  bounds.top + (bounds.height / 2),
         });
 
+        nodeID++
+
         const newNode: timelineNodeType = {
-            id: `step-${++nodeID}`,
+            id: `step-${nodeID}`,
             position: flowPosition,
             data: { 
-                handleType: handleType
+                handleType: handleType,
+                title: "", 
+                type: "",
+                start_at: "",
+                end_at: "",
+                content: ""
             },
             origin: [0.5, 0.5],
             type: 'cardNode',
@@ -66,7 +73,6 @@ export default function CanvasMenu() {
             setEndNode(true);
             setDisableEndNode(true)
         };
-
     }
 
     const menuDropdownFn = () => setIsExpand(!isExpand); 
@@ -82,16 +88,14 @@ export default function CanvasMenu() {
     }
 
     return (
-        <div className='absolute top-5 left-5 card-style w-35 h-fit transition-style'>
-            <div className='p-1'>
-                <div onClick={menuDropdownFn} className='flex items-center justify-between hover:bg-light-gray rounded-lg cursor-pointer'>
-                    <h3 className='p-style font-bold text-md p-2'>Menu</h3>
-                    <ChevronDown className='icon-style' />
-                </div>
+        <div className='absolute top-5 left-5 card-style w-full max-w-50 h-fit transition-style rounded-none! p-2'>
+            <div onClick={menuDropdownFn} className='flex items-center justify-between hover:bg-light-gray cursor-pointer'>
+                <p className='font-medium text-sm px-3'>Menu</p>
+                <ChevronDown className='icon-style opacity-60!' />
             </div>
             {isExpand &&
-                <div className='space-y-2'>
-                    <div onClick={changeModeFn} className='cursor-pointer p-1'>
+                <>
+                    <div onClick={changeModeFn} className='cursor-pointer'>
                         {mode == modeEnum.DELETE &&
                             <button className='timeline-btn-style text-light-red font-semibold bg-light-red/20 cursor-pointer hover:bg-light-red/10'>Delete Mode</button>
                         }
@@ -104,23 +108,23 @@ export default function CanvasMenu() {
                     </div>
                     
                     <hr className="hr-style" />
-                    <div className="p-1 space-y-2">
-                        <button onClick={() => newNode(handleEnum.START)} className={`timeline-btn-style ${disableStartNode ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
+                    <div className="space-y-2">
+                        <button onClick={() => newNodeFn(handleEnum.START)} className={`timeline-btn-style ${disableStartNode ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
                             <Plus className="w-4 h-4 stroke-3" />
                             <p className='font-semibold'>Start Node</p>
                         </button>
                         
-                        <button onClick={() => newNode(handleEnum.END)} className={`timeline-btn-style ${disableEndNode ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
+                        <button onClick={() => newNodeFn(handleEnum.END)} className={`timeline-btn-style ${disableEndNode ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
                             <Plus className="w-4 h-4 stroke-3" />
                             <p className='font-semibold'>End Node</p>
                         </button>
 
-                        <button onClick={() => newNode(handleEnum.MAIN)} className="timeline-btn-style bg-light-purple/50 hover:bg-light-purple cursor-pointer text-purplish">
+                        <button onClick={() => newNodeFn(handleEnum.MAIN)} className="timeline-btn-style bg-light-purple/50 hover:bg-light-purple cursor-pointer text-purplish">
                             <Plus className="w-4 h-4 stroke-3" />
                             <p className='font-semibold'>New Node</p>
                         </button>
                     </div>
-                </div>
+                </>
             }
         </div>
     )

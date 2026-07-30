@@ -83,7 +83,7 @@ h1, h2, h3{
 }
 
 .timeline-btn-style{
-  @apply py-1 px-5 rounded-lg text-xs flex items-center justify-center gap-x-1 w-full;
+  @apply py-1 px-5 text-xs flex items-center justify-center gap-x-1 w-full;
 }
 
 .timeline-btn-accent {

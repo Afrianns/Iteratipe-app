@@ -1,4 +1,3 @@
-import { CalendarDays, Timer } from "lucide-react";
 import { Suspense } from "react";
 import Sidebar from "./Sidebar";
 import SidebarContent from "./SidebarContent";
@@ -9,7 +8,7 @@ export default function SidebarContentWrapper({params}: {params: {node?: string 
     return (
         <Sidebar>
             <Suspense key={currentNodeId} fallback={<TimelineSidebarLoading/>}>
-                <SidebarContent />
+                <SidebarContent params={params.node} />
             </Suspense>
         </Sidebar>
     )

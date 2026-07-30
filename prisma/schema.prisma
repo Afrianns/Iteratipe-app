@@ -93,7 +93,7 @@ model Projects {
   Status             Status              @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Type               Types               @relation(fields: [type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Users              Users               @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  Timelines          Timelines[]
+  Nodes              Nodes[]
 }
 
 model Status {
@@ -109,25 +109,33 @@ model Tags {
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
-model Timelines {
+model Nodes {
   id           Int            @id @default(autoincrement())
   uid          String?        @unique @db.Uuid
   project_id   Int?
   thumbnail    String?        @db.VarChar(255)
-  Title        String?        @db.VarChar(60)
+  title        String?        @db.VarChar(60)
   type         String?        @db.VarChar(20)
   start_at     DateTime?      @db.Timestamp(6)
   end_at       DateTime?      @db.Timestamp(6)
-  summary      String?
+  content      String?
   published_at DateTime?      @default(now()) @db.Timestamp(6)
   updated_at   DateTime?      @db.Timestamp(6)
-  timeline_id  String         @db.VarChar
-  position_x   Int
-  position_y   Int
+  node_id      String         @unique @db.VarChar
+  position_x   Decimal
+  position_y   Decimal
   handle_type  handleTypeEnum
-  edge_source  String?        @db.VarChar(50)
-  edge_target  String?        @db.VarChar(50)
-  Projects     Projects?      @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Projects     Projects?      @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)    
+  Connectors   Connectors[]
+}
+
+model Connectors {
+  id           Int            @id @default(autoincrement())
+  node_id  Int?
+  edge_id      String         @db.VarChar(80)
+  edge_source  String?        @db.VarChar(80)
+  edge_target  String?        @db.VarChar(80)
+  Nodes        Nodes?     @relation(fields: [node_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Tools {

@@ -41,47 +41,47 @@ let edges: Edge[] = [
     }
 ]
 
-export const calledData = async () => {
+export const getNodes = async () => {
     
-    let nodes: timelineNodeType[] = []
+    // let nodes: timelineNodeType[] = []
 
-    const delay = (ms: number) => new Promise<timelineNodeType[]>((resolve) => setTimeout(() => {
-        const d: timelineNodeType[] = [
-            {
-                id: "step-0",
-                position: {x: 100, y: 0},
-                data: { 
-                    handleType: handleEnum.START,
-                    ...datas[0]
-                },
-                origin: [0.5, 0.5],
-                type: 'cardNode',
-            },
-            {
-                id: "step-1",
-                position: {x: 500, y: 50},
-                data: { 
-                    handleType: handleEnum.MAIN,
-                    ...datas[1]
-                },
-                origin: [0.5, 0.5],
-                type: 'cardNode',
-            },
-            {
-                id: "step-2",
-                position: {x: 900, y: -50},
-                data: { 
-                    handleType: handleEnum.END,
-                    ...datas[2]
-                },
-                origin: [0.5, 0.5],
-                type: 'cardNode',
-            }
-        ]
-        return resolve(d);
-    }, ms));
+    // const delay = (ms: number) => new Promise<timelineNodeType[]>((resolve) => setTimeout(() => {
+    //     const d: timelineNodeType[] = [
+    //         {
+    //             id: "step-0",
+    //             position: {x: 100, y: 0},
+    //             data: { 
+    //                 handleType: handleEnum.START,
+    //                 ...datas[0]
+    //             },
+    //             origin: [0.5, 0.5],
+    //             type: 'cardNode',
+    //         },
+    //         {
+    //             id: "step-1",
+    //             position: {x: 500, y: 50},
+    //             data: { 
+    //                 handleType: handleEnum.MAIN,
+    //                 ...datas[1]
+    //             },
+    //             origin: [0.5, 0.5],
+    //             type: 'cardNode',
+    //         },
+    //         {
+    //             id: "step-2",
+    //             position: {x: 900, y: -50},
+    //             data: { 
+    //                 handleType: handleEnum.END,
+    //                 ...datas[2]
+    //             },
+    //             origin: [0.5, 0.5],
+    //             type: 'cardNode',
+    //         }
+    //     ]
+    //     return resolve(d);
+    // }, ms));
 
-    nodes = await delay(3000)
+    // nodes = await delay(3000)
 
-    return { nodes, edges };
+    return { nodes: [], edges: [] };
 }

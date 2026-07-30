@@ -6,29 +6,41 @@ import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatFlexibleDuration } from "@/lib/convertDateinDuration";
 import { InputSelectPropsType } from "@/types/types";
 
-// 1. Generate lists for the selectors
 const months = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 
+// FIX 1: Generate a year range that includes current and future years (e.g., 5 years back, 5 years forward)
 const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 10 }, (_, i) => currentYear - 10 + i);
+const years = Array.from({ length: 8 }, (_, i) => currentYear - 4 + i); 
+// Generates: [2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031]
 
 
-export const DatePickerRange = ({ durationDateFn, initialStartDate, initialEndDate }: {durationDateFn: (a: string) => void, initialStartDate: string, initialEndDate: string}) => {
-  const [startDate, setStartDate] = useState<Date | null>(initialStartDate ? new Date(initialStartDate) : null);
-  const [endDate, setEndDate] = useState<Date | null>(initialEndDate ? new Date(initialEndDate) : null);
+// Helper to safely parse strings into valid Date objects across all browsers
+const parseSafeDate = (dateStr: string) => {
+  if (!dateStr) return null;
+  const parsed = new Date(dateStr);
+  return isNaN(parsed.getTime()) ? null : parsed;
+};
+
+export const DatePickerRange = ({ durationDateFn, updateNodeData, initialStartDate, initialEndDate }: { updateNodeData: (name: string, value: string) => void, durationDateFn: (a: string) => void, initialStartDate: string, initialEndDate: string}) => {
+  // FIX 2: Use safe parsing for your initial props
+  const [startDate, setStartDate] = useState<Date | null>(parseSafeDate(initialStartDate));
+  const [endDate, setEndDate] = useState<Date | null>(parseSafeDate(initialEndDate));
 
   const onChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
-    durationDateFn(formatFlexibleDuration(String(start || ''), String(end || '')))
+    durationDateFn(formatFlexibleDuration(String(start || ''), String(end || '')));
     setStartDate(start);
     setEndDate(end);
+
+    updateNodeData("start_at", convertDate(start))
+    updateNodeData("end_at", convertDate(end))
   };
 
   return (
-     <div className="z-50 relative">
+     <div className="z-5 relative">
         <DatePicker
           renderCustomHeader={(props) => <HeaderDatePicker {...props}/>}
           selected={startDate}
@@ -40,7 +52,7 @@ export const DatePickerRange = ({ durationDateFn, initialStartDate, initialEndDa
           showYearDropdown
           selectsRange
           dateFormat="d MMMM YYYY"
-          calendarClassName="z-10"
+          calendarClassName="z-50"
           portalId="date-picker-root"
           customInput={<SelectDate start_at={startDate} end_at={endDate} className="text-sm flex items-center justify-between gap-2 hover:bg-light-gray rounded-xl cursor-pointer py-1 px-5" />}
         />
@@ -48,9 +60,8 @@ export const DatePickerRange = ({ durationDateFn, initialStartDate, initialEndDa
   );
 };
 
-const SelectDate  = forwardRef<HTMLButtonElement, InputSelectPropsType>(({ start_at, end_at, onClick, className }, ref) => {
-  const convertDate = (date: Date | null) => `${date?.getDate()} ${months[date?.getMonth() || 0]} ${date?.getFullYear()}`
-  console.log(convertDate(start_at), end_at)
+const SelectDate = forwardRef<HTMLButtonElement, InputSelectPropsType>(({ start_at, end_at, onClick, className }, ref) => {
+
   return (
     <button type="button" className={className} onClick={onClick} ref={ref}>
       <CalendarDays className="w-3 h-3" />
@@ -58,15 +69,15 @@ const SelectDate  = forwardRef<HTMLButtonElement, InputSelectPropsType>(({ start
           <input hidden readOnly name="start_at" id="start_at" value={start_at ? convertDate(start_at) : ''} />
           <p>{start_at ? convertDate(start_at) : "no start date"}</p>
           -
-          <input hidden readOnly name="end_at" id="end_at" value={end_at ? convertDate(end_at) : ''}/>
+          <input hidden readOnly name="end_at" id="end_at" value={end_at ? convertDate(end_at) : ''} />
           <p>{end_at ? convertDate(end_at) : "no end date"}</p>
       </div>
     </button>
-  )
-})
+  );
+});
+SelectDate.displayName = "SelectDate"; // Kept for production optimization tooling
 
 
-// 2. The Custom Header Component
 const HeaderDatePicker = ({
   date,
   changeYear,
@@ -79,12 +90,11 @@ const HeaderDatePicker = ({
   return (
     <div className="flex items-center gap-x-2 justify-between px-5">
       <button type="button"
-      
         onClick={decreaseMonth}
         disabled={prevMonthButtonDisabled}
         className="p-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent transition-colors cursor-pointer"
       >
-        <ChevronLeft />
+        <ChevronLeft className="w-4 h-4" /> {/* Wrapped with clean width classes */}
       </button>
 
       <div className="flex gap-2">
@@ -119,8 +129,14 @@ const HeaderDatePicker = ({
         disabled={nextMonthButtonDisabled}
         className="p-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent transition-colors cursor-pointer"
       >
-        <ChevronRight />
+        <ChevronRight className="w-4 h-4" />
       </button>
     </div>
   );
+};
+
+
+const convertDate = (date: Date | null) => {
+  if (!date || isNaN(date.getTime())) return '';
+  return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
 };

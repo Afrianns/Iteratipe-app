@@ -19,6 +19,7 @@ import AuthorName from './main/AuthorName';
 
 interface MainType extends PagePropsType {
     project: WithPivotDataType
+    searchParams: Promise<{ menu?: string | undefined; tab?: string | undefined; node?: string | undefined; }>
 }
 
 export default async function Main({searchParams, project}: MainType) {

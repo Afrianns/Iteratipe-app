@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  # 1. Local Redis (Replaces Vercel KV for autosave testing)
+  redis:
+    image: redis:7-alpine
+    container_name: iteratip-redis
+    ports:
+      - "6379:6379" # Maps your Windows port 6379 to the container's 6379

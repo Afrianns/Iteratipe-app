@@ -1,7 +1,8 @@
 
 import { CalendarDays, Timer } from "lucide-react";
+import { ReadonlyURLSearchParams } from "next/navigation";
 
-export default async function SidebarContent() {
+export default async function SidebarContent({params}: {params: string | undefined}) {
 
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     await delay(3000);
@@ -9,6 +10,7 @@ export default async function SidebarContent() {
     return (
         <>
             <section className="space-y-2 px-5 pt-3">
+                {params}
                 <div className="flex items-center justify-between">
                     <h3 className="h-three-style">Initial Spark & Brief</h3>
                     <span className="badge-style bg-light-green">Research</span>

@@ -7,7 +7,8 @@ import TimelineMenu from './CanvasMenu';
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
 import { modeEnum } from '@/types/enum';
 import { timelineNodeType } from '@/types/types';
-import { calledData } from '@/lib/calledData';
+import { getNodes } from '@/actions/nodes';
+import CanvasSave from './CanvasSave';
 
 const nodeTypes = {
   cardNode: Card,
@@ -16,14 +17,14 @@ const nodeTypes = {
 
 export default function Canvas({ children }: { children: React.ReactNode }) {
 
-    const {mode, setFirstNode, setEndNode, deleteNode, setNodesChange, setConnection, setEdges, setEdgesChange, setNodes, nodes, edges } = useTimelineStateStore()
+    const {mode, setFirstNode, setEndNode, deleteNode, setNodesChange, setConnection, setEdges, setEdgesChange, setNodes, edges, nodes } = useTimelineStateStore()
 
-    useEffect(() => {
-        calledData().then(({nodes, edges}: {nodes: timelineNodeType[], edges: Edge[]}) => {
-            setNodes(nodes);
-            setEdges(edges)
-        });
-    }, [])
+    // useEffect(() => {
+    //     getNodes().then(({nodes, edges}: {nodes: timelineNodeType[], edges: Edge[]}) => {
+    //         setNodes(nodes);
+    //         setEdges(edges)
+    //     });
+    // }, [])
 
     const isSpectator = mode === modeEnum.SPECTATOR;
 
@@ -59,6 +60,7 @@ export default function Canvas({ children }: { children: React.ReactNode }) {
                 </ReactFlow>
                 {children}
                 <TimelineMenu />
+                <CanvasSave />
             </div>
         </ReactFlowProvider>
     )

@@ -11,8 +11,9 @@ export default function Sidebar({ children }: {children: React.ReactNode }) {
 
     const data = useSearchParams()
 
+
     return (
-        <div className={`card-style absolute transition-style right-0 top-0 overflow-y-auto h-full flex flex-col ${data.get("node") ? 'w-140' : 'w-0'}`}>
+        <div className={`card-style absolute transition-style right-0 top-0 overflow-y-auto h-full flex flex-col z-1 ${data.get("node") ? 'w-140' : 'w-0'}`}>
             <section className="p-5 pb-0 flex items-center justify-between mb-5">
                 <Link href="?menu=timeline" className="py-1 px-3 bg-light-gray hover:bg-grayish/50 cursor-pointer rounded-lg">
                     <MoveLeft className="w-5 h-5 text-grayish-dark" />
@@ -26,7 +27,7 @@ export default function Sidebar({ children }: {children: React.ReactNode }) {
                 </button>
             </section>
             {isEdit ? 
-                <TimelineSidebarEdit />
+                <TimelineSidebarEdit params={data} />
             :
                 <>
                     {children}

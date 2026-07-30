@@ -19,10 +19,11 @@ export interface TimelineStateType {
   nodes: timelineNodeType[] | [],
   edges: Edge[] | [],
   showSidebar: boolean,
-  nodeDataEdit: nodeDataEditType,
+  getNodeById: (id: string) => timelineNodeType | undefined
+  updateDataNode: (id: string, nodes: nodeDataType) => void
   setIsEditMode: () => void,
   setShowSidebar: () => void,
-  setNodesChange: (changes: NodeChange[]) => void,
+  setNodesChange: (changes: NodeChange<timelineNodeType>[]) => void,
   setEdgesChange: (changes: EdgeChange[]) => void,
   setConnection: (connection: Connection) => void,
   setNodes: (nodes: setNode<timelineNodeType>) => void,
@@ -62,11 +63,11 @@ export interface WithPivotDataType extends ProjectType {
 }
 
 
-export interface nodeDataEditType {
+export interface nodeDataType {
   title: string
   type: string
-  startDate: string
-  endDate: string
+  start_at: string
+  end_at: string
   content: string
 }
 
@@ -74,14 +75,9 @@ export interface timelineNodeType extends Omit<Node, "data">{
   data: timelineNodeDataType
 }
 
-export interface timelineNodeDataType {
-    handleType?: handleEnum
-    title?: string
-    type?: string
-    start_at?: string
-    end_at?: string
-    content?: string
-    [key: string]: unknown;
+export interface timelineNodeDataType extends nodeDataType {
+    handleType: handleEnum
+    [key: string]: unknown
 }
 
 

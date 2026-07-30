@@ -4,6 +4,7 @@ import { PagePropsType } from "@/types/types";
 
 export default function DetailPage({searchParams}: PagePropsType) {
     return (
-        <Main searchParams={searchParams} />
+        <p>sjdaslkd</p>
+        // <Main searchParams={searchParams} />
     )
 } 

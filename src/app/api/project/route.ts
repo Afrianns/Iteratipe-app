@@ -1,7 +1,8 @@
+import syncUser from "@/actions/syncUser";
 import { generalSettingSchema, settingsSchema, updateSettingSchema } from "@/lib/validations";
 import { saveProject, updateProjectById } from "@/services/projects.service";
 import { generalDataType, ProjectStoreType } from "@/types/types";
-import { auth } from '@clerk/nextjs/server'
+import { currentUser, auth } from '@clerk/nextjs/server'
 
 import { redirect } from "next/navigation";
 
@@ -9,6 +10,8 @@ import z from "zod";
 
 export async function POST(request: Request) {
   let data = await request.json()
+
+  let user = await currentUser()
   const secondValidated = settingsSchema.safeParse(data)
 
   if(!secondValidated.success){
@@ -34,17 +37,32 @@ export async function POST(request: Request) {
       client_name: secondValidated.data.client_name,
   }
 
-  let result = await saveProject(initialProjectsSetup)
-  
-  if(result.status == 200){
+  if(user && user.id && user?.firstName && user?.lastName && user?.fullName && user?.primaryEmailAddressId && user?.imageUrl){
+    syncUser({
+      id: user?.id,
+      first_name: user?.firstName,
+      last_name: user?.lastName,
+      full_name: user?.fullName,
+      email: user?.primaryEmailAddressId,
+      image_url: user?.imageUrl
+    })
+    let result = await saveProject(initialProjectsSetup)
+    if(result.status == 200){
       redirect("/explore/andreas-ideas-logo")
+    }
+    
+    return Response.json({ 
+      data: initialProjectsSetup
+    }, {
+      status: 200, 
+      statusText: "Succefuly saved"
+    })
   }
-
   return Response.json({ 
-    data: initialProjectsSetup
+    data: initialProjectsSetup.title
   }, {
-    status: 200, 
-    statusText: "Succefuly saved"
+    status: 400, 
+    statusText: "User is not valid"
   })
 }
 
