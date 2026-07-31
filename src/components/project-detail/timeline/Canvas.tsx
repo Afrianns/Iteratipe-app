@@ -7,7 +7,6 @@ import TimelineMenu from './CanvasMenu';
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
 import { modeEnum } from '@/types/enum';
 import { timelineNodeType } from '@/types/types';
-import { getNodes } from '@/actions/nodes';
 import CanvasSave from './CanvasSave';
 
 const nodeTypes = {

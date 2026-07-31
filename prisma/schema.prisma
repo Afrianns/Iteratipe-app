@@ -111,7 +111,7 @@ model Tags {
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
 model Nodes {
   id           Int            @id @default(autoincrement())
-  uid          String?        @unique @db.Uuid
+  uid          String         @unique @db.Uuid @default(dbgenerated("gen_ulid()"))
   project_id   Int?
   thumbnail    String?        @db.VarChar(255)
   title        String?        @db.VarChar(60)
@@ -121,7 +121,6 @@ model Nodes {
   content      String?
   published_at DateTime?      @default(now()) @db.Timestamp(6)
   updated_at   DateTime?      @db.Timestamp(6)
-  node_id      String         @unique @db.VarChar
   position_x   Decimal
   position_y   Decimal
   handle_type  handleTypeEnum
@@ -131,11 +130,11 @@ model Nodes {
 
 model Connectors {
   id           Int            @id @default(autoincrement())
-  node_id  Int?
+  node_id      Int?
   edge_id      String         @db.VarChar(80)
   edge_source  String?        @db.VarChar(80)
   edge_target  String?        @db.VarChar(80)
-  Nodes        Nodes?     @relation(fields: [node_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Nodes        Nodes?         @relation(fields: [node_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Tools {

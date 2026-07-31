@@ -81,6 +81,20 @@ export interface timelineNodeDataType extends nodeDataType {
 }
 
 
+export interface NodeDBType {
+  title: string,
+  thumbnail: string | null,
+  type: string,
+  start_at: string | null,
+  end_at: string | null,
+  content: string | null,
+  position_x: number,
+  position_y: number,
+  handle_type: 'start' | "main" | "end",
+  uid: string
+}
+
+
 export interface PagePropsType {
   searchParams: Promise<{ menu?: string | undefined, tab?: string | undefined, node?: string | undefined }>;
 }

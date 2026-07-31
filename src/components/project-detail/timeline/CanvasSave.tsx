@@ -1,7 +1,8 @@
-
+"use client"
+import { autoUpdateNodes } from "@/actions/nodes";
 import { useTimelineStateStore } from "@/hooks/useTimelineStateStore"
-import { getTotalNodesByProjectId, saveCurrentStateNodes } from "@/services/nodes.service";
-import { usePathname, useSearchParams } from "next/navigation";
+import { getTotalNodesByProjectId } from "@/services/nodes.service";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react"
 
 export default function CanvasSave() {
@@ -11,7 +12,7 @@ export default function CanvasSave() {
   let totalNodes = 0;
 
   const [nodeChanges, setNodeChanges] = useState<boolean>(false)
-  const { nodes, edges, isEndNodeUsed, isFirstNodeUsed } = useTimelineStateStore()
+  const { nodes, edges, setNodes } = useTimelineStateStore()
 
   const paths = pathname.split('/')
 
@@ -83,7 +84,11 @@ export default function CanvasSave() {
 
   const saveCurrentState = async () => {
     setNodeChanges(false)
-    let result = await saveCurrentStateNodes(paths[2].split("%E2%80%94")[1], nodes);
+    let result = await autoUpdateNodes(paths[2].split("%E2%80%94")[1], nodes);
+    
+    if(result.status == 200 && result.data){
+      setNodes(result.data.nodes)
+    }
     console.log(result)
   }
 

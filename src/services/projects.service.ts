@@ -19,7 +19,6 @@ interface quickStatusType {
     completed: number 
 }
 
-
 export async function saveProject(initialProject: ProjectStoreType): Promise<returnDataType<actionDataType>> {
     
     const { userId } = await auth()

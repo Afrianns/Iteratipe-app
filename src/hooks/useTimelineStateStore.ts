@@ -23,7 +23,7 @@ export const useTimelineStateStore = create<TimelineStateType>()(
     setEdges: (newEdge: Edge[]) => set({ edges: [...newEdge] }),
     setNodes: (newNode: setNode<timelineNodeType>) => {
       if (Array.isArray(newNode)) {
-          set((state) => ({ 
+          set(() => ({ 
               nodes: [...newNode] 
           }));
       } else {
@@ -49,7 +49,10 @@ export const useTimelineStateStore = create<TimelineStateType>()(
     deleteNode: (nodeId: string) => set((state) => ({nodes: state.nodes.filter((node) => node.id !== nodeId) })),
     setFirstNode: (first: boolean) => set({ isFirstNodeUsed: first}),
     setEndNode: (end: boolean) => set({ isEndNodeUsed: end}),
-    setEdgesChange: (changes: EdgeChange[]) => set((state) => ({ edges: applyEdgeChanges(changes, state.edges)})),
+    setEdgesChange: (changes: EdgeChange[]) => set((state) => {
+      console.log("edges: ", changes, state)
+      return { edges: applyEdgeChanges(changes, state.edges)}
+    }),
     setConnection: (connection: Connection) => {
       set((state) => ({
         edges: addEdge(connection, state.edges),

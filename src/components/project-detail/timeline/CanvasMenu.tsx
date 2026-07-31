@@ -49,7 +49,7 @@ export default function CanvasMenu() {
         nodeID++
 
         const newNode: timelineNodeType = {
-            id: `step-${nodeID}`,
+            id: `node_${nodeID}`,
             position: flowPosition,
             data: { 
                 handleType: handleType,
