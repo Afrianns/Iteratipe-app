@@ -5,11 +5,8 @@ import "@/app/globals.css"
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatFlexibleDuration } from "@/lib/convertDateinDuration";
 import { InputSelectPropsType } from "@/types/types";
+import { convertDate, months } from "@/lib/convertDateReadable";
 
-const months = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
 
 // FIX 1: Generate a year range that includes current and future years (e.g., 5 years back, 5 years forward)
 const currentYear = new Date().getFullYear();
@@ -24,7 +21,7 @@ const parseSafeDate = (dateStr: string) => {
   return isNaN(parsed.getTime()) ? null : parsed;
 };
 
-export const DatePickerRange = ({ durationDateFn, updateNodeData, initialStartDate, initialEndDate }: { updateNodeData: (name: string, value: string) => void, durationDateFn: (a: string) => void, initialStartDate: string, initialEndDate: string}) => {
+export const DatePickerRange = ({ durationDateFn, updateNodeData, initialStartDate, initialEndDate }: { updateNodeData: (arg: Record<string, string>) => void, durationDateFn: (a: string) => void, initialStartDate: string, initialEndDate: string}) => {
   // FIX 2: Use safe parsing for your initial props
   const [startDate, setStartDate] = useState<Date | null>(parseSafeDate(initialStartDate));
   const [endDate, setEndDate] = useState<Date | null>(parseSafeDate(initialEndDate));
@@ -35,8 +32,11 @@ export const DatePickerRange = ({ durationDateFn, updateNodeData, initialStartDa
     setStartDate(start);
     setEndDate(end);
 
-    updateNodeData("start_at", convertDate(start))
-    updateNodeData("end_at", convertDate(end))
+    console.log("date picker: ", start, end)
+
+    if(start != null && end != null) {
+      updateNodeData({"start_at": convertDate(start), "end_at": convertDate(end)})
+    }
   };
 
   return (
@@ -133,10 +133,4 @@ const HeaderDatePicker = ({
       </button>
     </div>
   );
-};
-
-
-const convertDate = (date: Date | null) => {
-  if (!date || isNaN(date.getTime())) return '';
-  return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
 };

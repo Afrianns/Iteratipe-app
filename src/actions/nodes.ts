@@ -1,12 +1,13 @@
 "use server"
 
 import { Prisma } from "@/generated/prisma/client";
-import { saveCurrentStateNodes, syncAndDeleteNodes } from "@/services/nodes.service";
+import { uuidRegex } from "@/lib/regexHelpers";
+import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { saveCurrentStateNodes } from "@/services/nodes.service";
+import { syncAndDelete, syncAndDeleteDBWithLocal } from "@/services/syncTimeline.service";
 
 import { returnDataType, timelineNodeType } from "@/types/types";
 import { Sql } from "@prisma/client/runtime/client";
-
-const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeType[]): Promise<returnDataType<{
     nodes: timelineNodeType[]
@@ -14,24 +15,7 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
 
     let mappedNodes: Sql[] = []
 
-    // syncing by delete
-    try {
-        const result = await syncAndDeleteNodeDBWithLocal(Nodes);
-
-        if(result.status == 200){
-            console.log(result);
-        } 
-        
-        if(result.status == 500){
-            throw new Error("Failed to fetch");   
-        }
-    } catch (error) {
-        return {
-            status: 500,
-            message: "An error ocur, please try again later"
-        }
-    }
-
+    // mapping nodes to sql format
     for (const node of Nodes) {
     
         const isRealUuid = uuidRegex.test(String(node.id));
@@ -48,7 +32,10 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
         } else if(isRealUuid){
             uid = Prisma.sql`${node.id}::uuid`
         } else{
-            throw new Error("node id is not valid");
+            return {
+                status: 500,
+                message: "node id is not valid"
+            };
         }
 
         mappedNodes.push(Prisma.sql`(
@@ -66,6 +53,21 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
             NOW())`)
     }
 
+    // syncing by delete
+    try {
+        const result = await syncAndDeleteDBWithLocal("Nodes", Nodes);
+
+        if(result.status == 200){
+            console.log(result);
+        }
+        
+        if(result.status == 500){
+            throw new Error("Failed to fetch");   
+        }
+    } catch (error) {
+        return tempErrorHandle(error);
+    }
+
     try {
         if(mappedNodes.length > 0){
 
@@ -73,6 +75,7 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
             
             if(result.status == 200 && result.data){
 
+                console.log("node: ",result.data)
                 let mappedTimelineNodes: timelineNodeType[] = result.data.map((node) => {
                     return {
                         id: node.uid,
@@ -81,8 +84,8 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
                             handleType: node.handle_type,
                             title: node.title,
                             type: node.type,
-                            start_at: node.start_at,
-                            end_at: node.end_at,
+                            start_at: node.start_date,
+                            end_at: node.end_date,
                             content: node.content
                         },
                         origin: [0.5, 0.5],
@@ -92,7 +95,7 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
 
                 return {
                     status: 200,
-                    message: "Successfuly mapped",
+                    message: "Successfuly updated nodes",
                     data: {
                         nodes: mappedTimelineNodes
                     }
@@ -103,43 +106,7 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
 
         throw new Error("An error occur");
     } catch (error) {
-        return {
-            status: 500,
-            message: "An error ocur, please try again later"
-        }   
+        return tempErrorHandle(error);
     }
 }
 
-
-
-export const syncAndDeleteNodeDBWithLocal = async (nodes: timelineNodeType[]) => {
-    const nodeUIDs = nodes.map((node: timelineNodeType) => uuidRegex.test(node.id) ? node.id : '').filter((data) => data.length > 2);
-    
-    if(nodeUIDs.length <= 0){
-        return {
-            status: 404,
-            message: "No nodes found"
-        }
-    }
-    
-    try {
-        const result = await syncAndDeleteNodes(nodeUIDs)
-
-        if(result.status == 200){
-            return {
-                status: 200,
-                message: "Sync delete sucessfuly"
-            }
-        }
-
-        throw new Error("An error occur");
-
-    } catch (error) {
-        console.log("an error: ", error)
-        return {
-            status: 500,
-            message: "An error ocur, please try again later"
-        }
-    }
-
-}

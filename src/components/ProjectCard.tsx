@@ -5,10 +5,10 @@ import Link from "next/link";
 
 export default function ProjectCard({currentPath, projectData, imageName}: {currentPath: string, projectData: ProjectType, imageName: string}) {
     return (
-        <div className="card-style-secondary p-0! w-full transition-style hover:shadow-lg! hover:-translate-y-1 relative h-full max-h-80 overflow-hidden">
-            <div className="h-30 relative">
-                <Image src={`/images/projectholders/${imageName}`} fill alt="thumbnail" className="absolute object-cover" />
-                <span className="badge-style-secondary absolute bottom-2 left-2 text-grayish-dark text-xs flex gap-x-1 items-center">
+        <div className="card-style-secondary p-0! w-full transition-style hover:shadow-lg! hover:-translate-y-1 relative h-full max-h-80 overflow-hidden space-y-3">
+            <div className="h-20 relative">
+                <Image key={imageName} src={`/images/${imageName}`} fill alt="thumbnail" className="absolute object-cover" />
+                <span className="badge-style-secondary absolute bottom-3 left-3 text-grayish-dark text-xs flex gap-x-1 items-center rounded-2xl">
                     <Layers className="w-3" />
                     15 Steps
                 </span>

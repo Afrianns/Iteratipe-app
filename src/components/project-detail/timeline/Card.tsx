@@ -5,10 +5,11 @@ import { timelineNodeType } from '@/types/types';
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { CalendarDays, MoveRight, Timer } from 'lucide-react';
 import Link from 'next/link';
+import { memo } from 'react';
 
-export default function Card({data, selected, id}: NodeProps<timelineNodeType>) {
+export default  memo(function Card({data, selected, id}: NodeProps<timelineNodeType>) {
 
-    const { mode } = useTimelineStateStore();
+    const mode = useTimelineStateStore((state) => state.mode);
 
     const handleType = data.handleType;
 
@@ -31,7 +32,7 @@ export default function Card({data, selected, id}: NodeProps<timelineNodeType>) 
     return (
         <>
             {(handleType == handleEnum.START || handleType == handleEnum.MAIN) && <Handle type="source" position={Position.Right} />}
-                <div className={`card-style p-5 w-80 ${activeSelectNodeFn()}`}>
+                <div className={`card-style shadow-none! p-5 w-80 ${activeSelectNodeFn()}`}>
                     <div className="flex items-center justify-between">
                         {data.title ? 
                             <h3 className="h-three-style">{data.title}</h3>
@@ -85,4 +86,4 @@ export default function Card({data, selected, id}: NodeProps<timelineNodeType>) 
             {(handleType == handleEnum.END || handleType == handleEnum.MAIN) && <Handle type="target" position={Position.Left} />}
         </>
     )
-}
+})

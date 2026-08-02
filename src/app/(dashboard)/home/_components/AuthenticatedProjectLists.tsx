@@ -16,7 +16,7 @@ export default async function AuthenticatedProjectLists() {
     return (
         <>
             {projects.map((project) => {
-                return <ProjectCard key={project.id} projectData={project} currentPath="home" imageName={"project-placeholder-5.png"} />
+                return <ProjectCard key={project.id} projectData={project} currentPath="home" imageName={"no-thumbnail-placeholder.png"} />
             })}
         </>
     )

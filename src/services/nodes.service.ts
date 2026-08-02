@@ -16,6 +16,8 @@ export async function getTotalNodesByProjectId(ProjectUid: string): Promise<retu
               uid: ProjectUid
             },
         });
+
+        console.log('ssss---',result)
         if(result){
             return {
                 status: 200,
@@ -67,7 +69,7 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
             position_y = EXCLUDED.position_y, 
             handle_type = EXCLUDED.handle_type, 
             updated_at = NOW()
-          RETURNING title, thumbnail, type, start_at, content, position_x, position_y, handle_type, uid
+          RETURNING title, thumbnail, type, TO_CHAR(start_at, 'DD FMMonth YYYY') as start_date, TO_CHAR(end_at, 'DD FMMonth YYYY') as end_date, content, position_x, position_y, handle_type, uid
       `;
 
       if(result){
@@ -91,32 +93,3 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
       };
   }
 }
-
-export async function syncAndDeleteNodes(mappedUID: string[]): Promise<returnDataType<NodeDBType[]>> {
-   try {
-      const result = await prisma.$queryRaw`
-                DELETE FROM "Nodes" WHERE uid NOT IN (${Prisma.join(mappedUID)})
-                RETURNING uid, title, type, content, project_id;
-      `;
-
-      if(result){
-          return {
-              status: 200,
-              message: "Success delete node",
-              data: result as NodeDBType[]
-          };
-      } else{
-          throw new Error("error while fetching data")
-      }
-      
-  } catch (error) {
-    if(error instanceof Prisma.PrismaClientKnownRequestError){
-      console.log(error)
-    }
-    console.log(error)
-      return {
-          status: 500,
-          message: "An Error Occur"
-      };
-  } 
-} 

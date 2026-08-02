@@ -11,14 +11,13 @@ let nodeID = 0;
 
 export default function CanvasMenu() {
 
-    const [mode, setMode] = useState<modeEnum>(modeEnum.EDIT);
     const [modePosCount, setModePosCount] = useState<number>(0);
-    const { changeMode, setFirstNode, setEndNode, setNodes, isEndNodeUsed, isFirstNodeUsed } = useTimelineStateStore();
+    const { changeMode, mode, setFirstNode, setEndNode, isEndNodeUsed, isFirstNodeUsed } = useTimelineStateStore();
 
     const [disableStartNode, setDisableStartNode] = useState<boolean>(false);
     const [disableEndNode, setDisableEndNode] = useState<boolean>(false);
 
-    const { getNode, screenToFlowPosition } = useReactFlow();
+    const { getNode, screenToFlowPosition, addNodes, getNodes } = useReactFlow();
 
     const [isExpand, setIsExpand] = useState(false);
 
@@ -28,6 +27,12 @@ export default function CanvasMenu() {
         setDisableStartNode(isFirstNodeUsed)
         setDisableEndNode(isEndNodeUsed)
     }, [isEndNodeUsed, isFirstNodeUsed])
+
+    // useOnSelectionChange({
+    //     onChange: (selection) => {
+    //         selection.nodes.forEach((node: Node) => {
+    //     }
+    // })
 
     const newNodeFn = async (handleType: handleEnum) => {
 
@@ -63,7 +68,12 @@ export default function CanvasMenu() {
             type: 'cardNode',
         }
 
-        setNodes(newNode);
+        console.log("new node: ", newNode)
+
+
+        const nodes = getNodes().length >= 1 ? [...getNodes(), newNode] : newNode;
+
+        addNodes(nodes); // add the new node to the React Flow instance
 
         if(handleType == handleEnum.START) {
             setFirstNode(true);
@@ -83,7 +93,6 @@ export default function CanvasMenu() {
         
         setModePosCount(nextCount);
         changeMode(modes[nextCount]);
-        setMode(modes[nextCount]);
 
     }
 
