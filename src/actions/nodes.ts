@@ -1,6 +1,7 @@
 "use server"
 
 import { Prisma } from "@/generated/prisma/client";
+import { convertDateToISOString } from "@/lib/convertDate";
 import { uuidRegex } from "@/lib/regexHelpers";
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { saveCurrentStateNodes } from "@/services/nodes.service";
@@ -20,16 +21,14 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
     
         const isRealUuid = uuidRegex.test(String(node.id));
         
-        const startDate = node.data.start_at ? new Date(node.data.start_at).toISOString() : null;
-        const endDate = node.data.end_at ? new Date(node.data.end_at).toISOString() : null;
+        const startDate = node.data.start_at ? convertDateToISOString(node.data.start_at) : null;
+        const endDate = node.data.end_at ? convertDateToISOString(node.data.end_at) : null;
         
-        const isTemp = String(node.id).startsWith('node_');
+        // const isTemp = String(node.id).startsWith('node_');
 
-        let uid: Sql 
+        let uid: Sql
 
-        if(isTemp){
-            uid = Prisma.raw("DEFAULT")
-        } else if(isRealUuid){
+        if(isRealUuid){
             uid = Prisma.sql`${node.id}::uuid`
         } else{
             return {
@@ -55,7 +54,7 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
 
     // syncing by delete
     try {
-        const result = await syncAndDeleteDBWithLocal("Nodes", Nodes);
+        const result = await syncAndDeleteDBWithLocal("Nodes", Nodes, projectUid);
 
         if(result.status == 200){
             console.log(result);
@@ -104,7 +103,11 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
         }
 
 
-        throw new Error("An error occur");
+        return {
+            status: 200,
+            message: "no syncing happend",
+        }
+        
     } catch (error) {
         return tempErrorHandle(error);
     }

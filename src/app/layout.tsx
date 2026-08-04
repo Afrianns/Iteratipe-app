@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Raleway, Instrument_Sans, Epilogue } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { dark, neobrutalism } from "@clerk/ui/themes";
 import { NextClerkProviderProps } from "@clerk/nextjs/types";
 import { Toaster } from "sonner";
 
@@ -48,7 +47,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col  font-instrument">
         <Toaster position="top-center" richColors />
         <ClerkProvider appearance={clerkAppearance}>
-          {children}
+            {children}
         </ClerkProvider>
       </body>
     </html>

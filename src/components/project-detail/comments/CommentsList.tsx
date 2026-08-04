@@ -1,12 +1,6 @@
 import Image from "next/image";
 
-export default async function CommentsList() {
-    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    await delay(3000);
-    setTimeout(() => {
-        console.log("Waiting...")
-    }, 10000)
+export default function CommentsList() {
     
     return (
         <div className="flex items-start gap-x-5 justify-start w-fill">

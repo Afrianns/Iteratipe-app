@@ -44,37 +44,34 @@ export default async function Home() {
     // // }
 
     return (
-         <div className="container-wrapper-style">
-            <Sidebar />
-            <div className="col-span-5 w-full">
-                <div className="container-style container-accent-style">
-                    <div className="limit-breaker">
-                        <Header showSearch={false} />
-                    </div>
+        <div className="col-span-5 w-full">
+            <div className="container-style container-accent-style">
+                <div className="limit-breaker">
+                    <Header showSearch={false} />
                 </div>
-                <div className="container-style">
-                    {!isAuthenticated ? 
-                        <UnauthorizedInfo />
-                    :
-                        <div className="limit-breaker max-md:mb-20">
-                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-                                <HeaderHome />
+            </div>
+            <div className="container-style">
+                {!isAuthenticated ? 
+                    <UnauthorizedInfo />
+                :
+                    <div className="limit-breaker max-md:mb-20">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+                            <HeaderHome />
+                        </div>
+                        <div className="grid lg:grid-cols-3 gap-5 mt-5">
+                            <div className="col-span-2 grid md:grid-cols-2 gap-5">
+                                <h3 className="col-span-full h-three-style">Your Recent Projects</h3>
+                                <Suspense fallback={<ProjectCardSkeleton />}>
+                                    <AuthenticatedProjectLists />
+                                </Suspense>
                             </div>
-                            <div className="grid lg:grid-cols-3 gap-5 mt-5">
-                                <div className="col-span-2 grid md:grid-cols-2 gap-5">
-                                    <h3 className="col-span-full h-three-style">Your Recent Projects</h3>
-                                    <Suspense fallback={<ProjectCardSkeleton />}>
-                                        <AuthenticatedProjectLists />
-                                    </Suspense>
-                                </div>
-                                <div className="max-md:row-start-1 card-style-secondary shadow! h-fit max-md:col-span-2">
-                                    <h3 className="h-three-style">Recent Activities</h3>
-                                    <hr className="hr-style my-2" />
-                                </div>
+                            <div className="max-md:row-start-1 card-style-secondary shadow! h-fit max-md:col-span-2">
+                                <h3 className="h-three-style">Recent Activities</h3>
+                                <hr className="hr-style my-2" />
                             </div>
                         </div>
-                    }
-                </div>
+                    </div>
+                }
             </div>
         </div>
     )

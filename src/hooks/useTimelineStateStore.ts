@@ -10,7 +10,7 @@ import localforage from "localforage"
 export const useTimelineStateStore = create<TimelineStateType>()(
   persist((set, get) => ({
     mode: modeEnum.EDIT,
-    isFirstNodeUsed: false,
+    isStartNodeUsed: false,
     isEndNodeUsed: false,
     MainNodeLeft: 3,
     globalNodes: [],
@@ -63,7 +63,7 @@ export const useTimelineStateStore = create<TimelineStateType>()(
         unsavedChanges: true
       }
     }),
-    setFirstNode: (first: boolean) => set({ isFirstNodeUsed: first}),
+    setStartNode: (first: boolean) => set({ isStartNodeUsed: first}),
     setEndNode: (end: boolean) => set({ isEndNodeUsed: end}),
     setEdgesChange: (changes: EdgeChange[]) => set((state) => {
       return { 
@@ -78,6 +78,19 @@ export const useTimelineStateStore = create<TimelineStateType>()(
         unsavedChanges: true
       }))
     },
+
+    resetTimeline: () => {
+      set(() => ({
+          mode: modeEnum.EDIT,
+          isStartNodeUsed: false,
+          isEndNodeUsed: false,
+          MainNodeLeft: 3,
+          globalNodes: [],
+          globalEdges: [],
+          lastGlobalNodes: [],
+          lastGlobalEdges: [],
+      }))
+    }
   }),{ 
     name: "temp-timelines-datas",
     storage: createJSONStorage(() => localforage),
@@ -87,7 +100,7 @@ export const useTimelineStateStore = create<TimelineStateType>()(
         lastGlobalNodes: state.lastGlobalNodes,
         lastGlobalEdges: state.lastGlobalEdges,
         mode: state.mode,
-        isFirstNodeUsed: state.isFirstNodeUsed,
+        isStartNodeUsed: state.isStartNodeUsed,
         isEndNodeUsed: state.isEndNodeUsed,
         MainNodeLeft: state.MainNodeLeft
       })

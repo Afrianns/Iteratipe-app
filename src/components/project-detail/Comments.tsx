@@ -7,7 +7,7 @@ export default function Comments() {
     return (
         <div className="container-style">
             <div className="limit-breaker w-full">
-                <div className="card-style-secondary col-span-2 max-w-200">
+                <div className="card-style-secondary space-y-3 col-span-2 max-w-200">
                     <div className="flex justify-between items-center">
                         <div className="max-w-90 w-full relative">
                             <p className="p-style">Comments from</p>

@@ -1,5 +1,7 @@
 import { Connection, Edge, EdgeChange, Node, NodeChange } from "@xyflow/react";
 import { handleEnum, modeEnum } from "./enum";
+import { handleTypeEnum } from "@/generated/prisma/enums";
+import { Decimal } from "@prisma/client/runtime/client";
 
 export type setNode<T> = T | T[]
 
@@ -11,25 +13,26 @@ export interface labelType {
 
 // timeline
 export interface TimelineStateType {
-  mode: modeEnum;
-  isFirstNodeUsed: boolean,
-  isEndNodeUsed: boolean,
-  MainNodeLeft: number,
-  globalNodes: timelineNodeType[] | [],
-  globalEdges: Edge[] | [],
-  lastGlobalNodes: timelineNodeType[] | [],
-  lastGlobalEdges: Edge[] | [],
+  mode: modeEnum
+  isStartNodeUsed: boolean
+  isEndNodeUsed: boolean
+  MainNodeLeft: number
+  globalNodes: timelineNodeType[] | []
+  globalEdges: Edge[] | []
+  lastGlobalNodes: timelineNodeType[] | []
+  lastGlobalEdges: Edge[] | []
   getNodeById: (id: string) => timelineNodeType | undefined
   updateDataNode: (id: string, nodes: nodeDataType) => void
-  setGlobalNodes: (nodes: setNode<timelineNodeType>) => void,
-  setGlobalEdges: (edges: Edge[]) => void,
-  setLastGlobalNodes: (nodes: timelineNodeType[]) => void,
-  setLastGlobalEdges: (edges: Edge[]) => void,
-  deleteNode: (nodeId: string) => void,
-  deleteEdge: (edgeId: string) => void,
-  changeMode: (mode: modeEnum) => void,
-  setFirstNode: (first: boolean) => void,
+  setGlobalNodes: (nodes: setNode<timelineNodeType>) => void
+  setGlobalEdges: (edges: Edge[]) => void
+  setLastGlobalNodes: (nodes: timelineNodeType[]) => void
+  setLastGlobalEdges: (edges: Edge[]) => void
+  deleteNode: (nodeId: string) => void
+  deleteEdge: (edgeId: string) => void
+  changeMode: (mode: modeEnum) => void
+  setStartNode: (first: boolean) => void
   setEndNode: (end: boolean) => void
+  resetTimeline: () => void
 }
 
 // project type
@@ -58,6 +61,7 @@ export interface ProjectType {
 export interface WithPivotDataType extends ProjectType {
     Project_tags: labelType[]
     Project_tools: labelType[]
+    Nodes: timelineNodeType[]
 }
 
 
@@ -214,5 +218,90 @@ export interface returnDataType<T> {
     message: string
     data?: T
 }
+
+
+// DB nodes return type
+
+export type Tab = "general" | "visibility"
+
+export interface DBSingleProjectByID {
+  projectTitleInfo: DBProjectTitleInfo
+  overviewInfo: OverviewInfo
+  settingInfo: DBSettingInfo
+  Nodes: timelineNodeType[]
+  created_at: Date | null
+  updated_at: Date | null
+}
+
+// export interface DBNodeType {
+//     id: string,
+//     thumbnail: string,
+//     title: string,
+//     type: string,
+//     content: string,
+//     end_at: string,
+//     start_at: string,
+//     handle_type: handleEnum,
+//     position_x: number,
+//     position_y: number,
+//     updated_at: string,
+//     published_at: string
+// }
+
+interface DBProjectTitleInfo {
+    title: string
+    type: labelType
+}
+
+interface OverviewInfo extends initialInfo{
+  id: number
+  user: {
+    id: number
+    full_name: string
+    clerk_user_id: string
+  }
+}
+
+interface initialInfo {
+    summary: string
+    type: labelType
+    client_name: string | null
+    tags: labelType[]
+    tools: labelType[]
+}
+
+export interface DBSettingInfo {
+    data: DBSettingInfoData
+}
+
+
+interface DBSettingInfoData extends initialInfo {
+  id: number
+  title: string
+  status: labelType
+  visibility: VISIBLE
+  disable_comments: boolean
+}
+
+
+  // id: number
+  // created_at: Date
+  // uid: string
+  // user_id: number
+  // type_id: number
+  // title: string
+  // summary: string
+  // visibility: VISIBLE
+  // disable_comments: boolean
+  // client_name: string | null
+  // updated_at: Date | null
+  // status_id: number
+  // Status: labelType
+  // Type: labelType
+  // Users: {
+  //   id: number
+  //   full_name: string
+  //   clerk_user_id: string
+  // }
 
 export type subMenuType = "timeline" | "overview" | "comments" | "settings";

@@ -1,3 +1,5 @@
+"use server"
+
 import { prisma } from "@/lib/db";
 import { returnDataType, UserPreviewType, UserType } from "@/types/types";
 

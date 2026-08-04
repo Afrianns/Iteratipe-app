@@ -5,7 +5,7 @@ import "@/app/globals.css"
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatFlexibleDuration } from "@/lib/convertDateinDuration";
 import { InputSelectPropsType } from "@/types/types";
-import { convertDate, months } from "@/lib/convertDateReadable";
+import { convertDate, months } from "@/lib/convertDate";
 
 
 // FIX 1: Generate a year range that includes current and future years (e.g., 5 years back, 5 years forward)

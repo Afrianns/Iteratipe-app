@@ -13,8 +13,6 @@ export default  memo(function Card({data, selected, id}: NodeProps<timelineNodeT
 
     const handleType = data.handleType;
 
-    // console.log("in a card: ",data, selected)
-
     const activeSelectNodeFn = () => {
         if(selected){
             switch (mode) {

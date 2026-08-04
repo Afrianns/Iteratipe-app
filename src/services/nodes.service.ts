@@ -2,6 +2,7 @@
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { NodeDBType, returnDataType } from "@/types/types";
 import { Sql } from "@prisma/client/runtime/client";
 
@@ -92,4 +93,13 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
           message: "An Error Occur"
       };
   }
+}
+
+
+export async function getTimelineNodes() {
+    try {
+        // const result = await prisma.nodes.findMany
+    } catch (error) {
+        tempErrorHandle(error)
+    }
 }

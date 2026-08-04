@@ -1,19 +1,23 @@
+"use client"
+
 import { Suspense } from "react";
 import Sidebar from "./Sidebar";
 import SidebarContent from "./SidebarContent";
+import { useSearchParams } from "next/navigation";
 
-export default function SidebarContentWrapper({params}: {params: {node?: string | undefined}}) {
+export default function SidebarContentWrapper() {
 
-    const currentNodeId = params.node || "empty"
+    const node = useSearchParams().get("node")
+
+    const currentNodeId = node || "empty"
     return (
         <Sidebar>
             <Suspense key={currentNodeId} fallback={<TimelineSidebarLoading/>}>
-                <SidebarContent params={params.node} />
+                <SidebarContent params={node || undefined} />
             </Suspense>
         </Sidebar>
     )
 }
-
 const TimelineSidebarLoading = () => {
     return (
         <div className="animate-pulse flex flex-col h-full">

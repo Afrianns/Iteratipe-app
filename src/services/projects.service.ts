@@ -1,9 +1,12 @@
 "use server"
 
-import { Prisma } from "@/generated/prisma/client";
+import { handleTypeEnum, Prisma } from "@/generated/prisma/client";
+import { convertDate } from "@/lib/convertDate";
 import { prisma } from "@/lib/db";
-import { generalDataType, ProjectStoreType, labelType, ProjectType, returnDataType, WithPivotDataType } from "@/types/types";
+import { handleEnum } from "@/types/enum";
+import { generalDataType, ProjectStoreType, labelType, ProjectType, returnDataType, WithPivotDataType, timelineNodeType, DBSingleProjectByID } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
+import { Decimal } from "@prisma/client/runtime/client";
 interface actionDataType {
     id: number
 }
@@ -201,7 +204,7 @@ const filterProject = (projects: { id: number;
     
 }
 
-export async function getProjectDetailById(projectUid: string): Promise<returnDataType<WithPivotDataType>> {
+export async function getProjectDetailById(projectUid: string): Promise<returnDataType<DBSingleProjectByID>> {
     
     try {
         let result = await prisma.projects.findFirst({
@@ -228,15 +231,48 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                         clerk_user_id: true,
 
                     }
-                }
+                },
+                Nodes: true,
+                Edges: true
             }
         })
 
         if(result){
+            const initialInfo = {
+                summary: result.summary,
+                type: result.Type,
+                client_name: result.client_name,
+                tags: remapPivotData(result.Project_tags, "Tags"),
+                tools: remapPivotData(result.Project_tools, "Tools"),
+            }
             return {
                 status: 200,
                 message: "Successfuly get project",
-                data: {...result, Project_tags: remapPivotData(result.Project_tags, "Tags"), Project_tools: remapPivotData(result.Project_tools, "Tools")}
+                data: { 
+                    projectTitleInfo: {
+                        title: result.title,
+                        type: result.Type,
+                    },
+                    overviewInfo: {
+                        id: result.id,
+                        user: result.Users,
+                        ...initialInfo
+                    },
+                    settingInfo: {
+                        tab: "general",
+                        data: {
+                            id: result.id,
+                            title: result.title,
+                            status: result.Status,
+                            visibility: result.visibility,
+                            disable_comments: result.disable_comments,
+                            ...initialInfo
+                        }
+                    },
+                    Nodes: remapNodes(result.Nodes),
+                    created_at: result.created_at,
+                    updated_at: result.updated_at
+                }
             }
 
         } else{
@@ -330,4 +366,46 @@ const remapPivotData = (unorganizedObj: UnorganizedObjType[], m: string) => {
         organizedObj.push(obj[m] as labelType)
     })
     return organizedObj;
+}
+
+const remapNodes = <T extends {
+  uid: string
+  title: string | null
+  updated_at: Date | null
+  type: string | null
+  project_id: number
+  thumbnail: string | null
+  start_at: Date | null
+  end_at: Date | null
+  content: string | null
+  published_at: Date | null
+  position_x: Decimal
+  position_y: Decimal
+  handle_type: handleTypeEnum;
+}>(nodes: T[]): timelineNodeType[] => {
+
+    let newNodes = nodes.map((node: T): timelineNodeType => {
+        return {
+            id: node.uid,
+            position: {
+                x: Number(node.position_x),
+                y: Number(node.position_y),
+            },
+            data: {
+                // thumbnail: node.thumbnail,
+                title: node.title || "",
+                type: node.type || "",
+                content: node.content || "",
+                start_at: node.start_at ? convertDate(new Date(node.start_at)) : "",
+                end_at: node.end_at ? convertDate(new Date(node.end_at)) : "",
+                handleType: node.handle_type as handleEnum,
+                // updated_at: node.updated_at,
+                // published_at: node.published_at
+            },
+            origin: [0.5, 0.5],
+            type: "cardNode"
+        }
+    })
+
+    return newNodes
 }

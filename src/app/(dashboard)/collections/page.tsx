@@ -7,24 +7,21 @@ import Sidebar from "@/components/Sidebar";
 export default async function Collections() {
     const { isAuthenticated } = await auth()
     return (
-        <div className="container-wrapper-style">
-            <Sidebar />
-            <div className="col-span-5 w-full">
-                <div className="container-style container-accent-style">
+        <div className="col-span-5 w-full">
+            <div className="container-style container-accent-style">
+                <div className="limit-breaker">
+                    <Header />
+                </div>
+            </div>
+            <div className="container-style">
+                {!isAuthenticated ? 
+                    <UnauthorizedInfo />
+                :
                     <div className="limit-breaker">
-                        <Header />
-                    </div>
-                </div>
-                <div className="container-style">
-                    {!isAuthenticated ? 
-                        <UnauthorizedInfo />
-                    :
-                        <div className="limit-breaker">
-                            <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            </div>
+                        <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-5">
                         </div>
-                    }
-                </div>
+                    </div>
+                }
             </div>
         </div>
     )

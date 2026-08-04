@@ -12,27 +12,11 @@ let nodeID = 0;
 export default function CanvasMenu() {
 
     const [modePosCount, setModePosCount] = useState<number>(0);
-    const { changeMode, mode, setFirstNode, setEndNode, isEndNodeUsed, isFirstNodeUsed } = useTimelineStateStore();
-
-    const [disableStartNode, setDisableStartNode] = useState<boolean>(false);
-    const [disableEndNode, setDisableEndNode] = useState<boolean>(false);
+    const { changeMode, mode, setStartNode, setEndNode, isEndNodeUsed, isStartNodeUsed } = useTimelineStateStore();
 
     const { getNode, screenToFlowPosition, addNodes, getNodes } = useReactFlow();
 
     const [isExpand, setIsExpand] = useState(false);
-
-    // it will be change in the future
-
-    useEffect(() => {
-        setDisableStartNode(isFirstNodeUsed)
-        setDisableEndNode(isEndNodeUsed)
-    }, [isEndNodeUsed, isFirstNodeUsed])
-
-    // useOnSelectionChange({
-    //     onChange: (selection) => {
-    //         selection.nodes.forEach((node: Node) => {
-    //     }
-    // })
 
     const newNodeFn = async (handleType: handleEnum) => {
 
@@ -51,10 +35,8 @@ export default function CanvasMenu() {
             y:  bounds.top + (bounds.height / 2),
         });
 
-        nodeID++
-
         const newNode: timelineNodeType = {
-            id: `node_${nodeID}`,
+            id: crypto.randomUUID(),
             position: flowPosition,
             data: { 
                 handleType: handleType,
@@ -76,12 +58,10 @@ export default function CanvasMenu() {
         addNodes(nodes); // add the new node to the React Flow instance
 
         if(handleType == handleEnum.START) {
-            setFirstNode(true);
-            setDisableStartNode(true);
+            setStartNode(true);
         }
         if(handleType == handleEnum.END) {
             setEndNode(true);
-            setDisableEndNode(true)
         };
     }
 
@@ -118,12 +98,12 @@ export default function CanvasMenu() {
                     
                     <hr className="hr-style" />
                     <div className="space-y-2">
-                        <button onClick={() => newNodeFn(handleEnum.START)} className={`timeline-btn-style ${disableStartNode ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
+                        <button onClick={() => newNodeFn(handleEnum.START)} className={`timeline-btn-style ${isStartNodeUsed ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
                             <Plus className="w-4 h-4 stroke-3" />
                             <p className='font-semibold'>Start Node</p>
                         </button>
                         
-                        <button onClick={() => newNodeFn(handleEnum.END)} className={`timeline-btn-style ${disableEndNode ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
+                        <button onClick={() => newNodeFn(handleEnum.END)} className={`timeline-btn-style ${isEndNodeUsed ? 'timeline-btn-accent-disable': 'timeline-btn-accent'}`}>
                             <Plus className="w-4 h-4 stroke-3" />
                             <p className='font-semibold'>End Node</p>
                         </button>

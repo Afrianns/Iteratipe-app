@@ -4,11 +4,12 @@ import { UserPreviewType } from "@/types/types";
 import { SquareArrowOutUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 
 
-export default async function AboutDesigner({designerId}: {designerId: number}) {
+export default function AboutDesigner({designerId}: {designerId: number}) {
 
-    let initialUser: UserPreviewType | null = {
+    let initialUser: UserPreviewType = {
         id: 0,
         clerk_user_id: "",
         first_name: "",
@@ -16,12 +17,18 @@ export default async function AboutDesigner({designerId}: {designerId: number}) 
         image_url: "",
         description: "",
     }
-    
-    const user = await getPreviewUser(designerId)
-    
-    if(user.status == 200){
-        initialUser = user.data as UserPreviewType
-    }
+
+    useEffect(() =>{
+        const previewUserFn = async () => {
+            const user = await getPreviewUser(designerId)
+            
+            if(user.status == 200){
+                initialUser = user.data as UserPreviewType
+            }
+        }
+
+        previewUserFn();
+    }, [])
     return (
         <>
             <div className="flex justify-between items-center">
@@ -31,7 +38,9 @@ export default async function AboutDesigner({designerId}: {designerId: number}) 
                 </Link>
             </div>
             <div className="flex items-start gap-x-5">
-                <Image alt="profile placeholder" src={initialUser.image_url} width={50} height={50} className="rounded-full"/>
+                {initialUser.image_url &&
+                    <Image alt="profile placeholder" src={initialUser.image_url} width={50} height={50} className="rounded-full"/>
+                }
                 <div className="space-y-2">
                     <h3 className="text-lg font-medium underline hover:no-underline cursor-pointer">{initialUser.first_name} {initialUser.last_name}</h3>
                     <div className="flex gap-x-2 text-sm">

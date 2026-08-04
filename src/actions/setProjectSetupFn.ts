@@ -83,7 +83,7 @@ export const handleProjectSetupFn = async (_: any, formData: FormData): Promise<
 
     if(STEP == "SUMMARY") {
         let initialProjectsSetup: ProjectStoreType = {
-            title: stepOneValidation.data.name,
+            title: stepOneValidation.data.title,
             summary: stepOneValidation.data.summary,
             type: { id: stepOneValidation.data.type.id },
             status: { id: stepOneValidation.data.status.id },

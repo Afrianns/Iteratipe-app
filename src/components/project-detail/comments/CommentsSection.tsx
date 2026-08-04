@@ -1,14 +1,6 @@
 import CommentsDropdown from "./CommentsDropdown";
 
-export default async function CommentsSection() {
-
-    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    await delay(3000);
-    setTimeout(() => {
-        console.log("Waiting...")
-    }, 10000)
-
+export default function CommentsSection() {
     return (
         <>
         <CommentsDropdown>

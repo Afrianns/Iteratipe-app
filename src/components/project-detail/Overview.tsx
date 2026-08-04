@@ -29,23 +29,27 @@ export default function Overview({ overview }: { overview: overviewPropsType}) {
                 </Suspense>
                 <div className="sm:col-span-2 md:col-span-3 lg:col-span-1 space-y-5 min-w-0">
                     <div className="card-style-secondary">
-                        <Suspense fallback={<AboutDesignLoading />}>
+                        {overview.user.id ?
                             <AboutDesigner designerId={overview.user.id} />
-                        </Suspense>
+                        :
+                            <AboutDesignLoading />
+                        }
                     </div>
                     <div className="card-style-secondary relative overflow-hidden">
-                        {/* <Suspense fallback={<TagsLoading />}>
-                            <Tags tags={overview.project_tags} />
-                        </Suspense> */}
-                         <h3 className="h-three-style z-2 relative">Tags</h3> 
-                        <LabelsList colorFrom="from-whitish" labels={overview.tags} />
+                        <h3 className="h-three-style z-2 relative">Tags</h3> 
+                        {overview.tags.length > 0 ?
+                            <LabelsList colorFrom="from-whitish" labels={overview.tags} />
+                        :
+                            <LabelsLoading />
+                        }
                     </div>
                     <div className="card-style-secondary relative overflow-hidden">
-                        {/* <Suspense fallback={<ToolsLoading />}>
-                            <Tools projectId={overview.id}/>
-                        </Suspense> */}
                         <h3 className="h-three-style z-2 relative">Tools</h3>
-                        <LabelsList colorFrom="from-whitish" labels={overview.tools} />
+                        {overview.tools.length > 0 ?
+                            <LabelsList colorFrom="from-whitish" labels={overview.tools} />
+                        :
+                            <LabelsLoading />
+                        }
                     </div>
                 </div>
 
@@ -109,30 +113,12 @@ const AboutDesignLoading = () => {
     )
 }
 
-const TagsLoading = () => {
+const LabelsLoading = () => {
     return (
-        <>
-            <h3 className="h-three-style z-2 relative">Tags</h3> 
-            
-            <div className="animate-pulse scroll-container-style flex gap-x-2 overflow-hidden"> 
-                <div className="h-7 w-16 bg-slate-200 rounded-lg shrink-0" />
-                <div className="h-7 w-24 bg-slate-200 rounded-lg shrink-0" />
-                <div className="h-7 w-14 bg-slate-200 rounded-lg shrink-0" />
-            </div>
-        </>
-    )
-}
-
-const ToolsLoading = () => {
-    return (
-        <>
-            <h3 className="h-three-style z-2 relative">Tools</h3>  
-            
-            <div className="animate-pulse scroll-container-style flex gap-x-2 overflow-hidden"> 
-                <div className="h-7 w-20 bg-slate-200 rounded-lg shrink-0" />
-                <div className="h-7 w-28 bg-slate-200 rounded-lg shrink-0" />
-                <div className="h-7 w-16 bg-slate-200 rounded-lg shrink-0" />
-            </div>
-        </>
+        <div className="animate-pulse scroll-container-style flex gap-x-2 overflow-hidden"> 
+            <div className="h-7 w-20 bg-slate-200 rounded-lg shrink-0" />
+            <div className="h-7 w-28 bg-slate-200 rounded-lg shrink-0" />
+            <div className="h-7 w-16 bg-slate-200 rounded-lg shrink-0" />
+        </div>
     )
 }
