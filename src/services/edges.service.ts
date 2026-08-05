@@ -2,6 +2,7 @@
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { returnDataType } from "@/types/types";
 import { Sql } from "@prisma/client/runtime/client";
 
@@ -42,13 +43,6 @@ export async function saveCurrentStateEdges(mappedEdges: Sql[]): Promise<returnD
       }
       
   } catch (error) {
-    if(error instanceof Prisma.PrismaClientKnownRequestError){
-      console.log(error)
-    }
-    console.log(error)
-      return {
-          status: 500,
-          message: "An Error Occur"
-      };
+    return tempErrorHandle(error)
   }
 }

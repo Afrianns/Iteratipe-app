@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { labelType, returnDataType } from "@/types/types";
 
 
@@ -25,9 +26,6 @@ export default async function getTypesFn(query?: string): Promise<returnDataType
         }
         
     } catch (error) {
-        return {
-            status: 500,
-            message: "An Error Occur"
-        };
+        return tempErrorHandle(error)
     }
 }

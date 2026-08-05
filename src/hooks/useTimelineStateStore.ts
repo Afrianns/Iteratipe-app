@@ -8,7 +8,8 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import localforage from "localforage"
 
 export const useTimelineStateStore = create<TimelineStateType>()(
-  persist((set, get) => ({
+  // persist(
+    (set, get) => ({
     mode: modeEnum.EDIT,
     isStartNodeUsed: false,
     isEndNodeUsed: false,
@@ -91,20 +92,21 @@ export const useTimelineStateStore = create<TimelineStateType>()(
           lastGlobalEdges: [],
       }))
     }
-  }),{ 
-    name: "temp-timelines-datas",
-    storage: createJSONStorage(() => localforage),
-    partialize: (state) => ({
-        globalNodes: state.globalNodes,
-        globalEdges: state.globalEdges,
-        lastGlobalNodes: state.lastGlobalNodes,
-        lastGlobalEdges: state.lastGlobalEdges,
-        mode: state.mode,
-        isStartNodeUsed: state.isStartNodeUsed,
-        isEndNodeUsed: state.isEndNodeUsed,
-        MainNodeLeft: state.MainNodeLeft
-      })
-   })
+  })
+  // ,{ 
+  //   name: "temp-timelines-datas",
+  //   storage: createJSONStorage(() => localforage),
+  //   partialize: (state) => ({
+  //       globalNodes: state.globalNodes,
+  //       globalEdges: state.globalEdges,
+  //       lastGlobalNodes: state.lastGlobalNodes,
+  //       lastGlobalEdges: state.lastGlobalEdges,
+  //       mode: state.mode,
+  //       isStartNodeUsed: state.isStartNodeUsed,
+  //       isEndNodeUsed: state.isEndNodeUsed,
+  //       MainNodeLeft: state.MainNodeLeft
+  //     })
+  //  })
 );
 
 

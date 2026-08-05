@@ -4,27 +4,29 @@ import { UserPreviewType } from "@/types/types";
 import { SquareArrowOutUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 export default function AboutDesigner({designerId}: {designerId: number}) {
 
-    let initialUser: UserPreviewType = {
+    let [previewUser, setPreviewUser] = useState<UserPreviewType>({
         id: 0,
         clerk_user_id: "",
         first_name: "",
         last_name: "",
         image_url: "",
         description: "",
-    }
+    })
 
     useEffect(() =>{
         const previewUserFn = async () => {
             const user = await getPreviewUser(designerId)
             
             if(user.status == 200){
-                initialUser = user.data as UserPreviewType
+                setPreviewUser(user.data as UserPreviewType)
             }
+
+            console.log(user)
         }
 
         previewUserFn();
@@ -38,16 +40,18 @@ export default function AboutDesigner({designerId}: {designerId: number}) {
                 </Link>
             </div>
             <div className="flex items-start gap-x-5">
-                {initialUser.image_url &&
-                    <Image alt="profile placeholder" src={initialUser.image_url} width={50} height={50} className="rounded-full"/>
+                {previewUser.image_url ?
+                    <Image alt="profile placeholder" src={previewUser.image_url} width={50} height={50} className="rounded-full"/>
+                :
+                    <div className="w-12.5 h-12.5 bg-slate-200 rounded-full shrink-0" />
                 }
                 <div className="space-y-2">
-                    <h3 className="text-lg font-medium underline hover:no-underline cursor-pointer">{initialUser.first_name} {initialUser.last_name}</h3>
+                    <h3 className="text-lg font-medium underline hover:no-underline cursor-pointer">{previewUser.first_name} {previewUser.last_name}</h3>
                     <div className="flex gap-x-2 text-sm">
                         <p><span className="font-medium">5</span> Following</p>
                         <p><span className="font-medium">43</span> Followers</p>
                     </div>
-                    <p className="p-style">{initialUser.description || <span className="text-purple-dark/50 italic">Hi there, I'am passionate about designing thing...</span>}</p>
+                    <p className="p-style">{previewUser.description || <span className="text-purple-dark/50 italic">Hi there, I'am passionate about designing thing...</span>}</p>
                 </div>
             </div>
         </>

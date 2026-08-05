@@ -1,15 +1,15 @@
 "use client";
 
 import { Timer } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
-import { initialStateType, nodeDataType, timelineNodeDataType, timelineNodeType } from "@/types/types";
+import { useEffect, useState } from "react";
+import { nodeDataType } from "@/types/types";
 import { DatePickerRange } from "./DatePickerRange";
 import { useTimelineStateStore } from "@/hooks/useTimelineStateStore";
 import { formatFlexibleDuration } from "@/lib/convertDateinDuration";
 import { ErrorMessageList } from "@/components/ErrorMessageList";
 import { ReadonlyURLSearchParams, usePathname } from "next/navigation";
 import { saveTimeline, useCheckModifiedTimeline } from "@/lib/autosave";
-import { NodeDataSchema, NodeListSchema, NodeSchema } from "@/lib/validations";
+import { NodeDataSchema } from "@/lib/validations";
 import z from "zod";
 import { toast } from "sonner";
 
@@ -118,12 +118,12 @@ export default function SidebarFormEdit({params}: {params: ReadonlyURLSearchPara
                 <div className="flex items-center justify-between text-purple-dark/50 text-xs m-0">
                     <p>2 Items</p>
                     {unsaveChanges ? 
-                        <button type="button" onClick={saveCurrentData} className="py-2 px-5 bg-light-purple/50 hover:bg-light-purple cursor-pointer rounded-lg text-purplish">
-                            Save
-                        </button>
-                    :
                         <button type="button" className="py-2 px-5 'bg-light-purple/20 cursor-not-allowed rounded-lg text-purplish">
                             No changes
+                        </button>
+                    :
+                        <button type="button" onClick={saveCurrentData} className="py-2 px-5 bg-light-purple/50 hover:bg-light-purple cursor-pointer rounded-lg text-purplish">
+                            Save
                         </button>
                     }
                 </div>

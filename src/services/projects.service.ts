@@ -3,10 +3,12 @@
 import { handleTypeEnum, Prisma } from "@/generated/prisma/client";
 import { convertDate } from "@/lib/convertDate";
 import { prisma } from "@/lib/db";
+import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { handleEnum } from "@/types/enum";
 import { generalDataType, ProjectStoreType, labelType, ProjectType, returnDataType, WithPivotDataType, timelineNodeType, DBSingleProjectByID } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { Decimal } from "@prisma/client/runtime/client";
+import { Edge } from "@xyflow/react";
 interface actionDataType {
     id: number
 }
@@ -58,10 +60,7 @@ export async function saveProject(initialProject: ProjectStoreType): Promise<ret
         }
         
     } catch (error) {
-        return {
-            status: 500,
-            message: "An Error Occurs",
-        }
+        return tempErrorHandle(error)
     }
 
 
@@ -101,10 +100,7 @@ export async function saveProject(initialProject: ProjectStoreType): Promise<ret
         }
 
     } catch (error) {
-        return {
-            status: 500,
-            message: "An Error Occurs",
-        }
+        return tempErrorHandle(error)
     }
 
     return result;
@@ -126,6 +122,11 @@ export async function getCurrentUserProjects(userId: string): Promise<returnData
                                 full_name: true,
                                 clerk_user_id: true
                             }
+                        },
+                        _count: {
+                            select: {
+                                Nodes: true
+                            }
                         }
                     }
                 }, 
@@ -144,10 +145,7 @@ export async function getCurrentUserProjects(userId: string): Promise<returnData
         }
 
     } catch (error) {
-        return {
-            status: 500,
-            message: "An error has occur"
-        }
+        return tempErrorHandle(error)
     }
 }
 
@@ -210,7 +208,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
         let result = await prisma.projects.findFirst({
             where: {
                 uid: projectUid
-            }, 
+            },
             include: {
                 Status: true,
                 Type: true,
@@ -249,6 +247,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                 status: 200,
                 message: "Successfuly get project",
                 data: { 
+                    id: result.id,
                     projectTitleInfo: {
                         title: result.title,
                         type: result.Type,
@@ -259,7 +258,6 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                         ...initialInfo
                     },
                     settingInfo: {
-                        tab: "general",
                         data: {
                             id: result.id,
                             title: result.title,
@@ -270,6 +268,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                         }
                     },
                     Nodes: remapNodes(result.Nodes),
+                    Edges: remapEdges(result.Edges),
                     created_at: result.created_at,
                     updated_at: result.updated_at
                 }
@@ -279,11 +278,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
             throw new Error("No project found")
         }
     } catch (error) {
-        console.log(error)
-        return {
-            status: 500,
-            message: "An error occur"
-        }
+        return tempErrorHandle(error)
     }
 }
 
@@ -346,12 +341,7 @@ export async function updateProjectById(clerkUserId: string, newUpdated: any): P
         }
 
     } catch (error) {
-        console.log(error)
-
-        return {
-            status: 500,
-            message: "there is an error occur"
-        }
+        return tempErrorHandle(error)
     }
 }
 
@@ -408,4 +398,30 @@ const remapNodes = <T extends {
     })
 
     return newNodes
+}
+
+
+const remapEdges = <T extends 
+    { 
+        source: string; 
+        target: string; 
+        id: number; 
+        uid: string; 
+        project_id: number; 
+    }
+>(edges: T[]): Edge[] => {
+
+    const newEdges = edges.map((edge: T): Edge => {
+
+        return {
+            id: `e-${edge.source}-to-${edge.target}`,
+            source: edge.source,
+            target: edge.target,
+    //      uid: edge.uid,
+    //      project_id: edge.project_id
+        }
+    })
+
+    return newEdges;
+ 
 }

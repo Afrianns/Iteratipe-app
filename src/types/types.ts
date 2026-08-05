@@ -56,6 +56,9 @@ export interface ProjectType {
     full_name: string
     clerk_user_id: string
   }
+  _count: {
+    Nodes: number
+  }
 }
 
 export interface WithPivotDataType extends ProjectType {
@@ -225,10 +228,12 @@ export interface returnDataType<T> {
 export type Tab = "general" | "visibility"
 
 export interface DBSingleProjectByID {
+  id: number
   projectTitleInfo: DBProjectTitleInfo
   overviewInfo: OverviewInfo
   settingInfo: DBSettingInfo
   Nodes: timelineNodeType[]
+  Edges: Edge[]
   created_at: Date | null
   updated_at: Date | null
 }

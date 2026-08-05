@@ -1,6 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/db";
+import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { labelType, returnDataType } from "@/types/types";
 
 export async function getTagsFn(query?: string): Promise<returnDataType<labelType[]>> {
@@ -25,10 +26,7 @@ export async function getTagsFn(query?: string): Promise<returnDataType<labelTyp
         }
         
     } catch (error) {
-        return {
-            status: 500,
-            message: "An Error Occur"
-        };
+        return tempErrorHandle(error)
     }
 }
 
@@ -50,10 +48,7 @@ export async function getProjectTags(projectId: number) {
         }
         
     } catch (error) {
-        return {
-            status: 500,
-            message: "An Error Occur",
-        }
+        return tempErrorHandle(error)
         
     }
 }
@@ -77,10 +72,6 @@ export async function getProjectTools(projectId: number) {
         }
         
     } catch (error) {
-        return {
-            status: 500,
-            message: "An Error Occur",
-        }
-        
+        return tempErrorHandle(error)
     }
 }

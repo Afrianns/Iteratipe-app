@@ -56,7 +56,9 @@ export default async function Home() {
                 :
                     <div className="limit-breaker max-md:mb-20">
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <HeaderHome />
+                            <Suspense fallback={<HeaderHomeLoading />}>
+                                <HeaderHome />
+                            </Suspense>
                         </div>
                         <div className="grid lg:grid-cols-3 gap-5 mt-5">
                             <div className="col-span-2 grid md:grid-cols-2 gap-5">
@@ -115,3 +117,21 @@ function ProjectCardSkeleton() {
   );
 }
 
+
+
+const HeaderHomeLoading = () => {
+    const ids = [1,2,3,4]
+    return (
+        <>
+            {ids.map((id) =>
+                <div key={id} className="card-style-secondary shadow-xs! card-home-list-style animate-pulse flex justify-between items-center">
+                    <div className="space-y-2">
+                        <div className="h-5 bg-gray-200 rounded-md w-30"></div>
+                        <div className="h-9 bg-gray-200 rounded-md w-16"></div>
+                    </div>
+                    <div className="p-2 bg-gray-200 rounded-full w-16.5 h-16.5"></div>
+                </div>
+            )}
+        </>
+    )
+}

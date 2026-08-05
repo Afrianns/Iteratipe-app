@@ -10,7 +10,11 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
                 <Image key={imageName} src={`/images/${imageName}`} fill alt="thumbnail" className="absolute object-cover" />
                 <span className="badge-style-secondary absolute bottom-3 left-3 text-grayish-dark text-xs flex gap-x-1 items-center rounded-2xl">
                     <Layers className="w-3" />
-                    15 Steps
+                    {projectData._count.Nodes > 1 ?
+                       <>{projectData._count.Nodes} Steps</>
+                    :
+                        <>0 Step</>
+                    }
                 </span>
             </div>
             <div className="p-4 pt-0 space-y-3">

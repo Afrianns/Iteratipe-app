@@ -1,7 +1,4 @@
 import { returnDataType } from "@/types/types"
-import { toast } from "sonner"
-
-
 export const tempErrorHandle = (error: unknown): returnDataType<any> => {
   console.log("an error: ", error)
         
@@ -12,10 +9,9 @@ export const tempErrorHandle = (error: unknown): returnDataType<any> => {
         status: 500,
         message: `${error.message}, please try again later`
     }
-  } else {
-      return {
-          status: 500,
-          message: "An Error Occur"
-      }
+  } 
+  return {
+      status: 500,
+      message: "An Error Occur"
   }
 }

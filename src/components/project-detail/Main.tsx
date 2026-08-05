@@ -20,6 +20,7 @@ import { useSearchParams } from 'next/navigation';
 import { getProjectDetailById } from '@/services/projects.service';
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
 import { SettingContext } from '@/lib/settingContext';
+import { Edge } from '@xyflow/react';
 
 
 const MENU = ["timeline", "overview", "settings", "comments"]
@@ -88,20 +89,23 @@ let settings = {
 
 export default function Main({ projectID }: {projectID: string}) {
 
-    const { resetTimeline, setGlobalNodes, setLastGlobalNodes, setStartNode, setEndNode } = useTimelineStateStore()
+    const { resetTimeline, setGlobalNodes, setGlobalEdges, setLastGlobalNodes, setLastGlobalEdges, setStartNode, setEndNode } = useTimelineStateStore()
     const [generalSettingErrors, setGeneralSettingErrors] = useState<generalSettingErrorsType>({})
     const [generalSettings, setGeneralSettings] = useState<generalDataType>(settings)
 
     const [project, setProject] = useState<DBSingleProjectByID>({
+        id: 0,
         projectTitleInfo: initialProjectTitleInfo,
         overviewInfo: initialOverviewDataInfo,
         settingInfo: initialSettingData,
         Nodes: [],
+        Edges: [],
         created_at: null,
         updated_at: null
     })
 
     useEffect(() => {
+
         const getProjectByID = async () => {
             const result = await getProjectDetailById(projectID.split("%E2%80%94")[1])
             if(result.status == 200 && result.data){
@@ -110,7 +114,7 @@ export default function Main({ projectID }: {projectID: string}) {
             }
         } 
         
-        const setTimelineData = (nodes: timelineNodeType[]) => {
+        const setTimelineData = (nodes: timelineNodeType[], edges: Edge[]) => {
             let containEND = false
             let containSTART = false
             
@@ -121,10 +125,15 @@ export default function Main({ projectID }: {projectID: string}) {
                 if(containEND && containSTART) break
             }
             
-            resetTimeline()
             setStartandEndNode(containSTART, containEND, true)
             
             console.log("get called many times?", project)
+
+            if(edges.length > 0) {
+                setGlobalEdges(edges)
+                setLastGlobalEdges(edges)
+            }
+            
             setGlobalNodes(nodes)
             setLastGlobalNodes(nodes)
         }
@@ -132,7 +141,9 @@ export default function Main({ projectID }: {projectID: string}) {
         getProjectByID().then((project) => {
             const settings = project?.settingInfo 
             const nodes = project?.Nodes
-            if(nodes) setTimelineData(nodes)
+            const edges = project?.Edges || []
+            
+            if(nodes) setTimelineData(nodes, edges)
 
             if(settings) {
                 setGeneralSettings({
@@ -149,6 +160,10 @@ export default function Main({ projectID }: {projectID: string}) {
                 })
             }
         })
+
+        return () => {
+            resetTimeline()
+        };
         
     }, [])
 
@@ -230,7 +245,7 @@ export default function Main({ projectID }: {projectID: string}) {
                     </div>
 
                     <div className={menu === "comments" ? "block" : "hidden"}>
-                        <Comments />
+                        <Comments projectId={project.id} ownerProjectId={project.overviewInfo.user.id} />
                     </div>
 
                     <div className={menu === "settings" ? "block" : "hidden"}>

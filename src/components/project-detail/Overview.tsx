@@ -2,7 +2,6 @@ import AboutDesigner from "@/components/project-detail/overview/AboutDesigner";
 
 import { labelType } from "@/types/types";
 
-import { Suspense } from "react";
 import Summary from "./overview/Summary";
 import LabelsList from "../LabelsList";
 
@@ -24,9 +23,11 @@ export default function Overview({ overview }: { overview: overviewPropsType}) {
     return (
         <div className="container-style">
             <div className="limit-breaker w-full grid md:grid-cols-2 lg:grid-cols-3 max-lg:gap-y-5 lg:gap-5 items-start">
-                <Suspense fallback={<SummaryLoading />}>
+                {overview.summary ? 
                     <Summary summary={overview.summary} client_name={overview.client_name} />
-                </Suspense>
+                :
+                    <SummaryLoading />
+                }
                 <div className="sm:col-span-2 md:col-span-3 lg:col-span-1 space-y-5 min-w-0">
                     <div className="card-style-secondary">
                         {overview.user.id ?
@@ -57,10 +58,6 @@ export default function Overview({ overview }: { overview: overviewPropsType}) {
         </div>
     )
 }
-
-// const mappingLabelList = (labels: {[key: string]: labelType | null}[] | undefined) => {
-//     return labels.map((label: {[key: string]: labelType | null}) => Object.values(label)[0]);
-// }
 
 const SummaryLoading = () => {
     return (

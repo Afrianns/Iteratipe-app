@@ -41,12 +41,10 @@ export default function CanvasSave() {
 
   // popluate react flow with global nodes and edges on initial render 
   useEffect(() => {
-    // if(!isClient) return;
-
-    // console.log("globalNodes", globalNodes, globalEdges)
     setNodes(globalNodes)
     setEdges(globalEdges)
   }, [globalEdges, globalNodes])
+
   
   // save current state of react flow to global state every 1 second
   useEffect(() => {

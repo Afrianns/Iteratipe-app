@@ -68,9 +68,6 @@ export async function syncAndDelete(dbName: string, mappedID: string[], projectU
       }
       
   } catch (error) {
-    if(error instanceof Prisma.PrismaClientKnownRequestError){
-      console.log(error)
-    }
     return tempErrorHandle(error);
   } 
 } 

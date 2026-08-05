@@ -18,7 +18,6 @@ export async function getTotalNodesByProjectId(ProjectUid: string): Promise<retu
             },
         });
 
-        console.log('ssss---',result)
         if(result){
             return {
                 status: 200,
@@ -84,22 +83,35 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
       }
       
   } catch (error) {
-    if(error instanceof Prisma.PrismaClientKnownRequestError){
-      console.log(error)
-    }
-    console.log(error)
-      return {
-          status: 500,
-          message: "An Error Occur"
-      };
+    return tempErrorHandle(error)
   }
 }
 
 
-export async function getTimelineNodes() {
+export async function getNodeIdByUid(uuid: string): Promise<returnDataType<{
+    id: number
+}>> {
     try {
-        // const result = await prisma.nodes.findMany
+        const result = await prisma.nodes.findFirst({
+            where: {
+                uid: uuid
+            },
+            select: {
+                id: true
+            }
+        })
+
+        if(result?.id){
+            return {
+                status: 200,
+                message: "Sucessfully get id",
+                data: result
+            }
+        } else{
+            throw new Error("Id not found");
+        }
+        
     } catch (error) {
-        tempErrorHandle(error)
-    }
+        return tempErrorHandle(error)
+  }
 }
