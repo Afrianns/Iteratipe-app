@@ -24,6 +24,31 @@ interface quickStatusType {
     completed: number 
 }
 
+export async function getProjectIDbyUID(projectId: string): Promise<returnDataType<{
+    id: number
+} | null>> {
+    try {
+        return await prisma.projects.findFirst({
+            where: {
+                uid: projectId
+            },
+            select: {
+                id: true
+            }
+        }).then((result) => {
+            return {
+             status: 200,
+             message: "Sucessfully retrieved",
+             data: result
+            }
+        }).catch((err) => {
+            throw new Error(err)
+        })
+    } catch (error) {
+        return tempErrorHandle(error)
+    }
+}
+
 export async function saveProject(initialProject: ProjectStoreType): Promise<returnDataType<actionDataType>> {
     
     const { userId } = await auth()
@@ -247,7 +272,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                 status: 200,
                 message: "Successfuly get project",
                 data: { 
-                    id: result.id,
+                    // id: result.id,
                     projectTitleInfo: {
                         title: result.title,
                         type: result.Type,

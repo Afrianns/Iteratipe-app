@@ -93,8 +93,10 @@ export default function Main({ projectID }: {projectID: string}) {
     const [generalSettingErrors, setGeneralSettingErrors] = useState<generalSettingErrorsType>({})
     const [generalSettings, setGeneralSettings] = useState<generalDataType>(settings)
 
+    const projectId = projectID.split("%E2%80%94")[1];
+
     const [project, setProject] = useState<DBSingleProjectByID>({
-        id: 0,
+        // id: 0,
         projectTitleInfo: initialProjectTitleInfo,
         overviewInfo: initialOverviewDataInfo,
         settingInfo: initialSettingData,
@@ -107,7 +109,7 @@ export default function Main({ projectID }: {projectID: string}) {
     useEffect(() => {
 
         const getProjectByID = async () => {
-            const result = await getProjectDetailById(projectID.split("%E2%80%94")[1])
+            const result = await getProjectDetailById(projectId)
             if(result.status == 200 && result.data){
                 setProject(result.data) 
                 return result.data
@@ -245,7 +247,7 @@ export default function Main({ projectID }: {projectID: string}) {
                     </div>
 
                     <div className={menu === "comments" ? "block" : "hidden"}>
-                        <Comments projectId={project.id} ownerProjectId={project.overviewInfo.user.id} />
+                        <Comments projectId={projectId} ownerProjectId={project.overviewInfo.user.id} />
                     </div>
 
                     <div className={menu === "settings" ? "block" : "hidden"}>

@@ -1,4 +1,4 @@
-import { generalDataType, generalSettingErrorsType, generalSettingType, labelType, VISIBLE } from "@/types/types";
+import { generalDataType, generalSettingErrorsType } from "@/types/types";
 import { createContext } from "react";
 
 

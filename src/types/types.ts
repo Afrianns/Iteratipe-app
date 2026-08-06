@@ -228,7 +228,7 @@ export interface returnDataType<T> {
 export type Tab = "general" | "visibility"
 
 export interface DBSingleProjectByID {
-  id: number
+  // id: number
   projectTitleInfo: DBProjectTitleInfo
   overviewInfo: OverviewInfo
   settingInfo: DBSettingInfo
@@ -288,25 +288,40 @@ interface DBSettingInfoData extends initialInfo {
   disable_comments: boolean
 }
 
+// comment
+export interface CommentType {
+  id: number
+  message: string
+  created_at: Date | null
+  updated_at: Date | null
+  deleted_at: Date | null
+  user_id: number
+  project_id: number
+  node_id: number | null
+  commentC_id: number | null
+  Users: {
+    id: number
+    clerk_user_id: string
+    first_name: string
+    last_name: string
+    full_name: string
+    email: string
+    image_url: string
+  }
+  Comment_likes: {
+    id: number
+    created_at: Date
+    user_id: number
+    comment_id: number
+  }[]
+  Nodes: {
+    uid: string
+    title: string | null
+  } | null
+}
 
-  // id: number
-  // created_at: Date
-  // uid: string
-  // user_id: number
-  // type_id: number
-  // title: string
-  // summary: string
-  // visibility: VISIBLE
-  // disable_comments: boolean
-  // client_name: string | null
-  // updated_at: Date | null
-  // status_id: number
-  // Status: labelType
-  // Type: labelType
-  // Users: {
-  //   id: number
-  //   full_name: string
-  //   clerk_user_id: string
-  // }
+export interface CommentWithReplies extends CommentType {
+  Replies: CommentType[] | []
+}
 
 export type subMenuType = "timeline" | "overview" | "comments" | "settings";

@@ -1,8 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
   previewFeatures = ["strictUndefinedChecks"]
-
 }
 
 datasource db {
@@ -22,42 +21,43 @@ enum visibility {
 }
 
 model Users {
-  id            Int         @id @default(autoincrement())
-  clerk_user_id String      @unique @db.VarChar
-  first_name    String      @db.VarChar(50)
-  last_name     String      @db.VarChar(50)
-  full_name     String      @db.VarChar(100)
-  email         String      @db.VarChar(50)
-  image_url     String      @db.VarChar(255)
-  description   String?     @db.Text
-  facebook_link String?     @db.VarChar(200)
-  twitter_link  String?     @db.VarChar(200)
-  website_link  String?     @db.VarChar(200)
+  id            Int                  @id @default(autoincrement())
+  clerk_user_id String               @unique @db.VarChar
+  first_name    String               @db.VarChar(50)
+  last_name     String               @db.VarChar(50)
+  full_name     String               @db.VarChar(100)
+  email         String               @db.VarChar(50)
+  image_url     String               @db.VarChar(255)
+  description   String?              @db.Text
+  facebook_link String?              @db.VarChar(200)
+  twitter_link  String?              @db.VarChar(200)
+  website_link  String?              @db.VarChar(200)
   Bookmarks     Bookmarks[]
   Likes         Likes[]
   Projects      Projects[]
   Comments      Comments[]
-  created_at    DateTime?       @default(now()) @db.Timestamp(6)
+  Comment_like  User_like_comments[]
+  created_at    DateTime?            @default(now()) @db.Timestamp(6)
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
 model Bookmarks {
-  id                 Int                 @id @default(autoincrement())
-  project_id         Int?
-  user_id            Int?
-  Projects           Projects?           @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  Users              Users?              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id         Int       @id @default(autoincrement())
+  project_id Int?
+  user_id    Int?
+  Projects   Projects? @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Users      Users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([project_id, user_id], map: "Bookmarks_project_id_user_id_idx")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
 model Likes {
-  id                 Int                 @id @default(autoincrement())
-  project_id         Int?
-  user_id            Int?
-  Projects           Projects?           @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  Users              Users?             @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id         Int       @id @default(autoincrement())
+  project_id Int?
+  user_id    Int?
+  Projects   Projects? @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Users      Users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([project_id, user_id], map: "Likes_project_id_user_id_idx")
 }
@@ -86,29 +86,29 @@ model Project_tools {
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
 model Projects {
-  id                 Int                 @id @default(autoincrement())
-  uid                String              @unique @db.Uuid @default(dbgenerated("gen_random_uuid()"))
-  clerk_user_id      String              @db.VarChar
-  user_id            Int
-  type_id            Int
-  title              String              @db.VarChar(100)
-  summary            String
-  visibility         visibility
-  disable_comments   Boolean
-  client_name        String?             @db.VarChar(255)
-  created_at         DateTime            @default(now()) @db.Timestamp(6)
-  updated_at         DateTime?           @db.Timestamp(6)
-  status_id          Int                 @unique
-  Bookmarks          Bookmarks[]
-  Likes              Likes[]
-  Project_tags       Project_tags[]
-  Project_tools      Project_tools[]
-  Status             Status              @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Type               Types               @relation(fields: [type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Users              Users               @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  Nodes              Nodes[]
-  Edges              Edges[]
-  Comments           Comments[]
+  id               Int             @id @default(autoincrement())
+  uid              String          @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clerk_user_id    String          @db.VarChar
+  user_id          Int
+  type_id          Int
+  title            String          @db.VarChar(100)
+  summary          String
+  visibility       visibility
+  disable_comments Boolean
+  client_name      String?         @db.VarChar(255)
+  created_at       DateTime        @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?       @db.Timestamp(6)
+  status_id        Int             @unique
+  Bookmarks        Bookmarks[]
+  Likes            Likes[]
+  Project_tags     Project_tags[]
+  Project_tools    Project_tools[]
+  Status           Status          @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Type             Types           @relation(fields: [type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users            Users           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Nodes            Nodes[]
+  Edges            Edges[]
+  Comments         Comments[]
 }
 
 model Status {
@@ -126,7 +126,7 @@ model Tags {
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
 model Nodes {
   id           Int            @id @default(autoincrement())
-  uid          String         @unique @db.Uuid @default(dbgenerated("gen_ulid()"))
+  uid          String         @unique @default(dbgenerated("gen_ulid()")) @db.Uuid
   project_id   Int
   thumbnail    String?        @db.VarChar(255)
   title        String?        @db.VarChar(60)
@@ -139,17 +139,17 @@ model Nodes {
   position_x   Decimal
   position_y   Decimal
   handle_type  handleTypeEnum
-  Projects     Projects       @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)    
+  Projects     Projects       @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Comments     Comments[]
 }
 
 model Edges {
-  id           Int            @id @default(autoincrement())
-  uid          String         @unique @db.VarChar(80)
-  project_id   Int
-  source       String         @db.VarChar(80)
-  target       String         @db.VarChar(80)
-  Projects     Projects       @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id         Int      @id @default(autoincrement())
+  uid        String   @unique @db.VarChar(80)
+  project_id Int
+  source     String   @db.VarChar(80)
+  target     String   @db.VarChar(80)
+  Projects   Projects @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Tools {
@@ -159,29 +159,38 @@ model Tools {
 }
 
 model Types {
-  id         Int        @id @default(autoincrement())
-  name       String     @db.VarChar(50)
-  Projects   Projects[]
+  id       Int        @id @default(autoincrement())
+  name     String     @db.VarChar(50)
+  Projects Projects[]
 }
 
 model Comments {
-  id            Int         @id @default(autoincrement())
-  user_id       Int        
-  project_id    Int
-  node_id       Int?
-  commentC_id   Int?
+  id          Int  @id @default(autoincrement())
+  user_id     Int
+  project_id  Int
+  node_id     Int?
+  commentC_id Int?
 
-  message       String      @db.Text
-  created_at    DateTime    @default(now()) @db.Timestamp(6)
-  
-  updated_at    DateTime?   @db.Timestamp(6)
-  deleted_at    DateTime?   @db.Timestamp(6)
+  message    String   @db.Text
+  created_at DateTime @default(now()) @db.Timestamp(6)
 
-  
-  Projects      Projects    @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Users         Users       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Nodes         Nodes?      @relation(fields: [node_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  
-  Replies      Comments[]  @relation("Replies")
-  CommentC     Comments?   @relation("Replies", fields: [commentC_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  updated_at DateTime? @db.Timestamp(6)
+  deleted_at DateTime? @db.Timestamp(6)
+
+  Projects      Projects             @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users         Users                @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Nodes         Nodes?               @relation(fields: [node_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Comment_likes User_like_comments[]
+  Replies       Comments[]           @relation("Replies")
+  CommentC      Comments?            @relation("Replies", fields: [commentC_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model User_like_comments {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  comment_id Int
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  @@unique([user_id, comment_id])
+  Users      Users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Comments   Comments @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
