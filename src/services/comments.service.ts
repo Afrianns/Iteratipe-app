@@ -61,7 +61,7 @@ export async function saveComment(projectID: number, comments: string, nodeUID?:
             clerk_user_id: true,
             first_name: true,
             last_name: true,
-            full_name: true,
+            username: true,
             email: true,
             image_url: true
           },
@@ -154,7 +154,7 @@ export async function getCommentsByProjectId(projectUid: string, nodeUID?: strin
             clerk_user_id: true,
             first_name: true,
             last_name: true,
-            full_name: true,
+            username: true,
             email: true,
             image_url: true
           }
@@ -272,7 +272,7 @@ export async function getRepliesComments(commentId: number): Promise<returnDataT
             clerk_user_id: true,
             first_name: true,
             last_name: true,
-            full_name: true,
+            username: true,
             email: true,
             image_url: true
           },
@@ -298,7 +298,10 @@ export async function getRepliesComments(commentId: number): Promise<returnDataT
         data: result
       }
     } else{
-      throw new Error("No replies found");
+      return {
+        status: 200,
+        message: "No replies found",
+      }
     }
   } catch (error) {
     return tempErrorHandle(error)

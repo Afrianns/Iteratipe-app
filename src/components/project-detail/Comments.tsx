@@ -1,5 +1,7 @@
+"use client"
+
 import CommentsSorting from "./comments/CommentsSorting";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CommentLists } from "./comments/CommentsList";
 import NodesListDropdown from "./comments/NodesListDropdown";
 import { getCommentsByProjectId } from "@/services/comments.service";
@@ -8,10 +10,25 @@ import { toast } from "sonner";
 import { saveCommentForm } from "@/actions/comment";
 import { CommentWithReplies } from "@/types/types";
 import { CommentsLoading } from "./comments/CommentListsLoading";
-
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 
 import { useImmer } from "use-immer"
 import { CommentContext } from "@/lib/commentsContex";
+import dynamic from "next/dynamic";
+
+import DOMPurify from 'dompurify';
+
+
+const RichTextEditor = dynamic(() => import('./comments/TextEditor'), { 
+  ssr: false 
+});
+
+// Define the RichTextEditorHandle type
+type RichTextEditorHandle = {
+  getContent: () => string
+  resetContent: () => void
+}
 
 export default function Comments({projectId, ownerProjectId}: {projectId: string, ownerProjectId: number}) {
     
@@ -23,13 +40,18 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
     
     const [comments, setComments] = useImmer<CommentWithReplies[]>([])
 
+    const [commentContent, setCommentContent] = useState<string>("")
+    const [commentContentLength, setCommentContentLength] = useState<string>("")
+
+    const editorRef = useRef<RichTextEditorHandle>(null);
+    const [editorContent, setEditorContent] = useState<string>('');
+
     useEffect(() => {
         setIsCommentsSet(false)
         const getAllRelatedProjectComments = async () => {
             await getCommentsByProjectId(projectId, selectedNodeIdComments).then((result) => {
                 const dbComments = result.data
 
-                console.log("getting called", result, projectId, selectedNodeIdComments)
                 if(result.status == 200){
                         if(dbComments != undefined && dbComments.length > 0){
                             setComments(() => {
@@ -50,12 +72,24 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
     }, [projectId, selectedNodeIdComments])
 
     // store saved comment
-    const beforeSaveComment = async (e: FormData) => {
+    const beforeSaveComment = async () => {
+        const quillRef = editorRef.current
+        
+        if (!quillRef) return
+        
+        const content = quillRef.getContent();
+        if(content) setEditorContent(content)
+
+        const purifyMessage = DOMPurify.sanitize(editorContent);
+        
+        if(!purifyMessage) return;
+
         try {
-            const result = await saveCommentForm(e, projectId, selectedValuePost)
+            const result = await saveCommentForm(purifyMessage, projectId, selectedValuePost)
             if(result?.status == 200 && result.data){
                 setComments([...comments, {...result.data, Replies: []}])
                 toast.success(result.message)
+                quillRef.resetContent()
             } else {
                 toast.warning(result.message)
             }
@@ -93,19 +127,32 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
                         </div>
 
                     </div>
-                    <form action={(e) => beforeSaveComment(e)} className="my-5 max-w-200 card-style-secondary space-y-3 px-3! py-5!">
+                    <div className="my-5 max-w-200 card-style-secondary space-y-3 px-3! py-5!">
                         <h3 className="">Write your feedback</h3>
-                        <textarea name="comment" id="comment" className="input-style"></textarea>
+                        <div>
+                            <RichTextEditor ref={editorRef} />
+                        </div>
+                        <button
+                            onClick={beforeSaveComment}
+                            className="button-style-secondary text-right"
+                        >
+                            Post
+                        </button>
+                    </div>
+                    {/* <form action={(e) => beforeSaveComment(e)   } className="my-5 max-w-200 card-style-secondary space-y-3 px-3! py-5!">
+                        <h3 className="">Write your feedback</h3>
+                        <textarea name="comment" id="comment" className="input-style" value={commentContent} onChange={commentChanges}></textarea>
                         <div className="flex items-center justify-between">
                             <div className="max-w-50 w-full relative">
                                 <p className="p-style">Post for</p>
                                 <NodesListDropdown direction="top" setSelectedId={setSelectedValuePost} />
                             </div>
                             <div className="text-right">
+                                <p>{commentContentLength}</p>
                                 <button className="button-style-secondary rounded-md">Post</button>
                             </div>
                         </div>
-                    </form>
+                    </form> */}
                 </div>
             </div>
         </CommentContext.Provider>

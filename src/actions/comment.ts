@@ -5,9 +5,9 @@ import { saveComment, setLikeComment } from "@/services/comments.service";
 import { getProjectIDbyUID } from "@/services/projects.service";
 import { CommentType, CommentWithReplies, returnDataType } from "@/types/types";
 
-export const saveCommentForm = async (data: FormData, projectUid: string, selectedValuePost: string, commentId?: number): Promise<returnDataType<CommentType>> => {
-    const messages = data.get("comment") as string;
+export const saveCommentForm = async (messages: string, projectUid: string, selectedValuePost: string, commentId?: number): Promise<returnDataType<CommentType>> => {
 
+        // purify again the message, idk
       let projectID = null
       try {
     

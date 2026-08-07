@@ -240,3 +240,7 @@ h1[data-localization-key="userProfile.navbar.title"] {
 p[data-localization-key="userProfile.navbar.description"] {
   @apply hidden;
 }
+
+.ql-editor a, .message-content a{
+  @apply text-purplish cursor-pointer hover:underline;
+}
