@@ -1,7 +1,6 @@
 "use server"
 
 import Header from "@/components/Header"
-import { getAllTypes } from "@/services/types.service"
 import { getUserByUsername } from "@/services/user.service"
 import { labelType, UserType } from "@/types/types"
 import { formatDistanceStrict } from "date-fns"
@@ -58,15 +57,10 @@ export default async function Page({params, searchParams}: {params: Promise<{id:
   const resultUserData = await getUserByUsername(data.id.replace("%40", ""))
 
   if(resultUserData.status == 200 && resultUserData.data){
-    initialUser = resultUserData.data
+    // initialUser = resultUserData.data
+    types = resultUserData.data.Projects.map((project) => ({id: project.Type.id, name: project.Type.name}));
   } else{
     notFound()
-  }
-  
-  const resultTypesData = await getAllTypes();
-  
-  if(resultTypesData.status == 200 && resultTypesData.data){
-    types = resultTypesData.data
   }
 
   return (

@@ -5,29 +5,15 @@ import { convertDate } from "@/lib/convertDate";
 import { prisma } from "@/lib/db";
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { handleEnum } from "@/types/enum";
-import { generalDataType, ProjectStoreType, labelType, ProjectType, returnDataType, WithPivotDataType, timelineNodeType, DBSingleProjectByID } from "@/types/types";
+import { ProjectStoreType, labelType, returnDataType, timelineNodeType, DBSingleProjectByID, ProjectPreviewType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { Decimal } from "@prisma/client/runtime/client";
 import { Edge } from "@xyflow/react";
+import { getUserID } from "./user.service";
+
+
 interface actionDataType {
     id: number
-}
-
-
-// reuseable
-interface ProjectPreviewType {
-    uid: string
-    title: string
-    Status: labelType
-    Type: labelType
-    created_at: Date
-    _count: { 
-        Nodes: number
-    }
-    Users: {
-        full_name: string
-        username: string
-    }
 }
 
 interface quickStatusType {
@@ -37,13 +23,13 @@ interface quickStatusType {
     completed: number 
 }
 
-export async function getProjectIDbyUID(projectId: string): Promise<returnDataType<{
+export async function getProjectIDbyUID(projectUid: string): Promise<returnDataType<{
     id: number
 } | null>> {
     try {
         return await prisma.projects.findFirst({
             where: {
-                uid: projectId
+                uid: projectUid
             },
             select: {
                 id: true
@@ -144,11 +130,24 @@ export async function saveProject(initialProject: ProjectStoreType): Promise<ret
     return result;
 }
 
-export async function getCurrentUserProjects(userId: string): Promise<returnDataType<ProjectPreviewType[]>> {
+export async function getCurrentUserProjects(clerkUserId: string): Promise<returnDataType<ProjectPreviewType[]>> {
+
+    let userId = 0;
 
     try {
+        const resultUserId = await getUserID(clerkUserId);
+
+        if(resultUserId.status == 200 && resultUserId.data){
+            userId = resultUserId.data.id
+        } else{
+            throw new Error("user ID not found");
+            
+        }
+
         const result = await prisma.users.findUnique({
-            where: { clerk_user_id: userId },
+            where: { 
+                id: userId 
+            },
             select: { 
                 Projects: {
                     select: {
@@ -159,7 +158,9 @@ export async function getCurrentUserProjects(userId: string): Promise<returnData
                         created_at: true,
                         _count: {
                             select: {
-                                Nodes: true
+                                Nodes: true,
+                                Bookmarks: true,
+                                Likes: true
                             }
                         },
                         Users: {
@@ -167,8 +168,26 @@ export async function getCurrentUserProjects(userId: string): Promise<returnData
                                 full_name: true,
                                 username: true,
                             }
+                        },
+                        Bookmarks: {
+                            where: {
+                                user_id: userId
+                            },
+                            take: 1,
+                            select: {
+                                project_id: true,
+                            }
+                        },
+                        Likes: {
+                            where: {
+                                user_id: userId
+                            },
+                            take: 1,
+                            select: {
+                                project_id: true,
+                            }
                         }
-                    }
+                    },
                 },
             }
         })
@@ -190,10 +209,10 @@ export async function getCurrentUserProjects(userId: string): Promise<returnData
 }
 
 
-export async function getCurrentUserProjectsInfo(userId: string): Promise<returnDataType<quickStatusType>> {
+export async function getAuthProjectCounts(clerkUserId: string): Promise<returnDataType<quickStatusType>> {
     try {
         const result = await prisma.users.findUnique({
-            where: { clerk_user_id: userId },
+            where: { clerk_user_id: clerkUserId },
             select: { 
                 Projects: {
                     select: {
@@ -239,7 +258,6 @@ const filterProject = (projects: { id: number;
         name: string;
     } | null }[], params: string) => {
     return projects.filter((project) => project.Status?.name == params).length
-    
 }
 
 export async function getProjectDetailById(projectUid: string): Promise<returnDataType<DBSingleProjectByID>> {
@@ -322,11 +340,6 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
     }
 }
 
-
-type GeneralTypes = Omit<ProjectStoreType,  "visibility" | "disable_comments" | "client_name"> & {
-    id: number
-}
-
 export async function updateProjectById(clerkUserId: string, newUpdated: any): Promise<returnDataType<{
     projectId: number
 }>> {
@@ -384,7 +397,6 @@ export async function updateProjectById(clerkUserId: string, newUpdated: any): P
         return tempErrorHandle(error)
     }
 }
-
 
 interface UnorganizedObjType {
     [key: string]: any

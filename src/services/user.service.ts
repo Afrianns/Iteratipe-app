@@ -2,45 +2,45 @@
 
 import { prisma } from "@/lib/db";
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
-import { labelType, returnDataType, UserPreviewType, UserType } from "@/types/types";
+import { labelType, ProjectPreviewType, returnDataType, UserPreviewType, UserType } from "@/types/types";
+import { auth } from "@clerk/nextjs/server";
 
 
 export const getUserID = async (userId: string): Promise<returnDataType<{
   id: number
 }>> => {
   try {
+    const user = await prisma.users.findUnique({
+        where: {
+            clerk_user_id: userId as string
+        },
+        select: { id: true },
+    });
 
-        const user = await prisma.users.findUnique({
-            where: {
-                clerk_user_id: userId as string
-            },
-            select: { id: true },
-        });
+    if(!user?.id) throw new Error("user not found");
 
-        if(!user?.id) throw new Error("user not found");
-
-        if(user.id){
-          return {
-            status: 200,
-            message: "successful",
-            data: {
-              id: user.id
-            }
-          }
-        } else{
-          throw new Error("ID not found. try again later");
+    if(user.id){
+      return {
+        status: 200,
+        message: "successful",
+        data: {
+          id: user.id
         }
-        
-    } catch (error) {
-        return tempErrorHandle(error)
+      }
+    } else{
+      throw new Error("ID not found. try again later");
     }
+        
+  } catch (error) {
+      return tempErrorHandle(error)
+  }
 }
 
-export const getUser = async (userId: number): Promise<returnDataType<UserType | null>> => {
+export const getUser = async (clerkUserId: string): Promise<returnDataType<UserType | null>> => {
   try {
     let user = await prisma.users.findFirst({
         where: {
-          id: userId
+          clerk_user_id: clerkUserId
         }
     });
 
@@ -50,7 +50,7 @@ export const getUser = async (userId: number): Promise<returnDataType<UserType |
       data: user
     }    
   } catch (error) {
-        return tempErrorHandle(error)
+      return tempErrorHandle(error)
   } 
 }
 
@@ -80,67 +80,88 @@ export const getPreviewUser = async (userId: number): Promise<returnDataType<Use
   } 
 }
 
-interface ProjectPreviewType extends UserType {
-  Projects: {
-      uid: string
-      title: string
-      Status: labelType
-      Type: labelType
-      created_at: Date
-      _count: { 
-          Nodes: number
-      }
-      Users: {
-          full_name: string
-          username: string
-      }
-  }[]
+interface ProjectPreviewTypeWUser extends UserType {
+  Projects: ProjectPreviewType[]
 }
 
-export const getUserByUsername = async (username: string): Promise<returnDataType<ProjectPreviewType>> => {
+export const getUserByUsername = async (username: string): Promise<returnDataType<ProjectPreviewTypeWUser>> => {
+  
+  const { userId } = await auth()
+  let userDbId = 0
+  
   try {
+    
+    if(userId){
+      const resultID = await getUserID(userId)
+  
+      if(resultID.status == 200 && resultID.data?.id){
+        userDbId = resultID.data.id
+      } else{
+        throw new Error("User id not found. Please try again later!");
+      }
+    }
 
-        const user = await prisma.users.findUnique({
-            where: {
-                username: username as string
-            },
+    const user = await prisma.users.findUnique({
+        where: {
+            username: username as string
+        },
 
-            include: {
-              Projects: {
-                select: {
-                  uid: true,
-                  title: true,
-                  Status: true,
-                  Type: true,
-                  created_at: true,
-                  _count: {
-                      select: {
-                          Nodes: true
-                      }
+        include: {
+          Projects: {
+            select: {
+              uid: true,
+              title: true,
+              Status: true,
+              Type: true,
+              created_at: true,
+              _count: {
+                  select: {
+                      Nodes: true,
+                      Bookmarks: true,
+                      Likes: true,
+                  }
+              },
+              Users: {
+                  select: {
+                      full_name: true,
+                      username: true,
+                  }
+              },
+              Bookmarks: {
+                  where: {
+                      user_id: userDbId
                   },
-                  Users: {
-                      select: {
-                          full_name: true,
-                          username: true,
-                      }
+
+                  take: 1,
+                  select: {
+                      project_id: true,
+                  }
+              },
+              Likes: {
+                  where: {
+                      user_id: userDbId
+                  },
+
+                  take: 1,
+                  select: {
+                      project_id: true,
                   }
               }
-              }
             }
-        });
-
-        if(!user?.id) throw new Error("user not found");
-
-        if(user.id){
-          return {
-            status: 200,
-            message: "successful",
-            data: user
           }
-        } else{
-          throw new Error("username not found. try again later");
         }
-    } catch (error) {
-        return tempErrorHandle(error)
+    });
+
+    if(user && user?.id){
+      return {
+        status: 200,
+        message: "successful",
+        data: user
+      }
+    } else{
+      throw new Error("username not found. try again later");
     }
+  } catch (error) {
+      return tempErrorHandle(error)
+  }
 }

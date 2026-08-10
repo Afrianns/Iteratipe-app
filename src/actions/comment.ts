@@ -3,7 +3,7 @@
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { saveComment, setLikeComment } from "@/services/comments.service";
 import { getProjectIDbyUID } from "@/services/projects.service";
-import { CommentType, CommentWithReplies, returnDataType } from "@/types/types";
+import { CommentType, returnDataType } from "@/types/types";
 
 export const saveCommentForm = async (messages: string, projectUid: string, selectedValuePost: string, commentId?: number): Promise<returnDataType<CommentType>> => {
 

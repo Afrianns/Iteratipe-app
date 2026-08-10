@@ -24,6 +24,7 @@ export default async function syncUser(params: UserWebhookType): Promise<returnD
                 first_name: params.first_name,
                 last_name: params.last_name,
                 full_name: params.full_name,
+                username: "",
                 email: params.email,
                 image_url: params.image_url
             },

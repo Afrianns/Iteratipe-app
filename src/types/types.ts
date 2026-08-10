@@ -326,6 +326,31 @@ export interface CommentWithReplies extends CommentType {
   Replies: CommentType[] | []
 }
 
+// project preview card data
+
+export interface ProjectPreviewType {
+    uid: string
+    title: string
+    Status: labelType
+    Type: labelType
+    created_at: Date
+    _count: { 
+        Nodes: number
+        Bookmarks: number
+        Likes: number
+    }
+    Bookmarks: {
+        project_id: number | null
+    }[]
+    Likes: {
+        project_id: number | null
+    }[]
+    Users: {
+        full_name: string
+        username: string
+    }
+}
+
 export type SortingType = "ASC" | "DSC"
 
 export type subMenuType = "timeline" | "overview" | "comments" | "settings";

@@ -2,21 +2,42 @@
 
 import Header from "@/components/Header";
 import { auth } from "@clerk/nextjs/server";
-import { CircleCheck, Clock4, Layers } from "lucide-react";
 import UnauthorizedInfo from "../_components/UnauthorizedInfo";
-import Sidebar from "@/components/Sidebar";
 import AuthenticatedProjectLists from "./_components/AuthenticatedProjectLists";
 import { Suspense } from "react";
 import HeaderHome from "./_components/HeaderHome";
 import useMasonry from "@/hooks/useMasonry";
+import { getUser } from "@/services/user.service";
+import { UserType } from "@/types/types";
 
 export default async function Home() {
+    const { isAuthenticated, userId } = await auth()
 
 
-    // const users = await prisma.additionalUserInfo.findMany();
+    let userAdditionalData: UserType = {
+        id: 0,
+        clerk_user_id: "",
+        first_name: "",
+        last_name: "",
+        full_name: "",
+        username: "",
+        email: "",
+        image_url: "",
+        description: "",
+        facebook_link: "",
+        twitter_link: "",
+        website_link: "",
+        created_at: null,
+    }
+
+    if(userId){
+        const user = await getUser(userId)
+
+        if(user.status == 200 && user.data){
+            userAdditionalData = user.data
+        }
+    }
     
-    const { isAuthenticated } = await auth()
-
     return (
         <div className="col-span-5 w-full">
             <div className="container-style container-accent-style">
@@ -29,6 +50,15 @@ export default async function Home() {
                     <UnauthorizedInfo />
                 :
                     <div className="limit-breaker max-md:mb-20">
+                        <div className="my-5">
+                            <h1 className="text-3xl!">Hello, <span className="h-two-style text-3xl!">{userAdditionalData.full_name}</span></h1>
+
+                            <div className="flex gap-x-3 items-center my-5">
+                                <div className="py-1 px-6 rounded-md bg-lightish">5 Followers</div>
+                                <div className="py-1 px-6 rounded-md bg-lightish">23 Following</div>
+                                <div className="py-1 px-6 rounded-md bg-lightish">120 Likes</div>
+                            </div>
+                        </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
                             <Suspense fallback={<HeaderHomeLoading />}>
                                 <HeaderHome />
@@ -41,7 +71,7 @@ export default async function Home() {
                                     <AuthenticatedProjectLists />
                                 </Suspense>
                             </div>
-                            <div className="max-md:row-start-1 card-style-secondary shadow! h-fit max-md:col-span-2">
+                            <div className="max-md:row-start-1 card-style-secondary h-fit max-md:col-span-2">
                                 <h3 className="h-three-style">Recent Activities</h3>
                                 <hr className="hr-style my-2" />
                             </div>

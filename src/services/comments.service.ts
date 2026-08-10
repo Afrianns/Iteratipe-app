@@ -2,18 +2,12 @@
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import { CommentType, CommentWithReplies, returnDataType } from "@/types/types";
+import { CommentType, returnDataType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { getUserID } from "./user.service";
 import { getNodeIdByUid } from "./nodes.service";
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { getProjectIDbyUID } from "./projects.service";
-
-type DBEdgeType = {
-    uid: string,
-    source: string,
-    target: string
-}
 
 export async function saveComment(projectID: number, comments: string, nodeUID?: string, commentID?: number): Promise<returnDataType<CommentType>> {
   

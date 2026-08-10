@@ -1,31 +1,60 @@
-import { labelType } from "@/types/types";
+"use client"
+
+import { bookmarkProject } from "@/services/bookmark.service";
+import { ProjectPreviewType } from "@/types/types";
 import { Bookmark, Eye, Heart, Layers } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
 import Image from "next/image";
 import Link from "next/link";
+import { likeProject } from "@/services/like.service";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL 
 
-interface ProjectPreviewType {
-    uid: string
-    title: string
-    Status: labelType
-    Type: labelType
-    created_at: Date
-    _count: { 
-        Nodes: number
-    }
-    Users: {
-        full_name: string
-        username: string
-    }
-}
-
-
 export default function ProjectCard({currentPath, projectData, imageName}: {currentPath: string, projectData: ProjectPreviewType, imageName: string}) {
+
+    const [bookmark, setBookmark] = useState<boolean>(false)
+    const [bookmarkCount, setBookmarkCount] = useState<number>(projectData._count.Bookmarks);
+    
+    const [like, setLike] = useState<boolean>(false)
+    const [likeCount, setLikeCount] = useState<number>(projectData._count.Likes);
+
+    useEffect(() => {
+        setBookmark(projectData.Bookmarks.length >= 1)
+        setLike(projectData.Likes.length >= 1)
+    }, [projectData])
+
+    const bookmarkThis = async () => {
+        setBookmark(!bookmark)
+        const result = await bookmarkProject(projectData.uid)
+        
+        if(result.status == 200 && result.data){
+            setBookmarkCount(result.data.total_bookmarked)
+            toast.success(`${result.message}: ${projectData.title}`)
+        } else{
+            toast.success("An error occur")
+            setBookmark(false)
+        }
+    }
+    
+    const likeThis = async () => {
+        setLike(!like)
+        const result = await likeProject(projectData.uid)
+        
+        if(result.status == 200 && result.data){
+            setLikeCount(result.data.total_liked)
+            toast.success(`${result.message}: ${projectData.title}`)
+        } else{
+            toast.success("An error occur")
+            setLike(false)
+        }
+    }
+    
     return (
         <div className="card-style-secondary p-0! w-full transition-style hover:shadow-lg! hover:-translate-y-1 relative h-full max-h-80 overflow-hidden space-y-3">
             <div className="h-20 relative">
-                <Image key={imageName} src={`/images/${imageName}`} fill alt="thumbnail" className="absolute object-cover" />
+                <Image key={imageName} src={`/images/${imageName}`} draggable={false} fill alt="thumbnail" className="absolute object-cover" />
                 <span className="badge-style-secondary absolute bottom-3 left-3 text-grayish-dark text-xs flex gap-x-1 items-center rounded-2xl">
                     <Layers className="w-3" />
                     {projectData._count.Nodes > 1 ?
@@ -48,9 +77,9 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
                             <Link href={`${APP_URL}/user/${projectData.Users.username}`} className="p-style hover:underline hover:cursor-pointer text-xs! text-main!">{projectData.Users?.full_name}</Link>
                         </p>    
                     </div>
-                    <p className="flex text-xs items-center gap-x-1 hover:bg-light-gray px-3 rounded-full cursor-pointer">
-                        <Heart className="w-3" />
-                        120
+                    <p onClick={likeThis} className={`flex text-xs items-center gap-x-1 hover:bg-light-gray px-3 rounded-full cursor-pointer ${like ? "bg-light-red/10 text-light-red" : "hover:bg-light-gray"}`}>
+                        <Heart className={`w-3 ${like && "text-light-red fill-light-red"}`} />
+                        {likeCount}
                     </p>
                 </div>
                 <div className="flex items-center justify-between">
@@ -58,9 +87,9 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
                         <Eye className="w-3" />
                         1,120
                     </p>
-                    <p className="flex text-xs items-center gap-x-1 hover:bg-light-gray px-3 rounded-full cursor-pointer">
-                        <Bookmark className="w-3" />
-                        120
+                    <p onClick={bookmarkThis} className={`flex text-xs items-center gap-x-1 px-3 rounded-full cursor-pointer ${bookmark ? "bg-blue-500/10 text-blue-500" : "hover:bg-light-gray"}`}>
+                        <Bookmark className={`w-3 ${bookmark && "text-blue-500 fill-blue-500"}`} />
+                        {bookmarkCount}
                     </p>
                 </div>
             </div>

@@ -58,6 +58,12 @@ h1, h2, h3{
 *{
   @apply font-secondary;
 }
+/* iamge */
+img, a {
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
 
 /* wrapper */
 
@@ -114,11 +120,11 @@ h1, h2, h3{
 }
 
 .card-style{
-  @apply bg-white shadow-md rounded-xl space-y-3 border border-grayish;
+  @apply bg-white shadow-xs rounded-xl space-y-3 border border-grayish;
 }
 
 .card-style-secondary{
-  @apply bg-white shadow-xs rounded-xl border border-grayish p-6;
+  @apply bg-white rounded-xl border border-grayish p-6;
 }
 
 .h-two-style {
@@ -240,7 +246,7 @@ h1, h2, h3{
 /* home quick info */
 
 .card-home-list-style {
-  @apply shadow! h-25 p-5 flex items-center justify-between;
+  @apply h-25 p-5 flex items-center justify-between;
 }
 
 /* clerk style */

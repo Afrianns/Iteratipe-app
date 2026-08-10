@@ -1,4 +1,4 @@
-import { getCurrentUserProjectsInfo } from "@/services/projects.service";
+import { getAuthProjectCounts } from "@/services/projects.service";
 import { auth } from "@clerk/nextjs/server";
 import { CircleCheck, Clock4, Layers } from "lucide-react";
 
@@ -14,7 +14,7 @@ export default async function HeaderHome() {
     const {userId} = await auth()
 
     if(userId){
-        const result = await getCurrentUserProjectsInfo(userId)
+        const result = await getAuthProjectCounts(userId)
         if(result.status == 200 && result.data)
             quickStatus = result.data
     }
@@ -26,7 +26,7 @@ export default async function HeaderHome() {
                     <p className="text-sm text-main-text/40 font-bold">Total Projects.</p>
                     <h2 className="text-4xl font-semibold font-main">{quickStatus.total}</h2>
                 </div>
-                <div className="p-2 bg-light-gray rounded-full text-light-red">
+                <div className="p-2 bg-main/10 rounded-full text-main">
                     <Layers strokeWidth={3} width={50} />
                 </div>
             </div>
@@ -35,7 +35,7 @@ export default async function HeaderHome() {
                     <p className="text-sm text-main-text/40 font-bold">Completed Projects.</p>
                     <h2 className="text-4xl font-semibold font-main">{quickStatus.completed}</h2>
                 </div>
-                <div className="p-2 bg-light-gray rounded-full text-lime-yellow">
+                <div className="p-2 bg-[#49c12b]/10 rounded-full text-[#49c12b]">
                     <CircleCheck strokeWidth={3} width={50} />
                 </div>
             </div>
@@ -44,7 +44,7 @@ export default async function HeaderHome() {
                     <p className="text-sm text-main-text/40 font-bold">In Progress Projects.</p>
                     <h2 className="text-4xl font-semibold font-main">{quickStatus.in_progress}</h2>
                 </div>
-                <div className="p-2 bg-light-gray rounded-full text-light-green">
+                <div className="p-2 bg-[#dce400]/10 rounded-full text-[#dce400]">
                     <Clock4 strokeWidth={3} width={50} />
                 </div>
             </div>
@@ -53,7 +53,7 @@ export default async function HeaderHome() {
                     <p className="text-sm text-main-text/40 font-bold">Pending Projects.</p>
                     <h2 className="text-4xl font-semibold font-main">{quickStatus.pending}</h2>
                 </div>
-                <div className="p-2 bg-light-gray rounded-full text-light-green">
+                <div className="p-2 bg-[#e49c00]/10 rounded-full text-[#e49c00]">
                     <Clock4 strokeWidth={3} width={50} />
                 </div>
             </div>
