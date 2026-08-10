@@ -97,7 +97,7 @@ export default function SidebarFormEdit({params}: {params: ReadonlyURLSearchPara
                 </div>
                 <ErrorMessageList inputName="title" messages={validationMessages.title} />
                 <ErrorMessageList inputName="type" messages={validationMessages.type} />
-                <div className="flex gap-x-5 items-center text-purple-dark/50 text-[10px] pt-2">
+                <div className="flex gap-x-5 items-center text-main-text/50 text-[10px] pt-2">
                     <DatePickerRange key={`${nodeData.start_at}-${nodeData.end_at}`} updateNodeData={updateNodeData} initialStartDate={nodeData.start_at as string} initialEndDate={nodeData.end_at as string} durationDateFn={setDurationDate} />
                     <div className="flex items-center justify-between gap-2">
                         <Timer className="w-3 h-3" />
@@ -115,14 +115,14 @@ export default function SidebarFormEdit({params}: {params: ReadonlyURLSearchPara
             </div>
             
             <section className="mt-auto h-10 space-y-2 z-10 border-t border-gray-200 bg-whitish px-5 py-2 mb-5 sticky bottom-0">
-                <div className="flex items-center justify-between text-purple-dark/50 text-xs m-0">
+                <div className="flex items-center justify-between text-main-text/50 text-xs m-0">
                     <p>2 Items</p>
                     {unsaveChanges ? 
-                        <button type="button" className="py-2 px-5 'bg-light-purple/20 cursor-not-allowed rounded-lg text-purplish">
+                        <button type="button" className="py-2 px-5 'bg-secondary/20 cursor-not-allowed rounded-lg text-main">
                             No changes
                         </button>
                     :
-                        <button type="button" onClick={saveCurrentData} className="py-2 px-5 bg-light-purple/50 hover:bg-light-purple cursor-pointer rounded-lg text-purplish">
+                        <button type="button" onClick={saveCurrentData} className="py-2 px-5 bg-secondary/50 hover:bg-secondary cursor-pointer rounded-lg text-main">
                             Save
                         </button>
                     }

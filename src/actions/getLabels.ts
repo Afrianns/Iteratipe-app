@@ -3,7 +3,7 @@
 import getStatusFn from "@/services/status.service";
 import {getTagsFn} from "@/services/tags.service";
 import getToolsFn from "@/services/tools.service";
-import getTypesFn from "@/services/types.service";
+import {getTypesFn} from "@/services/types.service";
 import { labelType, returnDataType } from "@/types/types";
 
 

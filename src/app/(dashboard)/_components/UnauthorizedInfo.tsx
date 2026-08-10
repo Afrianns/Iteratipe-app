@@ -8,7 +8,7 @@ export default function UnauthorizedInfo() {
                 <Lock className="w-10 font-bold stroke-3 text-grayish-dark opacity-20"/>
             </div>
             <div className="text-center space-y-5">
-                <h1 className="h-two-style my-2! font-epilogue!">THIS SECTION IS LOCKED</h1>
+                <h1 className="h-two-style my-2!">THIS SECTION IS LOCKED</h1>
                 <p className="p-style">You need to register or login first to access it!</p>
                 <Link href="/auth" className="button-style rounded-md">Sign in</Link>
             </div>

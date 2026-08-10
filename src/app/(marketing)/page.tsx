@@ -73,7 +73,7 @@ export default function LandingPage() {
         return (
             <>
                 <Image alt="Iteratipe Logo" src="Logo.svg" width={130} height={130}/>
-                <Menu onClick={toggleHeader} className="md:hidden bg-light-purple rounded-full p-1 mx-0 cursor-pointer" />
+                <Menu onClick={toggleHeader} className="md:hidden bg-secondary rounded-full p-1 mx-0 cursor-pointer" />
                 <ul className="hidden md:flex justify-between gap-x-5 md:text-sm items-center">
                     <li className="cursor-pointer hover:underline"><Link href="/home">Home</Link></li>
                     <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
@@ -106,8 +106,8 @@ export default function LandingPage() {
                     <HeaderComp />
                 </div>
                 <div ref={startRef} className="flex flex-col justify-center items-center text-center max-w-250 mx-10 md:mx-auto space-y-5 md:space-y-10 my-10">
-                    <h1 className="text-center font-black text-4xl md:text-6xl font-raleway">DESIGNING IS NOT JUST THE  RESULT BUT ALSO THE PROCESS.</h1>
-                    <p className="max-w-150 text-purplish">Appreciate the designing process from start to finished and get insight from other designer around the world.</p>
+                    <h1 className="text-center font-black text-3xl md:text-5xl uppercase md:py-5 ">Design not only the result but the process.</h1>
+                    <p className="max-w-150 text-main">Find out how designer around the world designing from start to finished and get insight.</p>
                     <div className="flex gap-x-5">
                         <Link href='/auth' className="button-style rounded-md">Get Started</Link>
                         <Link href='/explore' className="button-style-secondary rounded-md">Explore Now</Link>
@@ -118,7 +118,7 @@ export default function LandingPage() {
             <Timeline />
 
             <Features />
-            <section className="px-10 bg-purplish-blue h-fit w-full relative overflow-hidden z-2">
+            <section className="px-10 bg-tertiary h-fit w-full relative overflow-hidden z-2">
                 <div className="absolute -z-1 w-200 top-0 -bottom-10 -right-10">
                     <Image alt="wavy line pattern" className="-rotate-5 opacity-70" src="/assets/wavy-line.svg" fill/>
                 </div>
@@ -126,10 +126,10 @@ export default function LandingPage() {
                     <div className="flex max-md:flex-col items-start md:items-end justify-between">
                         <div className="max-w-200 space-y-5">
                             <h1 className="text-3xl font-bold text-whitish">EVERY DESIGNING PROCESS YOU MAKE ARE DESIGN WORTH TO SHOW.</h1>
-                            <p className="text-lg text-light-purple/90 max-w-100">Discover how professional designer workflow. showcase your process of your own to the world.</p>
+                            <p className="text-lg text-secondary/90 max-w-100">Discover how professional designer workflow. showcase your process of your own to the world.</p>
                         </div>
-                        <Link href="/explore" className="w-10 h-10 border border-light-purple hover:bg-light-purple rounded-full cursor-pointer mt-5">
-                            <ArrowUpRight className="p-2 w-10 h-10 text-light-purple hover:text-purplish" />
+                        <Link href="/explore" className="w-10 h-10 border border-secondary hover:bg-secondary rounded-full cursor-pointer mt-5">
+                            <ArrowUpRight className="p-2 w-10 h-10 text-secondary hover:text-main" />
                         </Link>
                     </div>
                 </div>
@@ -156,9 +156,9 @@ export default function LandingPage() {
                             </ul>
                         </div>
                         <div className="flex items-start gap-x-5">
-                            <Image alt="facebook logo black" className="cursor-pointer p-1 rounded-full bg-light-gray hover:bg-light-purple" src="/assets/facebook.svg" width={30} height={30}/>
-                            <Image alt="instagram logo black" className="cursor-pointer p-1 rounded-full bg-light-gray hover:bg-light-purple" src="/assets/instagram.svg" width={30} height={30}/>
-                            <Image alt="x/twitter logo black" className="cursor-pointer p-1 rounded-full bg-light-gray hover:bg-light-purple" src="/assets/x.svg" width={25} height={25}/>
+                            <Image alt="facebook logo black" className="cursor-pointer p-1 rounded-full bg-light-gray hover:bg-secondary" src="/assets/facebook.svg" width={30} height={30}/>
+                            <Image alt="instagram logo black" className="cursor-pointer p-1 rounded-full bg-light-gray hover:bg-secondary" src="/assets/instagram.svg" width={30} height={30}/>
+                            <Image alt="x/twitter logo black" className="cursor-pointer p-1 rounded-full bg-light-gray hover:bg-secondary" src="/assets/x.svg" width={25} height={25}/>
                         </div>
                     </div>
                 </div>

@@ -44,7 +44,7 @@ export async function saveComment(projectID: number, comments: string, nodeUID?:
       }
     }
 
-    console.log(nodeUID, nodeResultID)
+    console.log("check the messages: ", comments)
     
     const result = await prisma.comments.create({
       data: {

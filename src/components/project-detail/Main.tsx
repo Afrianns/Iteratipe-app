@@ -2,28 +2,27 @@
 
 import '@xyflow/react/dist/style.css';
 
-import Header from "../Header";
 import { Bookmark, Heart } from 'lucide-react';
-import Timeline from './Timeline';
-import Overview from './Overview';
-import Comments from './Comments';
-import Settings from './Settings';
-import DetailMenu from '@/components/project-detail/main/DetailMenu';
-import { DBSingleProjectByID, generalDataType, generalSettingErrorsType, PagePropsType, timelineNodeDataType, timelineNodeType, VISIBLE } from '@/types/types';
-import { Suspense, useEffect, useState } from 'react';
-import Published from './main/Published';
-import LastUpdated from './main/LastUpdated';
-import ProjectTitle from './main/ProjectTitle';
-import AuthorName from './main/AuthorName';
-import { convertDate } from '@/lib/convertDate';
+import { DBSingleProjectByID, generalDataType, generalSettingErrorsType, timelineNodeType, VISIBLE } from '@/types/types';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getProjectDetailById } from '@/services/projects.service';
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
 import { SettingContext } from '@/lib/settingContext';
 import { Edge } from '@xyflow/react';
 
+import Header from "../Header";
+import Timeline from './Timeline';
+import Overview from './Overview';
+import Comments from './Comments';
+import Settings from './Settings';
+import DetailMenu from '@/components/project-detail/main/DetailMenu';
+import Link from 'next/link';
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL 
 
 const MENU = ["timeline", "overview", "settings", "comments"]
+
 let initialProjectTitleInfo = {
     title: "",
     type: {
@@ -48,7 +47,7 @@ let initialOverviewDataInfo = {
     user: {
         id: 0,
         full_name: "",
-        clerk_user_id: ""
+        username: "",
     },
     ...initialData
 }
@@ -96,7 +95,6 @@ export default function Main({ projectID }: {projectID: string}) {
     const projectId = projectID.split("%E2%80%94")[1];
 
     const [project, setProject] = useState<DBSingleProjectByID>({
-        // id: 0,
         projectTitleInfo: initialProjectTitleInfo,
         overviewInfo: initialOverviewDataInfo,
         settingInfo: initialSettingData,
@@ -194,7 +192,10 @@ export default function Main({ projectID }: {projectID: string}) {
                             <div className='mr-auto'>
                                 <div className="flex-centering gap-x-2">
                                     {project.projectTitleInfo.title ?
-                                        <ProjectTitle data={project.projectTitleInfo} />
+                                        <>
+                                            <h1 className="text-4xl font-bold mb-2">{project.projectTitleInfo.title}</h1>
+                                            <span className="badge-style bg-light-green">{project.projectTitleInfo.type?.name}</span>
+                                        </>
                                     :
                                         <ProjectTitleLoading />
                                     }
@@ -202,25 +203,26 @@ export default function Main({ projectID }: {projectID: string}) {
                                 <p className="text-gray-600 text-xs mt-1.5 flex items-center gap-x-1">
                                     <span>By</span>
                                     {project.overviewInfo.user.full_name ? 
-                                        <AuthorName full_name={project.overviewInfo.user.full_name} />
+                                        <Link href={`${APP_URL}/user/${project.overviewInfo.user.username}`} className='hover:underline text-sm text-main'>{project.overviewInfo.user.full_name}</Link>
                                     :
                                         <span className="block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>
                                     }
+
                                 </p>
                             </div>
                             <div className="flex-centering gap-x-2 ml-auto">
-                                <button className="button-style-tertiary"><Heart strokeWidth="3" className="w-4 h-4 text-purplish" /></button>
-                                <button className="button-style-tertiary"><Bookmark strokeWidth="3" className="w-4 h-4 text-purplish" /></button>
+                                <button className="button-style-tertiary"><Heart strokeWidth="3" className="w-4 h-4 text-main" /></button>
+                                <button className="button-style-tertiary"><Bookmark strokeWidth="3" className="w-4 h-4 text-main" /></button>
                                 <button className="button-style">Follow <span className='underline text-sm'>Andreas Bunchaco</span></button>
                             </div>
                         </div>
                         <div className="flex items-center justify-between max-lg:flex-col-reverse">
                             <DetailMenu />
-                            <div className="flex items-center gap-x-5 text-purple-dark/60 text-sm mt-2 pb-3">
+                            <div className="flex items-center gap-x-5 text-main-text/60 text-sm mt-2 pb-3">
                                 <p className="text-xs font-light flex items-center gap-x-2">
                                     Published on 
                                     {project.created_at ?
-                                        <Published created_at={project.created_at} />
+                                        <span className="ml-2 text-md font-medium">{project.created_at.toDateString()}</span>
                                     :
                                         <span className="inline-block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>
                                     }
@@ -228,7 +230,7 @@ export default function Main({ projectID }: {projectID: string}) {
                                 <p className="text-xs font-light flex items-center gap-x-2">
                                     Last updated on 
                                     {project.created_at ? 
-                                        <LastUpdated updated_at={project.updated_at || new Date()} />
+                                        <span className="ml-2 text-md font-medium">{(project.updated_at || new Date()).toDateString()}</span>
                                     :
                                         <span className="inline-block h-4 w-25 bg-slate-200 animate-pulse rounded"></span>
                                     }

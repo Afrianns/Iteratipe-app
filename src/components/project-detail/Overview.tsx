@@ -11,7 +11,7 @@ interface overviewPropsType {
     user: {
         id: number
         full_name: string
-        clerk_user_id: string
+        username: string
     }
     type: labelType
     client_name: string | null
@@ -70,7 +70,7 @@ const SummaryLoading = () => {
                 <div className="h-4 w-4/5 bg-slate-200 rounded" />
             </div>
             
-            <hr className="h-style text-purple-dark/20 animate-pulse" />
+            <hr className="h-style text-main-text/20 animate-pulse" />
             
             <div className="flex items-center justify-between pt-4">
                 <h4 className="text-md">Project Durations</h4>

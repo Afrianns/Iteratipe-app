@@ -23,8 +23,8 @@ export default async function HeaderHome() {
         <>
             <div className="card-style-secondary card-home-list-style">
                 <div>
-                    <p className="text-sm text-purple-dark/40 font-epilogue font-bold">Total Projects.</p>
-                    <h2 className="text-4xl font-semibold font-raleway">{quickStatus.total}</h2>
+                    <p className="text-sm text-main-text/40 font-bold">Total Projects.</p>
+                    <h2 className="text-4xl font-semibold font-main">{quickStatus.total}</h2>
                 </div>
                 <div className="p-2 bg-light-gray rounded-full text-light-red">
                     <Layers strokeWidth={3} width={50} />
@@ -32,8 +32,8 @@ export default async function HeaderHome() {
             </div>
             <div className="card-style-secondary card-home-list-style">
                 <div>
-                    <p className="text-sm text-purple-dark/40 font-epilogue font-bold">Completed Projects.</p>
-                    <h2 className="text-4xl font-semibold font-raleway">{quickStatus.completed}</h2>
+                    <p className="text-sm text-main-text/40 font-bold">Completed Projects.</p>
+                    <h2 className="text-4xl font-semibold font-main">{quickStatus.completed}</h2>
                 </div>
                 <div className="p-2 bg-light-gray rounded-full text-lime-yellow">
                     <CircleCheck strokeWidth={3} width={50} />
@@ -41,8 +41,8 @@ export default async function HeaderHome() {
             </div>
             <div className="card-style-secondary card-home-list-style">
                 <div>
-                    <p className="text-sm text-purple-dark/40 font-epilogue font-bold">In Progress Projects.</p>
-                    <h2 className="text-4xl font-semibold font-raleway">{quickStatus.in_progress}</h2>
+                    <p className="text-sm text-main-text/40 font-bold">In Progress Projects.</p>
+                    <h2 className="text-4xl font-semibold font-main">{quickStatus.in_progress}</h2>
                 </div>
                 <div className="p-2 bg-light-gray rounded-full text-light-green">
                     <Clock4 strokeWidth={3} width={50} />
@@ -50,8 +50,8 @@ export default async function HeaderHome() {
             </div>
             <div className="card-style-secondary card-home-list-style">
                 <div>
-                    <p className="text-sm text-purple-dark/40 font-epilogue font-bold">Pending Projects.</p>
-                    <h2 className="text-4xl font-semibold font-raleway">{quickStatus.pending}</h2>
+                    <p className="text-sm text-main-text/40 font-bold">Pending Projects.</p>
+                    <h2 className="text-4xl font-semibold font-main">{quickStatus.pending}</h2>
                 </div>
                 <div className="p-2 bg-light-gray rounded-full text-light-green">
                     <Clock4 strokeWidth={3} width={50} />

@@ -16,11 +16,11 @@ export default function SidebarMenu({isOpen}: {isOpen: boolean }) {
             </div>
             <ul className="max-md:space-x-5 md:space-y-3 gap-y-3 md:mt-10 w-full mx-auto max-md:flex">
                 <li>
-                    <Link className={`flex-centering hovering-detail duration-300 hover:bg-light-purple group transition-colors ${path === 'home' ? 'bg-light-purple' : ''} whitespace-nowrap `} href="/home">
-                        <House className={`menu-icon-style ${path === 'home' ? 'text-purplish' : ''}`} />
+                    <Link className={`flex-centering hovering-detail duration-300 hover:bg-secondary group transition-colors ${path === 'home' ? 'bg-secondary' : ''} whitespace-nowrap `} href="/home">
+                        <House className={`menu-icon-style ${path === 'home' ? 'text-main' : ''}`} />
                         
                         <span className={`max-md:hidden menu-name-style ${
-                            path === 'home' ? 'text-purplish' : 'group-hover:text-purplish'
+                            path === 'home' ? 'text-main' : 'group-hover:text-main'
                         } ${
                             isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'
                         }`}
@@ -29,18 +29,18 @@ export default function SidebarMenu({isOpen}: {isOpen: boolean }) {
                         </span>
                     </Link>
                 </li>
-                <li><Link className={`flex-centering hovering-detail duration-300 hover:bg-light-purple group ${path === 'explore' ? 'bg-light-purple' : ''}`} href="/explore">
-                    <Compass className={`menu-icon-style ${path == 'explore' ? 'text-purplish' : ''}`} />
+                <li><Link className={`flex-centering hovering-detail duration-300 hover:bg-secondary group ${path === 'explore' ? 'bg-secondary' : ''}`} href="/explore">
+                    <Compass className={`menu-icon-style ${path == 'explore' ? 'text-main' : ''}`} />
                     <span className={`max-md:hidden menu-name-style ${
-                        path === 'explore' ? 'text-purplish' : 'group-hover:text-purplish'
+                        path === 'explore' ? 'text-main' : 'group-hover:text-main'
                     } ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>
                         Explore
                     </span>
                 </Link></li>
-                <li><Link className={`flex-centering hovering-detail duration-300 hover:bg-light-purple group ${path === 'collections' ? 'bg-light-purple' : ''}`} href="/collections">
-                    <FileStack className={`menu-icon-style ${path == 'collections' ? 'text-purplish' : ''}`} />
+                <li><Link className={`flex-centering hovering-detail duration-300 hover:bg-secondary group ${path === 'collections' ? 'bg-secondary' : ''}`} href="/collections">
+                    <FileStack className={`menu-icon-style ${path == 'collections' ? 'text-main' : ''}`} />
                     <span className={`max-md:hidden menu-name-style ${
-                        path === 'collections' ? 'text-purplish' : 'group-hover:text-purplish'
+                        path === 'collections' ? 'text-main' : 'group-hover:text-main'
                     } ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>
                         Collections
                     </span>

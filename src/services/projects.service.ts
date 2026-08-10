@@ -13,8 +13,21 @@ interface actionDataType {
     id: number
 }
 
-interface ownerDataType {
-    Projects: ProjectType[]
+
+// reuseable
+interface ProjectPreviewType {
+    uid: string
+    title: string
+    Status: labelType
+    Type: labelType
+    created_at: Date
+    _count: { 
+        Nodes: number
+    }
+    Users: {
+        full_name: string
+        username: string
+    }
 }
 
 interface quickStatusType {
@@ -131,30 +144,32 @@ export async function saveProject(initialProject: ProjectStoreType): Promise<ret
     return result;
 }
 
-export async function getCurrentUserProjects(userId: string): Promise<returnDataType<ownerDataType>> {
+export async function getCurrentUserProjects(userId: string): Promise<returnDataType<ProjectPreviewType[]>> {
 
     try {
         const result = await prisma.users.findUnique({
             where: { clerk_user_id: userId },
             select: { 
                 Projects: {
-                    include: {
+                    select: {
+                        uid: true,
+                        title: true,
                         Status: true,
                         Type: true,
-                        Users: {
-                            select: {
-                                id: true,
-                                full_name: true,
-                                clerk_user_id: true
-                            }
-                        },
+                        created_at: true,
                         _count: {
                             select: {
                                 Nodes: true
                             }
+                        },
+                        Users: {
+                            select: {
+                                full_name: true,
+                                username: true,
+                            }
                         }
                     }
-                }, 
+                },
             }
         })
 
@@ -163,7 +178,7 @@ export async function getCurrentUserProjects(userId: string): Promise<returnData
             return {
                 status: 200,
                 message: "Successfully",
-                data: result
+                data: result.Projects
             }
         } else{
             throw new Error("not found!")
@@ -251,7 +266,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                     select: {
                         id: true,
                         full_name: true,
-                        clerk_user_id: true,
+                        username: true,
 
                     }
                 },

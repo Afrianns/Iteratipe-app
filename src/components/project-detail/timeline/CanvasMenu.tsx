@@ -108,7 +108,7 @@ export default function CanvasMenu() {
                             <p className='font-semibold'>End Node</p>
                         </button>
 
-                        <button onClick={() => newNodeFn(handleEnum.MAIN)} className="timeline-btn-style bg-light-purple/50 hover:bg-light-purple cursor-pointer text-purplish">
+                        <button onClick={() => newNodeFn(handleEnum.MAIN)} className="timeline-btn-style bg-secondary/50 hover:bg-secondary cursor-pointer text-main">
                             <Plus className="w-4 h-4 stroke-3" />
                             <p className='font-semibold'>New Node</p>
                         </button>

@@ -1,7 +1,7 @@
 export const CommentsLoading = () => {
     const counts: number[] = [1,2,3]
     return (
-        <>
+        <div className="space-y-3">
             {counts.map((count: number) => (
                 <div key={count} className="flex items-start gap-x-5 justify-start w-fill animate-pulse">
                     <div className="w-10 h-10 bg-slate-200 rounded-full shrink-0" />
@@ -23,6 +23,6 @@ export const CommentsLoading = () => {
                     </div>
                 </div>
             ))}
-        </>
+        </div>
     )
 }

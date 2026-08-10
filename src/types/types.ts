@@ -54,6 +54,7 @@ export interface ProjectType {
   Users: {
     id: number
     full_name: string
+    username: string
     clerk_user_id: string
   }
   _count: {
@@ -194,6 +195,7 @@ export interface UserType {
  first_name: string;
  last_name: string;
  full_name: string;
+ username: string
  email: string;
  image_url: string;
  description: string | null;
@@ -205,11 +207,11 @@ export interface UserType {
 
 export interface UserPreviewType {
   id: number;
-  clerk_user_id: string
   first_name: string
   last_name: string
   image_url: string
   description: string | null
+  username: string
 }
 
 
@@ -263,7 +265,7 @@ interface OverviewInfo extends initialInfo{
   user: {
     id: number
     full_name: string
-    clerk_user_id: string
+    username: string
   }
 }
 
@@ -292,7 +294,7 @@ interface DBSettingInfoData extends initialInfo {
 export interface CommentType {
   id: number
   message: string
-  created_at: Date | null
+  created_at: Date
   updated_at: Date | null
   deleted_at: Date | null
   user_id: number
@@ -323,5 +325,7 @@ export interface CommentType {
 export interface CommentWithReplies extends CommentType {
   Replies: CommentType[] | []
 }
+
+export type SortingType = "ASC" | "DSC"
 
 export type subMenuType = "timeline" | "overview" | "comments" | "settings";

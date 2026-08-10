@@ -14,8 +14,8 @@ export default async function ExplorePage() {
                         <p className="text-gray-600">Here you can find various design and process from people around the world.</p>
 
                         <div className="flex gap-5 mt-10 bg-grayish/50 w-full rounded-lg relative">
-                            <input type="text" name="search" className="w-full p-5 rounded-lg border outline-purplish border-grayish focus:ring-0 text-sm" placeholder="Search designs..." />
-                            <button className="bg-purplish text-whitish right-2 top-2 bottom-2 py-2 px-6 rounded-sm absolute">Search</button>
+                            <input type="text" name="search" className="w-full p-5 rounded-lg border outline-main border-grayish focus:ring-0 text-sm" placeholder="Search designs..." />
+                            <button className="bg-main text-whitish right-2 top-2 bottom-2 py-2 px-6 rounded-sm absolute">Search</button>
                         </div>
                     </div>
                 </div>

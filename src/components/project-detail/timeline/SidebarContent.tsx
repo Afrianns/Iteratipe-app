@@ -32,7 +32,7 @@ export default function SidebarContent({params}: {params: string | undefined}) {
                     <h3 className="h-three-style">{nodeData.title}</h3>
                     <span className="badge-style bg-light-green">{nodeData.type}</span>
                 </div>
-                <div className="flex gap-x-5 items-center text-purple-dark/50 text-[10px]">
+                <div className="flex gap-x-5 items-center text-main-text/50 text-[10px]">
                     <div className="flex items-center justify-between gap-2">
                         <CalendarDays className="w-3 h-3" />
                         <div className="flex items-center gap-x-2">
@@ -48,10 +48,10 @@ export default function SidebarContent({params}: {params: string | undefined}) {
                 </div>
             </section>
 
-            <p className="text-xs text-purple-dark/80 my-2 px-5">{nodeData.content}</p>
+            <p className="text-xs text-main-text/80 my-2 px-5">{nodeData.content}</p>
             
             <section className="mt-auto h-10 space-y-2 z-10 border-t border-gray-200 bg-whitish px-5 py-2 mb-5 sticky bottom-0">
-                <div className="flex items-center justify-between text-purple-dark/50 text-xs m-0">
+                <div className="flex items-center justify-between text-main-text/50 text-xs m-0">
                     <p>2 Items</p>
                     <span className="py-2 px-5">Comments</span>
                 </div>

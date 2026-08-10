@@ -75,11 +75,11 @@ export default function CanvasSave() {
 
   return (
     <div className='absolute top-5 right-5 card-style h-fit transition-style rounded-none! overflow-hidden'>
-      <span className="p-2 text-xs text-purplish-dark/30 mr-2 border-l-2 border-light-green hidden">Auto saving...</span>
+      <span className="p-2 text-xs text-main-dark/30 mr-2 border-l-2 border-light-green hidden">Auto saving...</span>
       {unsaveChanges ? 
         <span className="py-1 px-5 border-none bg-light-gray text-grayish-dark/50 text-sm cursor-not-allowed">save</span>
       :
-        <button onClick={saveCurrentState} className="py-1 px-5 border-none bg-purplish text-light-purple text-sm cursor-pointer">save</button>
+        <button onClick={saveCurrentState} className="py-1 px-5 border-none bg-main text-secondary text-sm cursor-pointer">save</button>
       }
     </div>
   )

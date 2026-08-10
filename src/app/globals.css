@@ -19,11 +19,16 @@
 
 @theme inline {
   /* colors */
-  --color-purplish: #B63EEE;
-  --color-purplish-blue: #793EEE;
-  --color-purple-dark: #1C0830;
+  --color-main: #9381FF;
+
+  --color-secondary: #F4F4F8;
+
+  --color-tertiary: #8884FF;
+
+  --color-main-text: #080357;
+  /* --color-main-text: #0D0630; */
   --color-lightish: #EFEFEE;
-  --color-light-purple: #F7E5FB;
+  
   --color-light-green: #D8FF5F;
   --color-lime-yellow: #FFF36F;
   --color-light-red: #F56476;
@@ -32,18 +37,26 @@
   --color-light-gray: #F8F8FA;
   --color-whitish: #fefefe; 
   --color-light-blue: #EFF0FF;
+  
   /* font */
-  --font-raleway: var(--font-raleway);
-  --font-instrument: var(--font-instrument-sans);
-  --font-epilogue: var(--font-epilogue);
+  
+  /* --main: #B63EEE; */
+  /* --color-secondary: #F7E5FB; */
+  --font-main: var(--font-stack-sans-headline);
+  /* --font-main: var(--font-stack-sans-notch); */
+  --font-secondary: var(--font-quicksand);
 }
 
 body{
-  @apply text-purple-dark;
+  @apply text-main-text;
 }
 
 h1, h2, h3{
-  @apply font-raleway;
+  @apply font-main;
+}
+
+*{
+  @apply font-secondary;
 }
 
 /* wrapper */
@@ -67,19 +80,20 @@ h1, h2, h3{
 
 /* button */
 .button-style {
-  @apply bg-purplish text-whitish font-medium text-sm hover:bg-purplish/80 cursor-pointer py-2 px-10;
+  @apply bg-main text-whitish font-medium text-sm hover:bg-main/80 cursor-pointer py-2 px-10;
 }
 
 .button-style-secondary {
-  @apply bg-light-purple text-purplish font-medium text-sm hover:bg-purplish/20 cursor-pointer py-2 px-10;
+  @apply bg-secondary text-main font-medium text-sm hover:bg-main/10 cursor-pointer py-2 px-10;
 }
 
+
 .button-style-tertiary {
-  @apply border-2 border-purplish text-purplish font-medium text-sm hover:bg-purplish/20 cursor-pointer py-2 px-5;
+  @apply border-2 border-main text-main font-medium text-sm hover:bg-main/20 cursor-pointer py-2 px-5;
 }
 
 .button-style-loading{
-  @apply bg-light-purple/50 text-purplish-blue/50 font-medium text-sm cursor-not-allowed py-2 px-10;
+  @apply bg-secondary/50 text-tertiary/50 font-medium text-sm cursor-not-allowed py-2 px-10;
 }
 
 .timeline-btn-style{
@@ -87,16 +101,16 @@ h1, h2, h3{
 }
 
 .timeline-btn-accent {
-  @apply text-purplish bg-light-purple/50 hover:bg-light-purple cursor-pointer;
+  @apply text-main bg-secondary/50 hover:bg-secondary cursor-pointer;
 }
 
 .timeline-btn-accent-disable {
-  @apply text-purple-dark/40 bg-grayish/50 hover:bg-grayish/20 cursor-not-allowed;
+  @apply text-main-text/40 bg-grayish/50 hover:bg-grayish/20 cursor-not-allowed;
 }
 
 /*  */
 .stack-style{
-  @apply w-30 inline-block rounded-t-sm border border-light-purple absolute bottom-0;
+  @apply w-30 inline-block rounded-t-sm border border-secondary absolute bottom-0;
 }
 
 .card-style{
@@ -108,23 +122,23 @@ h1, h2, h3{
 }
 
 .h-two-style {
-  @apply font-bold text-xl;
+  @apply font-main font-bold text-xl;
 }
 
 .h-three-style{
-  @apply font-bold text-lg;
+  @apply font-main font-bold text-lg;
 }
 
 .h-four-style{
-  @apply text-sm my-5 font-bold text-purple-dark/30 font-raleway uppercase;
+  @apply text-sm my-5 font-bold text-main-text/30 font-main uppercase;
 }
 
 .p-style{
-  @apply text-sm text-purple-dark/60;
+  @apply text-sm text-main-text/60;
 }
 
 .span-style{
-  @apply text-xs text-purple-dark/50;
+  @apply text-xs text-main-text/50;
 }
 
 .hr-style{
@@ -152,7 +166,7 @@ h1, h2, h3{
 }
 
 .detail-list-style{
-  @apply border-b-4 pb-3 px-3 hover:border-purplish cursor-pointer transition-all ease-in-out;
+  @apply border-b-4 pb-3 px-3 hover:border-main cursor-pointer transition-all ease-in-out;
 }
 
 
@@ -162,22 +176,22 @@ h1, h2, h3{
   @apply w-9 h-9 p-2 hover:bg-light-gray rounded-full cursor-pointer;
 }
 .icon-style-secondary{
-  @apply w-9 h-9 p-2.5 hover:bg-light-purple cursor-pointer rounded-full text-xl text-purplish;
+  @apply w-9 h-9 p-2.5 hover:bg-secondary cursor-pointer rounded-full text-xl text-main;
 }
 
 
 /* input style */
 
 .label-style{
-  @apply block text-purple-dark/80 font-semibold font-raleway;
+  @apply block text-main-text/80 font-semibold font-main;
 }
 
 .input-style{
-  @apply py-3 px-5 text-purple-dark bg-light-gray w-full border border-grayish rounded-lg outline-purplish;
+  @apply py-3 px-5 text-main-text bg-light-gray w-full border border-grayish rounded-lg outline-main;
 }
 
 .input-radio-style{
-  @apply h-5 w-5 accent-purplish;
+  @apply h-5 w-5 accent-main;
 }
 
 .error-msg-style{
@@ -187,7 +201,7 @@ h1, h2, h3{
 /* menu setting style */
 
 .menu-setting-style{
-  @apply cursor-pointer hover:bg-grayish/50 py-2 px-3 rounded-md font-raleway font-medium;
+  @apply cursor-pointer hover:bg-grayish/50 py-2 px-3 rounded-md font-secondary font-medium;
 }
 
 /* sidebar */
@@ -205,7 +219,7 @@ h1, h2, h3{
 }
 
 .menu-name-style{
-  @apply transition-all ease-in-out text-xs font-medium font-raleway overflow-hidden;
+  @apply transition-all ease-in-out text-xs font-medium font-secondary overflow-hidden;
 }
 
 .menu-icon-style{
@@ -242,5 +256,9 @@ p[data-localization-key="userProfile.navbar.description"] {
 }
 
 .ql-editor a, .message-content a{
-  @apply text-purplish cursor-pointer hover:underline;
+  @apply text-main cursor-pointer hover:underline;
+}
+
+.message-content > * {
+  @apply bg-transparent;
 }

@@ -9,12 +9,6 @@ import AuthenticatedProjectLists from "./_components/AuthenticatedProjectLists";
 import { Suspense } from "react";
 import HeaderHome from "./_components/HeaderHome";
 import useMasonry from "@/hooks/useMasonry";
-import { prisma } from "@/lib/db";
-
-import Types from "@/../resources/Types.json"
-import Tags from "@/../resources/Tags.json"
-
-// import Types from "@/../resources/Types.json";
 
 export default async function Home() {
 
@@ -22,26 +16,6 @@ export default async function Home() {
     // const users = await prisma.additionalUserInfo.findMany();
     
     const { isAuthenticated } = await auth()
-
-    // // const insertData = async () => {
-    //     try {
-    //         // createMany inserts the entire array into your Neon table in a single query
-    //         const result = await prisma.tags.create({
-    //             data: {
-    //                 name: "book"
-    //             }, 
-    //             // skipDuplicates: true, // Optional: ignores errors if a unique key matches
-    //         });
-
-    //         console.log(result)
-
-    //     //     console.log(`Successfully inserted ${result.count} rows!`);
-    //     //     return result;
-
-    //     } catch (error) {
-    //         console.error("Failed to insert data:", error instanceof Error ? error.message : "Database connection lost.");
-    //     }
-    // // }
 
     return (
         <div className="col-span-5 w-full">

@@ -127,7 +127,7 @@ model Tags {
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
 model Nodes {
   id           Int            @id @default(autoincrement())
-  uid          String         @unique @default(dbgenerated("gen_ulid()")) @db.Uuid
+  uid          String         @unique @default(dbgenerated("gen_ulid()::uuid")) @db.Uuid
   project_id   Int
   thumbnail    String?        @db.VarChar(255)
   title        String?        @db.VarChar(60)

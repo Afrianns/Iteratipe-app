@@ -12,9 +12,9 @@ export default function Features() {
         </div>
         <section className="limit-breaker py-10">
             <div className="flex items-center flex-col justify-center my-10 w-full space-y-2">
-                <h2 className="font-black text-purplish">FEATURES</h2>
+                <h2 className="font-black text-main">FEATURES</h2>
                 <h2 className="text-3xl text-center md:text-3xl font-bold">DESIGN AND SHARE BETTER WORKFLOWS</h2>
-                <p className="text-purple-dark/50 w-full text-center max-w-150">Create and share design for people around the world. Discover how professional designer create design.</p>
+                <p className="text-main-text/50 w-full text-center max-w-150">Create and share design for people around the world. Discover how professional designer create design.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 max-w-80 md:max-w-220 mx-auto gap-y-5 md:gap-x-5">
@@ -57,7 +57,7 @@ export default function Features() {
                     <div className="flex flex-col items-center justify-center w-full space-y-3 absolute -bottom-10">
                         <div className="card-style w-60 h-25 p-5 flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-purple-dark/40 font-epilogue font-bold">Total Projects.</p>
+                                <p className="text-sm text-main-text/40 font-bold">Total Projects.</p>
                                 <h2 className="text-3xl font-semibold">23</h2>
                             </div>
                             <div className="p-2 bg-light-gray/50 rounded-full text-light-red">
@@ -66,7 +66,7 @@ export default function Features() {
                         </div>
                         <div className="card-style w-60 h-25 p-5 flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-purple-dark/40 font-epilogue font-bold">Completed Projects.</p>
+                                <p className="text-sm text-main-text/40 font-bold">Completed Projects.</p>
                                 <h2 className="text-3xl font-semibold">14</h2>
                             </div>
                             <div className="p-2 bg-light-gray/50 rounded-full text-lime-yellow">
@@ -75,7 +75,7 @@ export default function Features() {
                         </div>
                         <div className="card-style w-60 h-25 p-5 flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-purple-dark/40 font-epilogue font-bold">Pending Projects.</p>
+                                <p className="text-sm text-main-text/40 font-bold">Pending Projects.</p>
                                 <h2 className="text-3xl font-semibold">9</h2>
                             </div>
                             <div className="p-2 bg-light-gray/50 rounded-full text-light-green">
@@ -84,13 +84,13 @@ export default function Features() {
                         </div>
                     </div>
                 </div>
-                <div className="h-110 bg-purplish/70 relative overflow-hidden shadow">
-                    <h2 className="p-10 text-2xl font-semibold text-light-purple">Discover Outstanding Design.</h2>
+                <div className="h-110 bg-main/70 relative overflow-hidden shadow">
+                    <h2 className="p-10 text-2xl font-semibold text-secondary">Discover Outstanding Design.</h2>
                     <div className="card-style z-1 w-70 h-fit p-3 absolute -bottom-10 -right-20">
                         <div className="relative w-full h-40 rounded-md overflow-hidden">
                             <Image alt="illustration of underwater life" src="/images/underwater-life-illustration.png" fill className="object-cover"/>
 
-                            <span className="absolute bg-white text-purple-dark/50 py-1 px-3 bottom-2 left-2 rounded-sm text-xs">15 Steps</span>
+                            <span className="absolute bg-white text-main-text/50 py-1 px-3 bottom-2 left-2 rounded-sm text-xs">15 Steps</span>
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="py-1 px-3 bg-light-green text-[10px]">Logo Design</span>
@@ -99,7 +99,7 @@ export default function Features() {
                         <div className="flex justify-between items-center">
                             <div>
                                 <h3 className="h-three-style">De La Cruz</h3>
-                                <p className="font-extralight text-xs text-purple-dark/70">by <span className="font-medium hover:underline cursor-pointer">Andreas Salisan</span></p>
+                                <p className="font-extralight text-xs text-main-text/70">by <span className="font-medium hover:underline cursor-pointer">Andreas Salisan</span></p>
                             </div>
                             <span>LIKE</span>
                         </div>

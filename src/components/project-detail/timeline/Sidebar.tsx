@@ -19,7 +19,7 @@ export default function Sidebar({ children }: {children: React.ReactNode }) {
                     <MoveLeft className="w-5 h-5 text-grayish-dark" />
                 </Link>
 
-                <button type="button" onClick={() => setIsEdit(!isEdit)} className={`transiton-style rounded-full cursor-pointer flex items-center gap-x-2 py-2 px-5 ${ isEdit ?'bg-light-purple hover:bg-purplish/10 text-purplish' : 'bg-light-gray hover:bg-grayish text-grayish-dark'}`}>
+                <button type="button" onClick={() => setIsEdit(!isEdit)} className={`transiton-style rounded-full cursor-pointer flex items-center gap-x-2 py-2 px-5 ${ isEdit ?'bg-secondary hover:bg-main/10 text-main' : 'bg-light-gray hover:bg-grayish text-grayish-dark'}`}>
                     {isEdit && 
                         <span className="text-xs font-extralight">Edit</span>
                     }

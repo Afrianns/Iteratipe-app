@@ -43,7 +43,7 @@ export default  memo(function Card({data, selected, id}: NodeProps<timelineNodeT
                             <span className='h-3 w-10 bg-slate-200 animate-pulse rounded-sm'></span>
                         }
                     </div>
-                    <div className="flex gap-x-5 items-center text-purple-dark/50 text-[10px]">
+                    <div className="flex gap-x-5 items-center text-main-text/50 text-[10px]">
                         <div className="flex items-center justify-between gap-2">
                             <CalendarDays className="w-3 h-3" />
                             {data.start_at && <p>{data.start_at}</p>}
@@ -61,7 +61,7 @@ export default  memo(function Card({data, selected, id}: NodeProps<timelineNodeT
                         </div>
                     </div>
                     {data.content ? 
-                        <p className="text-xs text-purple-dark/80">{data.content}</p>
+                        <p className="text-xs text-main-text/80">{data.content}</p>
                     :
                         <div className='flex flex-col space-y-2'>
                             <span className='h-2 w-full bg-slate-200 animate-pulse rounded-sm'></span>
@@ -74,9 +74,9 @@ export default  memo(function Card({data, selected, id}: NodeProps<timelineNodeT
                         </div>
                     }
                     <hr className="hr-style"/>
-                    <div className="flex items-center justify-between text-purple-dark/50 text-xs m-0">
+                    <div className="flex items-center justify-between text-main-text/50 text-xs m-0">
                         <p>0 Items</p>
-                        <Link href={`?menu=timeline&node=${id}`} className="py-1 px-3 bg-light-purple/50 hover:bg-light-purple cursor-pointer rounded-lg">
+                        <Link href={`?menu=timeline&node=${id}`} className="py-1 px-3 bg-secondary/50 hover:bg-secondary cursor-pointer rounded-lg">
                             <MoveRight className="w-5 h-5" />
                         </Link>
                     </div>

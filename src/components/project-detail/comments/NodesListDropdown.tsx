@@ -38,19 +38,21 @@ export default function NodesListDropdown({ direction = "bottom", setSelectedId 
                 <p className="p-style font-medium!">{selectedValue}</p>
                 <ChevronDown className={`transition-style icon-style ${stepDropdown && 'rotate-180'}`} />
             </div>
+            <div className={`absolute w-full ${direction == 'bottom' ? 'top-18': 'bottom-10'}`}>
+                {stepDropdown && 
+                    <div className="card-style overflow-hidden right-0 left-0 z-1" ref={menuRef}>
+                        <ul>
+                            <li className="hover:bg-purple-50 p-style cursor-pointer py-2 px-4" onMouseDown={() => selectThisNode("NOT_AN_ID", "General")}>General</li>
+                            {nodes.map((node) => {
+                                if(node.data.title != ""){
+                                    return <li key={node.id} className="hover:bg-purple-50 p-style cursor-pointer py-2 px-4" onMouseDown={() => selectThisNode(node.id, node.data.title)}>{node.data.title}</li>
+                                }
+                            })}
+                        </ul>
+                    </div>
+                }
 
-            {stepDropdown && 
-                <div className={`card-style overflow-hidden absolute right-0 left-0 z-1 ${direction == 'bottom' ? 'top-15': 'bottom-12'}`} ref={menuRef}>
-                    <ul>
-                        <li className="hover:bg-purple-50 p-style cursor-pointer py-2 px-4" onMouseDown={() => selectThisNode("NOT_AN_ID", "General")}>General</li>
-                        {nodes.map((node) => {
-                            if(node.data.title != ""){
-                                return <li key={node.id} className="hover:bg-purple-50 p-style cursor-pointer py-2 px-4" onMouseDown={() => selectThisNode(node.id, node.data.title)}>{node.data.title}</li>
-                            }
-                        })}
-                    </ul>
-                </div>
-            }
+            </div>
         </>
     )
 }

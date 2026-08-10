@@ -1,9 +1,27 @@
-import { ProjectType } from "@/types/types";
+import { labelType } from "@/types/types";
 import { Bookmark, Eye, Heart, Layers } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function ProjectCard({currentPath, projectData, imageName}: {currentPath: string, projectData: ProjectType, imageName: string}) {
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL 
+
+interface ProjectPreviewType {
+    uid: string
+    title: string
+    Status: labelType
+    Type: labelType
+    created_at: Date
+    _count: { 
+        Nodes: number
+    }
+    Users: {
+        full_name: string
+        username: string
+    }
+}
+
+
+export default function ProjectCard({currentPath, projectData, imageName}: {currentPath: string, projectData: ProjectPreviewType, imageName: string}) {
     return (
         <div className="card-style-secondary p-0! w-full transition-style hover:shadow-lg! hover:-translate-y-1 relative h-full max-h-80 overflow-hidden space-y-3">
             <div className="h-20 relative">
@@ -27,7 +45,7 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
                         <Link href={`./${currentPath}/${(projectData.title).toLowerCase().split(" ").join("-")}—${projectData.uid}`} className="h-three-style capitalize hover:underline cursor-pointer">{projectData.title}</Link>
                         <p className="span-style flex items-center gap-x-1 text-xs">
                             By
-                            <span className="p-style hover:underline hover:cursor-pointer text-xs!">{projectData.Users?.full_name}</span>
+                            <Link href={`${APP_URL}/user/${projectData.Users.username}`} className="p-style hover:underline hover:cursor-pointer text-xs! text-main!">{projectData.Users?.full_name}</Link>
                         </p>    
                     </div>
                     <p className="flex text-xs items-center gap-x-1 hover:bg-light-gray px-3 rounded-full cursor-pointer">

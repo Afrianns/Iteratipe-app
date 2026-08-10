@@ -8,10 +8,9 @@ import { getCommentsByProjectId } from "@/services/comments.service";
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { toast } from "sonner";
 import { saveCommentForm } from "@/actions/comment";
-import { CommentWithReplies } from "@/types/types";
+import { CommentWithReplies, SortingType } from "@/types/types";
 import { CommentsLoading } from "./comments/CommentListsLoading";
-import Quill from 'quill';
-import 'quill/dist/quill.snow.css';
+
 
 import { useImmer } from "use-immer"
 import { CommentContext } from "@/lib/commentsContex";
@@ -20,7 +19,7 @@ import dynamic from "next/dynamic";
 import DOMPurify from 'dompurify';
 
 
-const RichTextEditor = dynamic(() => import('./comments/TextEditor'), { 
+const CommentTextEditor = dynamic(() => import('./comments/CommentTextEditor'), { 
   ssr: false 
 });
 
@@ -32,7 +31,6 @@ type RichTextEditorHandle = {
 
 export default function Comments({projectId, ownerProjectId}: {projectId: string, ownerProjectId: number}) {
     
-    // const nodes = useTimelineStateStore((state) => state.globalNodes)
     const [selectedNodeIdComments, setSelectedNodeIdComments] = useState<string>("NOT_AN_ID")
     const [selectedValuePost, setSelectedValuePost] = useState<string>("NOT_AN_ID")
 
@@ -40,27 +38,28 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
     
     const [comments, setComments] = useImmer<CommentWithReplies[]>([])
 
-    const [commentContent, setCommentContent] = useState<string>("")
-    const [commentContentLength, setCommentContentLength] = useState<string>("")
+    const [SortingComment, setSortingComment] = useState<SortingType>("ASC")
 
     const editorRef = useRef<RichTextEditorHandle>(null);
-    const [editorContent, setEditorContent] = useState<string>('');
 
     useEffect(() => {
+        
         setIsCommentsSet(false)
+
         const getAllRelatedProjectComments = async () => {
             await getCommentsByProjectId(projectId, selectedNodeIdComments).then((result) => {
                 const dbComments = result.data
 
                 if(result.status == 200){
-                        if(dbComments != undefined && dbComments.length > 0){
-                            setComments(() => {
-                                setIsCommentsSet(true)
-                                return dbComments.map((comments) => ({...comments, Replies: []})) 
-                            })
-                        } else{
+                    if(dbComments != undefined && dbComments.length > 0){
+                        setComments(() => {
                             setIsCommentsSet(true)
-                        }
+                            return dbComments.map((comments) => ({...comments, Replies: []})) 
+                        })
+                    } else{
+                        setIsCommentsSet(true)
+                        setComments([])
+                    }
                 }
             }).catch((e) => {
                 console.log(e)
@@ -74,18 +73,14 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
     // store saved comment
     const beforeSaveComment = async () => {
         const quillRef = editorRef.current
-        
-        if (!quillRef) return
-        
-        const content = quillRef.getContent();
-        if(content) setEditorContent(content)
 
-        const purifyMessage = DOMPurify.sanitize(editorContent);
-        
-        if(!purifyMessage) return;
+        if (!quillRef) return
+        let purifiedMessage = ""
+        const content = quillRef.getContent();
+        if(content) purifiedMessage = DOMPurify.sanitize(content, { ADD_ATTR: ['target'] });
 
         try {
-            const result = await saveCommentForm(purifyMessage, projectId, selectedValuePost)
+            const result = await saveCommentForm(purifiedMessage, projectId, selectedValuePost)
             if(result?.status == 200 && result.data){
                 setComments([...comments, {...result.data, Replies: []}])
                 toast.success(result.message)
@@ -100,19 +95,19 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
     }
 
     return (
-        <CommentContext.Provider value={{comments: comments, ownerProjectId: ownerProjectId, projectId: projectId, selectedValuePost: selectedValuePost, setComments: setComments}}>
+        <CommentContext.Provider value={{comments: comments, ownerProjectId: ownerProjectId, projectId: projectId, selectedValuePost: selectedValuePost, selectedNodeIdComments: selectedNodeIdComments, setComments: setComments, sortingComment: SortingComment, setSortingComment: setSortingComment}}>
             <div className="container-style">
                 <div className="limit-breaker w-full">
-                    <div className="card-style-secondary space-y-3 col-span-2 max-w-200">
-                        <div className="flex justify-between items-center">
-                            <div className="max-w-90 w-full relative">
+                    <div className="card-style-secondary p-0! space-y-3 col-span-2 max-w-200">
+                        <div className="flex justify-between items-center p-5">
+                            <div className="max-w-90 w-full relative space-y-3">
                                 <p className="p-style">Comments from</p>
                                 <NodesListDropdown setSelectedId={setSelectedNodeIdComments} />
                             </div>
                             <CommentsSorting />
                         </div>
                         <hr className="hr-style" />
-                        <div className="space-y-6 mt-5">
+                        <div className="space-y-6 p-5">
                             {isCommentsSet ? 
                                 comments.length > 0 ?
                                     <CommentLists />
@@ -127,43 +122,26 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
                         </div>
 
                     </div>
-                    <div className="my-5 max-w-200 card-style-secondary space-y-3 px-3! py-5!">
+                    <div className="my-5 max-w-200 card-style-secondary space-y-3 p-5!">
                         <h3 className="">Write your feedback</h3>
                         <div>
-                            <RichTextEditor ref={editorRef} />
+                            <CommentTextEditor id={1} ref={editorRef} />
                         </div>
-                        <button
-                            onClick={beforeSaveComment}
-                            className="button-style-secondary text-right"
-                        >
-                            Post
-                        </button>
-                    </div>
-                    {/* <form action={(e) => beforeSaveComment(e)   } className="my-5 max-w-200 card-style-secondary space-y-3 px-3! py-5!">
-                        <h3 className="">Write your feedback</h3>
-                        <textarea name="comment" id="comment" className="input-style" value={commentContent} onChange={commentChanges}></textarea>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-x-10 justify-between">
                             <div className="max-w-50 w-full relative">
                                 <p className="p-style">Post for</p>
                                 <NodesListDropdown direction="top" setSelectedId={setSelectedValuePost} />
                             </div>
-                            <div className="text-right">
-                                <p>{commentContentLength}</p>
-                                <button className="button-style-secondary rounded-md">Post</button>
-                            </div>
+                            <button
+                                onClick={beforeSaveComment}
+                                className="button-style-secondary text-xs! py-2! px-5! rounded-full text-right"
+                            >
+                                Post
+                            </button>
                         </div>
-                    </form> */}
+                    </div>
                 </div>
             </div>
         </CommentContext.Provider>
-    )
-}
-
-const CommentsListLoading = () => {
-    return (
-        <div className="flex items-center justify-between pt-4 animate-pulse">
-            <div className="h-6 w-44 bg-slate-200 rounded" />
-            <div className="h-6 w-12 bg-slate-200 rounded" />
-        </div>
     )
 }

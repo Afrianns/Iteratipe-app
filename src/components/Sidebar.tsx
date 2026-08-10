@@ -41,7 +41,7 @@ export default async function Sidebar() {
 
                 {isAuthenticated &&
                     <div className="flex justify-center">
-                        <Link href="/new" className="flex-centering hovering-detail duration-300 bg-light-purple text-purplish font-medium hover:bg-light-purple hover:underline justify-center whitespace-nowrap w-full">
+                        <Link href="/new" className="flex-centering hovering-detail duration-300 bg-secondary text-main font-medium hover:bg-secondary hover:underline justify-center whitespace-nowrap w-full">
                             <Plus className="menu-icon-style" /> 
                             <span className={`max-md:hidden menu-name-style ${
                                 isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'
@@ -65,12 +65,12 @@ export default async function Sidebar() {
                             rootBox: "w-full flex-centering justify-center max-w-full",
                             userButtonTrigger: "block w-full",
                             userButtonOuterIdentifier: `menu-name-style hidden md:block overflow-hidden ${isOpen ? 'max-w-37.5 opacity-100' : 'max-w-0 opacity-0 p-0 m-0'}`,
-                            userButtonBox: "flex-row-reverse flex-centering hovering-detail duration-300 bg-light-purple text-purplish font-medium hover:bg-light-purple hover:underline justify-center whitespace-nowrap gap-x-0",
+                            userButtonBox: "flex-row-reverse flex-centering hovering-detail duration-300 bg-secondary text-main font-medium hover:bg-secondary hover:underline justify-center whitespace-nowrap gap-x-0",
                             avatarBox: `${isOpen ? 'h-7 w-7' :'w-5 h-5'}`
                         }
                     }} showName={true} />
                 :
-                    <Link href="/auth" className="flex-centering hovering-detail duration-100 bg-grayish/50 text-purple-dark font-medium hover:bg-light-grayish/80 hover:underline whitespace-nowrap w-4/5 justify-center">
+                    <Link href="/auth" className="flex-centering hovering-detail duration-100 bg-grayish/50 text-main-text font-medium hover:bg-light-grayish/80 hover:underline whitespace-nowrap w-4/5 justify-center">
                         <CircleUser className="menu-icon-style" /> 
                         <span className={`max-md:hidden menu-name-style ${isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'}`}>Get Started</span>
                     </Link>

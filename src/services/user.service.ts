@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
-import { returnDataType, UserPreviewType, UserType } from "@/types/types";
+import { labelType, returnDataType, UserPreviewType, UserType } from "@/types/types";
 
 
 export const getUserID = async (userId: string): Promise<returnDataType<{
@@ -66,7 +66,7 @@ export const getPreviewUser = async (userId: number): Promise<returnDataType<Use
           description: true,
           first_name: true,
           last_name: true,
-          clerk_user_id: true,
+          username: true,
         }
     })
 
@@ -78,4 +78,69 @@ export const getPreviewUser = async (userId: number): Promise<returnDataType<Use
   } catch (error) {
     return tempErrorHandle(error)
   } 
+}
+
+interface ProjectPreviewType extends UserType {
+  Projects: {
+      uid: string
+      title: string
+      Status: labelType
+      Type: labelType
+      created_at: Date
+      _count: { 
+          Nodes: number
+      }
+      Users: {
+          full_name: string
+          username: string
+      }
+  }[]
+}
+
+export const getUserByUsername = async (username: string): Promise<returnDataType<ProjectPreviewType>> => {
+  try {
+
+        const user = await prisma.users.findUnique({
+            where: {
+                username: username as string
+            },
+
+            include: {
+              Projects: {
+                select: {
+                  uid: true,
+                  title: true,
+                  Status: true,
+                  Type: true,
+                  created_at: true,
+                  _count: {
+                      select: {
+                          Nodes: true
+                      }
+                  },
+                  Users: {
+                      select: {
+                          full_name: true,
+                          username: true,
+                      }
+                  }
+              }
+              }
+            }
+        });
+
+        if(!user?.id) throw new Error("user not found");
+
+        if(user.id){
+          return {
+            status: 200,
+            message: "successful",
+            data: user
+          }
+        } else{
+          throw new Error("username not found. try again later");
+        }
+    } catch (error) {
+        return tempErrorHandle(error)
+    }
 }

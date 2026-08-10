@@ -180,16 +180,16 @@ export default function Main() {
             <SettingContext.Provider value={{generalSettings, generalSettingErrors, setGeneralSettings, setGeneralSettingErrors}}>
                 <form action={createdNewProject} className="container-style mx-auto flex flex-col items-center justify-center transition-style">
                     <div className="flex items-center justify-center my-10 gap-x-10 w-fit relative z-2">
-                        <div className={`w-10 h-10 rounded-full z-2 flex items-center justify-center ${steps[0] ? "bg-purplish" : "bg-light-purple"}`}>
-                            <h3 className={`font-extrabold text-2xl h-9 ${steps[0] ? "text-whitish" : "text-purplish"}`}>1</h3>
+                        <div className={`w-10 h-10 rounded-full z-2 flex items-center justify-center ${steps[0] ? "bg-main" : "bg-secondary"}`}>
+                            <h3 className={`font-extrabold text-2xl h-9 ${steps[0] ? "text-whitish" : "text-main"}`}>1</h3>
                         </div>
-                        <hr className={`hr-style border-5 w-1/2 left-0 absolute z-1 ${steps[1] ? "border-purplish!" :"border-light-purple!"}`} />
-                        <div className={`w-10 h-10 rounded-full z-2 flex items-center justify-center ${steps[1] ? "bg-purplish" : "bg-light-purple"}`}>
-                            <h3 className={`font-extrabold text-2xl h-9 ${steps[1] ? "text-whitish" : "text-purplish"}`}>2</h3>
+                        <hr className={`hr-style border-5 w-1/2 left-0 absolute z-1 ${steps[1] ? "border-main!" :"border-secondary!"}`} />
+                        <div className={`w-10 h-10 rounded-full z-2 flex items-center justify-center ${steps[1] ? "bg-main" : "bg-secondary"}`}>
+                            <h3 className={`font-extrabold text-2xl h-9 ${steps[1] ? "text-whitish" : "text-main"}`}>2</h3>
                         </div>
-                        <hr className={`hr-style border-5 w-1/2 right-0 absolute z-1 ${steps[2] ? "border-purplish!" :"border-light-purple!"}`} />
-                        <div className={`w-10 h-10 rounded-full z-2 flex items-center justify-center ${steps[2] ? "bg-purplish" : "bg-light-purple"}`}>
-                            <h3 className={`font-extrabold text-2xl h-9 ${steps[2] ? "text-whitish" : "text-purplish"}`}>3</h3>
+                        <hr className={`hr-style border-5 w-1/2 right-0 absolute z-1 ${steps[2] ? "border-main!" :"border-secondary!"}`} />
+                        <div className={`w-10 h-10 rounded-full z-2 flex items-center justify-center ${steps[2] ? "bg-main" : "bg-secondary"}`}>
+                            <h3 className={`font-extrabold text-2xl h-9 ${steps[2] ? "text-whitish" : "text-main"}`}>3</h3>
                         </div>
                     </div>
                     <div className={`w-full ${steps.filter(Boolean).length == 1 ? "block" : "hidden"}`}>
