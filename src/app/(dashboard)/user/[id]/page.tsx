@@ -57,7 +57,7 @@ export default async function Page({params, searchParams}: {params: Promise<{id:
   const resultUserData = await getUserByUsername(data.id.replace("%40", ""))
 
   if(resultUserData.status == 200 && resultUserData.data){
-    // initialUser = resultUserData.data
+    initialUser = resultUserData.data
     types = resultUserData.data.Projects.map((project) => ({id: project.Type.id, name: project.Type.name}));
   } else{
     notFound()
