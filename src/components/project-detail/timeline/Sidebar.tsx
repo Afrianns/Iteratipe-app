@@ -11,7 +11,6 @@ export default function Sidebar({ children }: {children: React.ReactNode }) {
 
     const data = useSearchParams()
 
-
     return (
         <div className={`card-style absolute transition-style right-0 top-0 overflow-y-auto h-full flex flex-col z-1 ${data.get("node") ? 'w-140' : 'w-0'}`}>
             <section className="p-5 pb-0 flex items-center justify-between mb-5">
@@ -27,7 +26,7 @@ export default function Sidebar({ children }: {children: React.ReactNode }) {
                 </button>
             </section>
             {isEdit ? 
-                <TimelineSidebarEdit params={data} />
+                <TimelineSidebarEdit />
             :
                 <>
                     {children}

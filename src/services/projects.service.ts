@@ -186,7 +186,8 @@ export async function getCurrentUserProjects(clerkUserId: string): Promise<retur
                             select: {
                                 project_id: true,
                             }
-                        }
+                        },
+                        visibility: true
                     },
                 },
             }
@@ -416,7 +417,7 @@ const remapNodes = <T extends {
   updated_at: Date | null
   type: string | null
   project_id: number
-  thumbnail: string | null
+  image_url: string | null
   start_at: Date | null
   end_at: Date | null
   content: string | null
@@ -434,7 +435,7 @@ const remapNodes = <T extends {
                 y: Number(node.position_y),
             },
             data: {
-                // thumbnail: node.thumbnail,
+                image_url: node.image_url || "",
                 title: node.title || "",
                 type: node.type || "",
                 content: node.content || "",

@@ -126,8 +126,6 @@ export default function Main({ projectID }: {projectID: string}) {
             }
             
             setStartandEndNode(containSTART, containEND, true)
-            
-            console.log("get called many times?", project)
 
             if(edges.length > 0) {
                 setGlobalEdges(edges)

@@ -45,7 +45,7 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
           INSERT INTO "Nodes" (
             uid,
             project_id,
-            thumbnail,
+            image_url,
             title,
             type,
             start_at,
@@ -60,7 +60,7 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
           ON CONFLICT (uid) 
           DO UPDATE SET 
             title = EXCLUDED.title,
-            thumbnail = EXCLUDED.thumbnail,
+            image_url = EXCLUDED.image_url,
             type = EXCLUDED.type,
             start_at = EXCLUDED.start_at,
             end_at = EXCLUDED.end_at,
@@ -69,7 +69,7 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
             position_y = EXCLUDED.position_y, 
             handle_type = EXCLUDED.handle_type, 
             updated_at = NOW()
-          RETURNING title, thumbnail, type, TO_CHAR(start_at, 'DD FMMonth YYYY') as start_date, TO_CHAR(end_at, 'DD FMMonth YYYY') as end_date, content, position_x, position_y, handle_type, uid
+          RETURNING title, image_url, type, TO_CHAR(start_at, 'DD FMMonth YYYY') as start_date, TO_CHAR(end_at, 'DD FMMonth YYYY') as end_date, content, position_x, position_y, handle_type, uid
       `;
 
       if(result){

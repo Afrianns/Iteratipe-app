@@ -13,7 +13,7 @@ import z from "zod";
 
 
 interface SaveTimelineTimelineType {
-  paths: string[] 
+  paths: string[]
   globalEdges: Edge[] 
   globalNodes: timelineNodeType[] 
   setGlobalNodes: (params: setNode<timelineNodeType>) => void 
@@ -132,6 +132,7 @@ export const useCheckModifiedTimeline = () => {
           y: Math.round(position.y * 100) / 100
         },
         data: {
+          image_url: data.image_url,
           title: data.title,
           type: data.type,
           content: data.content,

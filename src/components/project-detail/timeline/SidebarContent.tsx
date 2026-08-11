@@ -13,6 +13,7 @@ export default function SidebarContent({params}: {params: string | undefined}) {
 
     let nodeData: timelineNodeDataType = {
         title: "",
+        image_url: "",
         content: "",
         end_at: "",
         handleType: handleEnum.START,

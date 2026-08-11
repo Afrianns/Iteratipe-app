@@ -1,45 +1,68 @@
 "use client";
 
 import { Timer } from "lucide-react";
-import { useEffect, useState } from "react";
-import { nodeDataType } from "@/types/types";
+import { startTransition, useActionState, useEffect, useState } from "react";
+import { nodeDataType, returnDataType, timelineNodeDataType, timelineNodeType } from "@/types/types";
 import { DatePickerRange } from "./DatePickerRange";
 import { useTimelineStateStore } from "@/hooks/useTimelineStateStore";
 import { formatFlexibleDuration } from "@/lib/convertDateinDuration";
 import { ErrorMessageList } from "@/components/ErrorMessageList";
-import { ReadonlyURLSearchParams, usePathname } from "next/navigation";
+import { ReadonlyURLSearchParams, usePathname, useSearchParams } from "next/navigation";
 import { saveTimeline, useCheckModifiedTimeline } from "@/lib/autosave";
 import { NodeDataSchema } from "@/lib/validations";
 import z from "zod";
 import { toast } from "sonner";
+import Upload from "./upload";
+import axios from "axios";
+import { updateNode } from "@/actions/nodes";
+import { FormUpdateType, saveCurrentData, storeImage, ValidationMessagesType } from "@/actions/upload";
+import { handleEnum } from "@/types/enum";
 
 
-interface ValidationMessagesType {
-    title?: string[]
-    type?: string[]
-    start_at?: string[]
-    end_at?: string[]
-    content?: string[]
+const initialData: FormUpdateType = {
+    status: 0,
+    message: ""
 }
 
-export default function SidebarFormEdit({params}: {params: ReadonlyURLSearchParams}) {
+export default function SidebarFormEdit() {
 
     const { globalNodes, globalEdges,  setGlobalNodes, setGlobalEdges, setLastGlobalEdges, setLastGlobalNodes, updateDataNode, getNodeById } = useTimelineStateStore();
     const unsaveChanges = useCheckModifiedTimeline()
 
     const [validationMessages, setValidationMessages] = useState<ValidationMessagesType>({})
-    
+    const [file, setFile] = useState<File>()
+
     const pathname = usePathname()
+    const params = useSearchParams();
     const paths = pathname.split("/")
 
     const [durationDate, setDurationDate] = useState(formatFlexibleDuration(new Date().toLocaleString(), new Date().toLocaleString()));
 
-    const [nodeData, setNodeData] = useState<nodeDataType>({
-        title: "",
-        type: "",
-        content: "",
-        start_at: "",
-        end_at: ""
+    
+     const [state, formAction, isPending] = useActionState(saveCurrentData, initialData)
+                    // setLastGlobalNodes({...globalNodes, ...result.data})
+
+    console.log('state form ',state)
+    const [nodeData, setNodeData] = useState<timelineNodeType>({
+        id: "",
+        position: {
+            x: 601.2764748728747,
+            y: 204.9859404710946
+        },
+        data: {
+            handleType: handleEnum.MAIN,
+            title: "",
+            type: "",
+            start_at: "",
+            end_at: "",
+            content: "",
+            image_url: ""
+        },
+        origin: [
+            0.5,
+            0.5
+        ],
+        type: "cardNode"
     })
 
     useEffect(() => {
@@ -48,7 +71,7 @@ export default function SidebarFormEdit({params}: {params: ReadonlyURLSearchPara
         if(nodeId != null){
             const node = getNodeById(nodeId);
             if(node != undefined && node.data){
-                setNodeData(node.data)
+                setNodeData(node)
                 setDurationDate(formatFlexibleDuration(node.data.start_at as string, node.data.end_at as string))
             }
         }
@@ -57,48 +80,66 @@ export default function SidebarFormEdit({params}: {params: ReadonlyURLSearchPara
     const updateNodeData = (args: Record<string, string>) => {
         const nodeId = params.get("node");
         if(nodeId != null) {
-            let updateDate = {...nodeData, ...args};
+            console.log('args ',args)
+            let updateDate = {...nodeData, data: {...nodeData.data, ...args}};
             setNodeData(updateDate)
-            updateDataNode(nodeId, updateDate)
+            updateDataNode(nodeId, updateDate.data)
         }
     } 
 
-    const saveCurrentData = async () => {    
-        const paths = pathname.split('/');
+    const beforeUpdate = async (formData: FormData) => {
 
-        const validation = NodeDataSchema.safeParse(nodeData)
+        try {
+            if(file){
+                const fileData  = new FormData()
+                fileData.append("file", file)
 
-        if(validation.success){
-            console.log(validation)
-            const result = await saveTimeline({paths, globalEdges, globalNodes, setGlobalEdges, setGlobalNodes})
-        
-            if(result.data?.result_nodes.status == 200 || result.data?.result_nodes.node) setLastGlobalNodes(result.data.result_nodes.node)
-            if(result.data?.result_edges.status == 200 || result.data?.result_edges.edges) setLastGlobalEdges(result.data.result_edges.edges)
+                const response = await axios.post("/api/upload", fileData)
 
-        } else{
-            setValidationMessages(z.flattenError(validation.error).fieldErrors);
+                if(response.status == 200){
+                    formData.append("image_url", response.data.secure_url)
+                } else{
+                    throw new Error(response.statusText);
+                }
+            }
+            
+            startTransition(() => {
+                formAction(formData);
+            });
+        } catch (error) {
+            if(error instanceof Error){
+                toast.error(error.message)
+            }
         }
-
-        
-    };
-
+    }
     return (
-        <form className="flex flex-col h-full">
+        <form action={beforeUpdate} className="flex flex-col h-full">
+            {state.status}
+            {/* additional node data */}
+            <input type="hidden" name="project_id" value={paths[2].split("%E2%80%94")[1]} />
+            <input type="hidden" name="node_id" value={params.get("node") || ""} />
+            <input type="hidden" name="pos_x" value={nodeData.position.x} />
+            <input type="hidden" name="pos_y" value={nodeData.position.y} />
+            <input type="hidden" name="handle_type" value={nodeData.data.handleType} />
+
+            <section className="space-y-2 px-5 pt-3">
+                <Upload setFile={setFile} updateNodeData={updateNodeData} nodeData={nodeData.data} />
+            </section>
             <section className="space-y-2 px-5 pt-3">
                 <div className="flex items-center justify-between gap-x-2">
                     <div className="w-4/6">
                         <label htmlFor="title" className="text-xs font-light">Title</label>
-                        <input type="text" className="input-style h-10!" value={nodeData.title} onChange={(e) => updateNodeData({"title": e.target.value})} name="title" id="title" />
+                        <input type="text" className="input-style h-10!" value={nodeData.data.title} onChange={(e) => updateNodeData({"title": e.target.value})} name="title" id="title" />
                     </div>
                     <div className="w-2/6">
                         <label htmlFor="type" className="text-xs font-light">Type</label>
-                        <input type="text" className="input-style h-10!" value={nodeData.type} onChange={(e) => updateNodeData({"type": e.target.value})} name="type" id="type" />
+                        <input type="text" className="input-style h-10!" value={nodeData.data.type} onChange={(e) => updateNodeData({"type": e.target.value})} name="type" id="type" />
                     </div>
                 </div>
                 <ErrorMessageList inputName="title" messages={validationMessages.title} />
                 <ErrorMessageList inputName="type" messages={validationMessages.type} />
                 <div className="flex gap-x-5 items-center text-main-text/50 text-[10px] pt-2">
-                    <DatePickerRange key={`${nodeData.start_at}-${nodeData.end_at}`} updateNodeData={updateNodeData} initialStartDate={nodeData.start_at as string} initialEndDate={nodeData.end_at as string} durationDateFn={setDurationDate} />
+                    <DatePickerRange key={`${nodeData.data.start_at}-${nodeData.data.end_at}`} updateNodeData={updateNodeData} initialStartDate={nodeData.data.start_at as string} initialEndDate={nodeData.data.end_at as string} durationDateFn={setDurationDate} />
                     <div className="flex items-center justify-between gap-2">
                         <Timer className="w-3 h-3" />
                         <p>{ durationDate || "0 Week" }</p>
@@ -110,7 +151,7 @@ export default function SidebarFormEdit({params}: {params: ReadonlyURLSearchPara
 
             <div className="px-5 pb-5 pt-2">
                 <label htmlFor="content" className="text-xs font-light">Content</label>
-                <textarea className="input-style min-h-30" name="content" id="content" value={nodeData.content} onChange={(e) => updateNodeData({"content": e.target.value})}></textarea>
+                <textarea className="input-style min-h-30" name="content" id="content" value={nodeData.data.content} onChange={(e) => updateNodeData({"content": e.target.value})}></textarea>
                 <ErrorMessageList inputName="Content" messages={validationMessages.content} />
             </div>
             
@@ -122,9 +163,17 @@ export default function SidebarFormEdit({params}: {params: ReadonlyURLSearchPara
                             No changes
                         </button>
                     :
-                        <button type="button" onClick={saveCurrentData} className="py-2 px-5 bg-secondary/50 hover:bg-secondary cursor-pointer rounded-lg text-main">
-                            Save
-                        </button>
+                        <>
+                            {isPending ? 
+                                <button type="button" className="py-2 px-5 'bg-secondary/20 cursor-not-allowed rounded-lg text-main">
+                                    Loading...
+                                </button>
+                                : 
+                                <button type="submit" className="py-2 px-5 bg-secondary/50 hover:bg-secondary cursor-pointer rounded-lg text-main">
+                                    Save
+                                </button>
+                            }
+                        </>
                     }
                 </div>
             </section>
@@ -141,3 +190,25 @@ function limitText(text: string, maxLength = 100) {
   // Cut the text and append the ellipses
   return text.slice(0, maxLength) + "...";
 }
+
+// {
+//     "id": "b8f4c5b2-c97d-480c-94d1-0927f8e5ec65",
+//     "position": {
+//         "x": 601.2764748728747,
+//         "y": 204.9859404710946
+//     },
+//     "data": {
+//         "handleType": "end",
+//         "title": "",
+//         "type": "",
+//         "start_at": "",
+//         "end_at": "",
+//         "content": "",
+//         "image_url": ""
+//     },
+//     "origin": [
+//         0.5,
+//         0.5
+//     ],
+//     "type": "cardNode"
+// }

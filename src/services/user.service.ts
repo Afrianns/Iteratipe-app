@@ -146,7 +146,8 @@ export const getUserByUsername = async (username: string): Promise<returnDataTyp
                   select: {
                       project_id: true,
                   }
-              }
+              },
+              visibility: true
             }
           }
         }

@@ -2,7 +2,7 @@
 
 import Header from "@/components/Header"
 import { getUserByUsername } from "@/services/user.service"
-import { labelType, UserType } from "@/types/types"
+import { labelType, ProjectPreviewType, UserType } from "@/types/types"
 import { formatDistanceStrict } from "date-fns"
 import Image from "next/image"
 import { notFound } from "next/navigation"
@@ -13,21 +13,8 @@ import { auth } from "@clerk/nextjs/server"
 import Link from "next/link"
 import { Settings } from "lucide-react"
 
-interface ProjectPreviewType extends UserType {
-  Projects: {
-      uid: string
-      title: string
-      Status: labelType
-      Type: labelType
-      created_at: Date
-      _count: { 
-          Nodes: number
-      }
-      Users: {
-          full_name: string
-          username: string
-      }
-  }[]
+interface UserProjectPreviewType extends UserType {
+  Projects: ProjectPreviewType[]
 }
 export default async function Page({params, searchParams}: {params: Promise<{id: string}>, searchParams: Promise<{ [key: string]: string | string[] | undefined }>}) {
   const data = await params
@@ -35,7 +22,7 @@ export default async function Page({params, searchParams}: {params: Promise<{id:
 
   const { userId } = await auth()
 
-  let initialUser: ProjectPreviewType = {
+  let initialUser: UserProjectPreviewType = {
     id: 0,
     clerk_user_id: "",
     first_name: "",

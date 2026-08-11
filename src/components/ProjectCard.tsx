@@ -1,8 +1,8 @@
 "use client"
 
 import { bookmarkProject } from "@/services/bookmark.service";
-import { ProjectPreviewType } from "@/types/types";
-import { Bookmark, Eye, Heart, Layers } from "lucide-react";
+import { ProjectPreviewType, VISIBLE } from "@/types/types";
+import { Bookmark, Eye, GlobeLock, Heart, Layers } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -52,16 +52,17 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
     }
     
     return (
-        <div className="card-style-secondary p-0! w-full transition-style hover:shadow-lg! hover:-translate-y-1 relative h-full max-h-80 overflow-hidden space-y-3">
+        <div className="card-style-secondary p-0! w-full transition-style hover:shadow-lg! hover:-translate-y-1 h-full max-h-80 overflow-hidden space-y-3">
             <div className="h-20 relative">
                 <Image key={imageName} src={`/images/${imageName}`} draggable={false} fill alt="thumbnail" className="absolute object-cover" />
-                <span className="badge-style-secondary absolute bottom-3 left-3 text-grayish-dark text-xs flex gap-x-1 items-center rounded-2xl">
-                    <Layers className="w-3" />
-                    {projectData._count.Nodes > 1 ?
-                       <>{projectData._count.Nodes} Steps</>
-                    :
-                        <>0 Step</>
-                    }
+
+                <span className="flex items-center gap-x-2 text-xs badge-style-secondary absolute bottom-3 left-3 rounded-2xl">
+                    <Layers className="w-3 h-3 text-main-text" />
+                    {stepReadability(projectData._count.Nodes)}
+                </span>
+                <span title={`this project is ${visiblityReadability(projectData.visibility)}`} className="flex items-center gap-x-2 text-xs badge-style-secondary absolute bottom-3 right-3 rounded-2xl">
+                    <GlobeLock className="w-3 h-3 text-main-text" />
+                    {visiblityReadability(projectData.visibility)}
                 </span>
             </div>
             <div className="p-4 pt-0 space-y-3">
@@ -69,30 +70,34 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
                     <p className="badge-style bg-green-100">{projectData.Type?.name}</p>
                     <p className="badge-style bg-amber-100">{projectData.Status?.name}</p>
                 </div>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <Link href={`./${currentPath}/${(projectData.title).toLowerCase().split(" ").join("-")}—${projectData.uid}`} className="h-three-style capitalize hover:underline cursor-pointer">{projectData.title}</Link>
-                        <p className="span-style flex items-center gap-x-1 text-xs">
-                            By
-                            <Link href={`${APP_URL}/user/${projectData.Users.username}`} className="p-style hover:underline hover:cursor-pointer text-xs! text-main!">{projectData.Users?.full_name}</Link>
-                        </p>    
-                    </div>
-                    <p onClick={likeThis} className={`flex text-xs items-center gap-x-1 hover:bg-light-gray px-3 rounded-full cursor-pointer ${like ? "bg-light-red/10 text-light-red" : "hover:bg-light-gray"}`}>
-                        <Heart className={`w-3 ${like && "text-light-red fill-light-red"}`} />
-                        {likeCount}
-                    </p>
+                <div>
+                    <Link href={`./${currentPath}/${(projectData.title).toLowerCase().split(" ").join("-")}—${projectData.uid}`} className="h-three-style capitalize hover:underline cursor-pointer">{projectData.title}
+                    </Link>
+                    <p className="span-style flex items-center gap-x-1 text-xs">
+                        By
+                        <Link href={`${APP_URL}/user/${projectData.Users.username}`} className="p-style hover:underline hover:cursor-pointer text-xs! text-main!">{projectData.Users?.full_name}</Link>
+                    </p>    
                 </div>
                 <div className="flex items-center justify-between">
-                    <p className="flex text-xs items-center gap-x-1">
-                        <Eye className="w-3" />
-                        1,120
-                    </p>
-                    <p onClick={bookmarkThis} className={`flex text-xs items-center gap-x-1 px-3 rounded-full cursor-pointer ${bookmark ? "bg-blue-500/10 text-blue-500" : "hover:bg-light-gray"}`}>
+                    <p onClick={bookmarkThis} className={`flex text-xs items-center gap-x-1 px-3 rounded-full cursor-pointer hover:bg-light-gray ${bookmark && "bg-blue-500/10 text-blue-500"}`}>
                         <Bookmark className={`w-3 ${bookmark && "text-blue-500 fill-blue-500"}`} />
                         {bookmarkCount}
+                    </p>
+
+                     <p onClick={likeThis} className={`flex text-xs items-center gap-x-1 hover:bg-light-gray px-3 rounded-full cursor-pointer ${like && "bg-light-red/10 text-light-red"}`}>
+                        <Heart className={`w-3 ${like && "text-light-red fill-light-red"}`} />
+                        {likeCount}
                     </p>
                 </div>
             </div>
         </div>
     )
+}
+
+const visiblityReadability = (visibility: VISIBLE) => {
+    return (visibility == "SEMI") ? "hybrid" : visibility.toLowerCase()
+}
+
+const stepReadability = (step: number) => {
+    return (step > 1) ? `${step} steps` : `${step} step`
 }

@@ -41,6 +41,7 @@ export default function CanvasSave() {
 
   // popluate react flow with global nodes and edges on initial render 
   useEffect(() => {
+    console.log("saving: ",globalEdges, globalNodes)
     setNodes(globalNodes)
     setEdges(globalEdges)
   }, [globalEdges, globalNodes])

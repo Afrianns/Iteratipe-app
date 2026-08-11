@@ -129,7 +129,7 @@ model Nodes {
   id           Int            @id @default(autoincrement())
   uid          String         @unique @default(dbgenerated("gen_ulid()::uuid")) @db.Uuid
   project_id   Int
-  thumbnail    String?        @db.VarChar(255)
+  image_url    String?        @db.VarChar(255)
   title        String?        @db.VarChar(60)
   type         String?        @db.VarChar(20)
   start_at     DateTime?      @db.Timestamp(6)

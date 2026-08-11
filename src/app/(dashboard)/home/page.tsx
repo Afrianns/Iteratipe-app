@@ -9,9 +9,22 @@ import HeaderHome from "./_components/HeaderHome";
 import useMasonry from "@/hooks/useMasonry";
 import { getUser } from "@/services/user.service";
 import { UserType } from "@/types/types";
+import { getTotalAuthUserProjectLikes } from "@/services/like.service";
+import { Link2, SquareArrowOutUpRight } from "lucide-react";
+import Link from "next/link";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL
 
 export default async function Home() {
     const { isAuthenticated, userId } = await auth()
+
+    let totalLike = 0
+
+    const projectLike = await getTotalAuthUserProjectLikes()
+
+    if(projectLike.status == 200 && projectLike.data?.project_total_likes){
+        totalLike = projectLike.data?.project_total_likes
+    }
 
 
     let userAdditionalData: UserType = {
@@ -37,6 +50,8 @@ export default async function Home() {
             userAdditionalData = user.data
         }
     }
+
+    
     
     return (
         <div className="col-span-5 w-full">
@@ -51,12 +66,18 @@ export default async function Home() {
                 :
                     <div className="limit-breaker max-md:mb-20">
                         <div className="my-5">
-                            <h1 className="text-3xl!">Hello, <span className="h-two-style text-3xl!">{userAdditionalData.full_name}</span></h1>
+                            <div className="flex items-center gap-x-3">
+                                <h1 className="text-3xl!">Hello, <span className="h-two-style text-3xl!">{userAdditionalData.full_name}</span></h1>
+                                <Link target="_blank" title="go to public profile." href={`${APP_URL}/user/${userAdditionalData.username}`}>
+                                    <Link2 className="w-5 h-5 text-main" /> 
+                                </Link>
+                            </div>
+                            
 
                             <div className="flex gap-x-3 items-center my-5">
                                 <div className="py-1 px-6 rounded-md bg-lightish">5 Followers</div>
                                 <div className="py-1 px-6 rounded-md bg-lightish">23 Following</div>
-                                <div className="py-1 px-6 rounded-md bg-lightish">120 Likes</div>
+                                <div className="py-1 px-6 rounded-md bg-lightish">{totalLike > 1 ? `${totalLike} Likes` : `${totalLike} Like`}</div>
                             </div>
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">

@@ -2,13 +2,16 @@
 
 import { Prisma } from "@/generated/prisma/client";
 import { convertDateToISOString } from "@/lib/convertDate";
+import { prisma } from "@/lib/db";
 import { uuidRegex } from "@/lib/regexHelpers";
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { saveCurrentStateNodes } from "@/services/nodes.service";
+import { getProjectIDbyUID } from "@/services/projects.service";
 import { syncAndDelete, syncAndDeleteDBWithLocal } from "@/services/syncTimeline.service";
 
 import { returnDataType, timelineNodeType } from "@/types/types";
 import { Sql } from "@prisma/client/runtime/client";
+import { storeImage } from "./upload";
 
 export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeType[]): Promise<returnDataType<{
     nodes: timelineNodeType[]
@@ -23,8 +26,6 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
         
         const startDate = node.data.start_at ? convertDateToISOString(node.data.start_at) : null;
         const endDate = node.data.end_at ? convertDateToISOString(node.data.end_at) : null;
-        
-        // const isTemp = String(node.id).startsWith('node_');
 
         let uid: Sql
 
@@ -40,7 +41,7 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
         mappedNodes.push(Prisma.sql`(
             ${uid},
             (SELECT id FROM "Projects" WHERE uid = ${projectUid}),
-            ${null},
+            ${node.data.image_url},
             ${node.data.title},
             ${node.data.type},
             ${startDate}::timestamp,
@@ -85,6 +86,7 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
                             type: node.type,
                             start_at: node.start_date,
                             end_at: node.end_date,
+                            image_url: node.image_url,
                             content: node.content
                         },
                         origin: [0.5, 0.5],
@@ -113,3 +115,85 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
     }
 }
 
+export const updateNode = async (projectUid: string, nodeToStore: timelineNodeType): Promise<returnDataType<timelineNodeType>>  => {
+
+    let projectId = 0
+    let uuid = "";
+    const isRealUuid = uuidRegex.test(String(nodeToStore.id));
+
+    try {
+        if(isRealUuid){
+            uuid = nodeToStore.id
+        } else{
+            throw new Error("Id is not valid");
+        }
+
+        const resultId = await getProjectIDbyUID(projectUid);
+
+        if(resultId.status == 200 && resultId.data){
+            projectId = resultId.data?.id
+        }
+
+
+        if(projectId == 0 || resultId.status != 200){
+            throw new Error("Cannot find project");
+        }
+
+        const node = await prisma.nodes.upsert({
+            where: {
+                uid: uuid
+            },
+            update: {
+                position_x: nodeToStore.position.x,
+                position_y: nodeToStore.position.y,
+                handle_type: nodeToStore.data.handleType,
+                title: nodeToStore.data.title,
+                type: nodeToStore.data.type,
+                start_at: nodeToStore.data.start_at,
+                end_at: nodeToStore.data.end_at,
+                image_url: nodeToStore.data.image_url,
+                content: nodeToStore.data.content
+            },
+            create: {
+                uid: uuid,
+                project_id: projectId,
+                position_x: nodeToStore.position.x,
+                position_y: nodeToStore.position.y,
+                handle_type: nodeToStore.data.handleType,
+                title: nodeToStore.data.title,
+                type: nodeToStore.data.type,
+                start_at: nodeToStore.data.start_at,
+                end_at: nodeToStore.data.end_at,
+                image_url: nodeToStore.data.image_url,
+                content: nodeToStore.data.content,
+            }
+        })
+
+        if(node){
+            return {
+                status: 200,
+                message: "Sucessful update node",
+                data: {
+                    id: node.uid,
+                    position: {x: Number(node.position_x), y: Number(node.position_y)},
+                    data: { 
+                        handleType: node.handle_type,
+                        title: node.title,
+                        type: node.type,
+                        start_at: node.start_at?.toDateString(),
+                        end_at: node.end_at?.toDateString(),
+                        image_url: node.image_url,
+                        content: node.content
+                    },
+                    origin: [0.5, 0.5],
+                    type: 'cardNode',
+                } as timelineNodeType
+            }
+        } else{
+            throw new Error("Failed to update node");
+            
+        }
+    } catch (error) {
+        return tempErrorHandle(error);
+    }
+}

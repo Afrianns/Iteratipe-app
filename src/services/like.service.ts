@@ -82,3 +82,40 @@ export async function likeProject(projectUid: string): Promise<ReturnType> {
   }
 }
 
+
+export async function getTotalAuthUserProjectLikes(): Promise<returnDataType<{project_total_likes: number}>> {
+
+  const { userId } = await auth();
+  let userDbId = 0;
+
+  try{
+    if(userId){
+      const resultUserId = await getUserID(userId)
+  
+      if(resultUserId.status == 200 && resultUserId.data?.id){
+        userDbId = resultUserId.data.id
+      } else{
+        throw new Error("User id not found. Please try again later!");
+      }
+    }
+
+    const resultTotalLikes = await prisma.likes.findMany({
+        where: {
+          user_id: userDbId
+        }, 
+        select: {
+          id: true
+        }
+    })
+
+    return {
+      status: 200, 
+      message: "Successful retrieved total likes",
+      data: {
+        project_total_likes: resultTotalLikes.length
+      } 
+    }
+  } catch (error) {
+    return tempErrorHandle(error)
+  }
+}

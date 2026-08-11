@@ -70,6 +70,7 @@ export interface WithPivotDataType extends ProjectType {
 
 
 export interface nodeDataType {
+  image_url: string
   title: string
   type: string
   start_at: string
@@ -89,7 +90,7 @@ export interface timelineNodeDataType extends nodeDataType {
 
 export interface NodeDBType {
   title: string,
-  thumbnail: string | null,
+  image_url: string | null,
   type: string,
   start_date: string | null,
   end_date: string | null,
@@ -349,6 +350,7 @@ export interface ProjectPreviewType {
         full_name: string
         username: string
     }
+    visibility: VISIBLE
 }
 
 export type SortingType = "ASC" | "DSC"

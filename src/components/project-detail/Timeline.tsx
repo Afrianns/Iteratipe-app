@@ -33,7 +33,7 @@ export default function Timeline() {
 
     const isSpectator = mode === modeEnum.SPECTATOR;
 
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+    const [nodes,, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
     const nodeChanges = useCallback((changes: NodeChange<timelineNodeType>[]

@@ -140,7 +140,8 @@ export async function getBookmarkedProject(): Promise<returnDataType<ProjectPrev
                       select: {
                           project_id: true,
                       }
-                  }
+                  },
+                  visibility: true
               }
             }
           }

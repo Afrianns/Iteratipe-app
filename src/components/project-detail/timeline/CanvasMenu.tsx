@@ -44,7 +44,8 @@ export default function CanvasMenu() {
                 type: "",
                 start_at: "",
                 end_at: "",
-                content: ""
+                content: "",
+                image_url: ""
             },
             origin: [0.5, 0.5],
             type: 'cardNode',
