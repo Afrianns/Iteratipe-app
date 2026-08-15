@@ -16,7 +16,7 @@ export default async function User({ searchParams }: {searchParams: Promise<{ ad
                     <Header showSearch={false} />
                 </div>
             </div>
-            <div className="container-style">
+            <div className="container-style limit-breaker">
                 <div className="space-y-5 mb-5">
                     <h3 className="h-two-style">Settings</h3>
                     <ProfileNav />

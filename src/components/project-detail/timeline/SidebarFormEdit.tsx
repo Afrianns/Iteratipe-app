@@ -9,14 +9,16 @@ import { formatFlexibleDuration } from "@/lib/convertDateinDuration";
 import { ErrorMessageList } from "@/components/ErrorMessageList";
 import { ReadonlyURLSearchParams, usePathname, useSearchParams } from "next/navigation";
 import { saveTimeline, useCheckModifiedTimeline } from "@/lib/autosave";
-import { NodeDataSchema } from "@/lib/validations";
+import { NodeDataSchema, NodeSchema } from "@/lib/validations";
 import z from "zod";
 import { toast } from "sonner";
 import Upload from "./upload";
 import axios from "axios";
 import { updateNode } from "@/actions/nodes";
-import { FormUpdateType, saveCurrentData, storeImage, ValidationMessagesType } from "@/actions/upload";
+import { FormUpdateType, saveCurrentData, ValidationMessagesType } from "@/actions/upload";
 import { handleEnum } from "@/types/enum";
+import treeifyErrorHandling from "@/lib/treeifyErrorHandling";
+import uploadImage from "@/lib/uploadImage";
 
 
 const initialData: FormUpdateType = {
@@ -24,13 +26,16 @@ const initialData: FormUpdateType = {
     message: ""
 }
 
+const URL = process.env.NEXT_PUBLIC_APP_URL
+
 export default function SidebarFormEdit() {
 
-    const { globalNodes, globalEdges,  setGlobalNodes, setGlobalEdges, setLastGlobalEdges, setLastGlobalNodes, updateDataNode, getNodeById } = useTimelineStateStore();
+    const { globalNodes, lastGlobalNodes, updateSingleNodeToLastAndCurrent, updateSingleNode, getNodeById } = useTimelineStateStore();
     const unsaveChanges = useCheckModifiedTimeline()
 
+    const [uploadLoading, setUploadLoading] = useState<boolean>(false)
+
     const [validationMessages, setValidationMessages] = useState<ValidationMessagesType>({})
-    const [file, setFile] = useState<File>()
 
     const pathname = usePathname()
     const params = useSearchParams();
@@ -39,10 +44,8 @@ export default function SidebarFormEdit() {
     const [durationDate, setDurationDate] = useState(formatFlexibleDuration(new Date().toLocaleString(), new Date().toLocaleString()));
 
     
-     const [state, formAction, isPending] = useActionState(saveCurrentData, initialData)
-                    // setLastGlobalNodes({...globalNodes, ...result.data})
+    const [state, formAction, isPending] = useActionState(saveCurrentData, initialData)
 
-    console.log('state form ',state)
     const [nodeData, setNodeData] = useState<timelineNodeType>({
         id: "",
         position: {
@@ -66,6 +69,26 @@ export default function SidebarFormEdit() {
     })
 
     useEffect(() => {
+        console.log("result- ",state, globalNodes, lastGlobalNodes)
+
+        if(state.status == 200 && state.success){
+            setValidationMessages({})
+            toast.success(state.message)
+            updateSingleNodeToLastAndCurrent(state.success)
+            
+        } 
+        
+        if(state.status == 500){
+            console.log(state)
+            toast.error(state.message)
+        }
+        
+        if(state.error) {
+            setValidationMessages(state.error)
+        }
+    }, [state])
+
+    useEffect(() => {
         // it suppose to get the data from db, but for now get from zustand store
         const nodeId = params.get("node");
         if(nodeId != null){
@@ -80,51 +103,72 @@ export default function SidebarFormEdit() {
     const updateNodeData = (args: Record<string, string>) => {
         const nodeId = params.get("node");
         if(nodeId != null) {
-            console.log('args ',args)
-            let updateDate = {...nodeData, data: {...nodeData.data, ...args}};
-            setNodeData(updateDate)
-            updateDataNode(nodeId, updateDate.data)
+            let updateData = {...nodeData, data: {...nodeData.data, ...args}};
+            console.log('args ',args, updateData)
+            setNodeData(updateData)
+            updateSingleNode(updateData)
         }
     } 
 
     const beforeUpdate = async (formData: FormData) => {
-
-        try {
-            if(file){
-                const fileData  = new FormData()
-                fileData.append("file", file)
-
-                const response = await axios.post("/api/upload", fileData)
-
-                if(response.status == 200){
-                    formData.append("image_url", response.data.secure_url)
-                } else{
-                    throw new Error(response.statusText);
-                }
+        setUploadLoading(true)
+        const validation = NodeSchema.safeParse(nodeData)
+        if(validation.success){
+            storeAndUpdate(formData)
+        } else{
+            let remapErrorMessages = treeifyErrorHandling(z.treeifyError(validation.error))
+            if(remapErrorMessages) {
+                setValidationMessages(remapErrorMessages)
             }
+            setUploadLoading(false)
+        }
+    }
+
+    const storeAndUpdate = async (formData: FormData) => {
+        try {
+
+            if(nodeData.data.image_url.startsWith(`blob:${URL}`)) {
+                const result = await uploadImage(nodeData.data.image_url)
+                if(result.status == 200 && result.data){
+                    formData.append("image_url", result.data.image_url)
+                    formData.append("asset_id", result.data.asset_id)
+                } else{
+                    throw new Error(result.message);
+                }
+            } 
             
+            if (nodeData.data.image_url.startsWith("https://res.cloudinary.com/cloud-store-images/image")){
+                formData.append("image_url", nodeData.data.image_url)
+            }
+
             startTransition(() => {
                 formAction(formData);
             });
+
         } catch (error) {
             if(error instanceof Error){
                 toast.error(error.message)
             }
+        } finally {
+            setUploadLoading(false)
         }
     }
+
+
     return (
         <form action={beforeUpdate} className="flex flex-col h-full">
-            {state.status}
             {/* additional node data */}
+
+            <input type="hidden" name="handle_type" value={nodeData.data.handleType} />
             <input type="hidden" name="project_id" value={paths[2].split("%E2%80%94")[1]} />
             <input type="hidden" name="node_id" value={params.get("node") || ""} />
             <input type="hidden" name="pos_x" value={nodeData.position.x} />
             <input type="hidden" name="pos_y" value={nodeData.position.y} />
-            <input type="hidden" name="handle_type" value={nodeData.data.handleType} />
 
             <section className="space-y-2 px-5 pt-3">
-                <Upload setFile={setFile} updateNodeData={updateNodeData} nodeData={nodeData.data} />
+                <Upload updateNodeData={updateNodeData} nodeData={nodeData.data} />
             </section>
+            <ErrorMessageList inputName="type" messages={validationMessages.image_url} />
             <section className="space-y-2 px-5 pt-3">
                 <div className="flex items-center justify-between gap-x-2">
                     <div className="w-4/6">
@@ -164,7 +208,7 @@ export default function SidebarFormEdit() {
                         </button>
                     :
                         <>
-                            {isPending ? 
+                            {(isPending || uploadLoading) ? 
                                 <button type="button" className="py-2 px-5 'bg-secondary/20 cursor-not-allowed rounded-lg text-main">
                                     Loading...
                                 </button>
@@ -183,11 +227,9 @@ export default function SidebarFormEdit() {
 
 function limitText(text: string, maxLength = 100) {
   if (!text) return "";
-  
-  // If the text is already short enough, return it as is
+
   if (text.length <= maxLength) return text;
   
-  // Cut the text and append the ellipses
   return text.slice(0, maxLength) + "...";
 }
 
@@ -211,4 +253,23 @@ function limitText(text: string, maxLength = 100) {
 //         0.5
 //     ],
 //     "type": "cardNode"
+// }
+
+// if(file){
+//     const fileData  = new FormData()
+    
+//     fileData.append("file", file)
+//     const response = await axios.post("/api/image", fileData)
+
+//     console.log("check response ",response)
+//     if(response.status == 200){
+//         console.log(response.data)
+//         formData.append("image_url", response.data.image_url)
+//         formData.append("asset_id", response.data.asset_id)
+//     } else{
+//         throw new Error(response.statusText);
+//     }
+// } else{
+//     console.log(nodeData, nodeData.data.image_url)
+//     formData.append("image_url", nodeData.data.image_url)
 // }

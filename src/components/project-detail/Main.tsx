@@ -88,7 +88,7 @@ let settings = {
 
 export default function Main({ projectID }: {projectID: string}) {
 
-    const { resetTimeline, setGlobalNodes, setGlobalEdges, setLastGlobalNodes, setLastGlobalEdges, setStartNode, setEndNode } = useTimelineStateStore()
+    const { resetTimeline, setStartNode, setEndNode, setBothLastAndNewNodes, setBothLastAndNewEdges } = useTimelineStateStore()
     const [generalSettingErrors, setGeneralSettingErrors] = useState<generalSettingErrorsType>({})
     const [generalSettings, setGeneralSettings] = useState<generalDataType>(settings)
 
@@ -128,12 +128,10 @@ export default function Main({ projectID }: {projectID: string}) {
             setStartandEndNode(containSTART, containEND, true)
 
             if(edges.length > 0) {
-                setGlobalEdges(edges)
-                setLastGlobalEdges(edges)
+                setBothLastAndNewEdges(edges)
             }
             
-            setGlobalNodes(nodes)
-            setLastGlobalNodes(nodes)
+            setBothLastAndNewNodes(nodes)
         }
 
         getProjectByID().then((project) => {
@@ -171,7 +169,7 @@ export default function Main({ projectID }: {projectID: string}) {
 
     if(menu && !MENU.includes(menu)) {
         return <div>
-            <h1>Ooops....Seem like that menu doesn't exist :\</h1>
+            <h1>Ooops....Seem like the menu doesn't exist :\</h1>
         </div>
     }
 

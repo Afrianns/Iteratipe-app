@@ -5,33 +5,26 @@ import { saveTimeline, useCheckModifiedTimeline } from "@/lib/autosave";
 import { timelineNodeType } from "@/types/types";
 import { Edge, useEdges, useNodes, useReactFlow } from "@xyflow/react";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useShallow } from "zustand/react/shallow";
 
+
 export default function CanvasSave() {
-
-  // prevent hydration error
-  const [isClient, setIsClient] = useState(false);
   
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-  // end prevent hydration error
-  
-  const unsaveChanges = useCheckModifiedTimeline()
-
   const pathname = usePathname();
 
+  
+  const unsaveChanges = useCheckModifiedTimeline();
 
-  const { globalNodes, globalEdges, setGlobalNodes, setGlobalEdges, setLastGlobalNodes, setLastGlobalEdges } = useTimelineStateStore(useShallow((state) => ({
+  const { globalNodes, globalEdges, setGlobalNodes, setGlobalEdges, setBothLastAndNewEdges, setBothLastAndNewNodes } = useTimelineStateStore(useShallow((state) => ({
     globalNodes: state.globalNodes,
     globalEdges: state.globalEdges,
     lastGlobalNodes: state.lastGlobalNodes,
     lastGlobalEdges: state.lastGlobalEdges,
     setGlobalNodes: state.setGlobalNodes,
     setGlobalEdges: state.setGlobalEdges,
-    setLastGlobalNodes: state.setLastGlobalNodes,
-    setLastGlobalEdges: state.setLastGlobalEdges
+    setBothLastAndNewNodes: state.setBothLastAndNewNodes,
+    setBothLastAndNewEdges: state.setBothLastAndNewEdges,
   })))
 
   const { setNodes, setEdges } = useReactFlow();
@@ -41,7 +34,6 @@ export default function CanvasSave() {
 
   // popluate react flow with global nodes and edges on initial render 
   useEffect(() => {
-    console.log("saving: ",globalEdges, globalNodes)
     setNodes(globalNodes)
     setEdges(globalEdges)
   }, [globalEdges, globalNodes])
@@ -65,15 +57,12 @@ export default function CanvasSave() {
 
   // auto save current state of react flow to database every x seconds(i dont know how long it should be, maybe 5 minutes or 10 minutes)
   const saveCurrentState = async () => {
-    
-    const paths = pathname.split('/');
+  
+    const paths = pathname.split("/")
 
-    const result = await saveTimeline({paths, globalEdges, globalNodes, setGlobalEdges, setGlobalNodes})
-    
-    if(result.data?.result_nodes.status == 200 || result.data?.result_nodes.node) setLastGlobalNodes(result.data.result_nodes.node)
-    if(result.data?.result_edges.status == 200 || result.data?.result_edges.edges) setLastGlobalEdges(result.data.result_edges.edges)
-  };
-
+    await saveTimeline({paths, globalNodes, globalEdges, setBothLastAndNewNodes, setBothLastAndNewEdges})
+  }
+  
   return (
     <div className='absolute top-5 right-5 card-style h-fit transition-style rounded-none! overflow-hidden'>
       <span className="p-2 text-xs text-main-dark/30 mr-2 border-l-2 border-light-green hidden">Auto saving...</span>

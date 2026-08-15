@@ -6,6 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { getUserID } from "./user.service";
 import { prisma } from "@/lib/db";
 import { getUserIdAndProjectId } from "./partial.service";
+import { previewCardDataQuery } from "@/lib/prismaQuery";
 
 type ReturnType = returnDataType<{total_bookmarked: number}>
 
@@ -102,47 +103,7 @@ export async function getBookmarkedProject(): Promise<returnDataType<ProjectPrev
           },
           select: {
             Projects: {
-              select: {
-                  uid: true,
-                  title: true,
-                  Status: true,
-                  Type: true,
-                  created_at: true,
-                  _count: {
-                      select: {
-                          Nodes: true,
-                          Bookmarks: true,
-                          Likes: true,
-                      }
-                  },
-                  Users: {
-                      select: {
-                          full_name: true,
-                          username: true,
-                      }
-                  },
-                  Bookmarks: {
-                      where: {
-                          user_id: userDbId
-                      },
-
-                      take: 1,
-                      select: {
-                          project_id: true,
-                      }
-                  },
-                  Likes: {
-                      where: {
-                          user_id: userDbId
-                      },
-
-                      take: 1,
-                      select: {
-                          project_id: true,
-                      }
-                  },
-                  visibility: true
-              }
+              ...previewCardDataQuery(userDbId)
             }
           }
       })

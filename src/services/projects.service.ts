@@ -10,6 +10,7 @@ import { auth } from "@clerk/nextjs/server";
 import { Decimal } from "@prisma/client/runtime/client";
 import { Edge } from "@xyflow/react";
 import { getUserID } from "./user.service";
+import { previewCardDataQuery } from "@/lib/prismaQuery";
 
 
 interface actionDataType {
@@ -150,46 +151,9 @@ export async function getCurrentUserProjects(clerkUserId: string): Promise<retur
             },
             select: { 
                 Projects: {
-                    select: {
-                        uid: true,
-                        title: true,
-                        Status: true,
-                        Type: true,
-                        created_at: true,
-                        _count: {
-                            select: {
-                                Nodes: true,
-                                Bookmarks: true,
-                                Likes: true
-                            }
-                        },
-                        Users: {
-                            select: {
-                                full_name: true,
-                                username: true,
-                            }
-                        },
-                        Bookmarks: {
-                            where: {
-                                user_id: userId
-                            },
-                            take: 1,
-                            select: {
-                                project_id: true,
-                            }
-                        },
-                        Likes: {
-                            where: {
-                                user_id: userId
-                            },
-                            take: 1,
-                            select: {
-                                project_id: true,
-                            }
-                        },
-                        visibility: true
-                    },
-                },
+                    ...previewCardDataQuery(userId),
+                }
+                
             }
         })
 
@@ -445,7 +409,7 @@ const remapNodes = <T extends {
                 // updated_at: node.updated_at,
                 // published_at: node.published_at
             },
-            origin: [0.5, 0.5],
+            origin: [0.5, 0.5], 
             type: "cardNode"
         }
     })

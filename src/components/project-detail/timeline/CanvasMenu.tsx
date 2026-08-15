@@ -5,9 +5,8 @@ import { modeEnum, handleEnum } from '@/types/enum';
 import { timelineNodeType } from '@/types/types';
 import { useReactFlow } from '@xyflow/react';
 import { ChevronDown, Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-let nodeID = 0;
 
 export default function CanvasMenu() {
 

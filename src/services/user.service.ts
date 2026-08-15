@@ -1,6 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/db";
+import { previewCardDataQuery } from "@/lib/prismaQuery";
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { labelType, ProjectPreviewType, returnDataType, UserPreviewType, UserType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
@@ -108,47 +109,7 @@ export const getUserByUsername = async (username: string): Promise<returnDataTyp
 
         include: {
           Projects: {
-            select: {
-              uid: true,
-              title: true,
-              Status: true,
-              Type: true,
-              created_at: true,
-              _count: {
-                  select: {
-                      Nodes: true,
-                      Bookmarks: true,
-                      Likes: true,
-                  }
-              },
-              Users: {
-                  select: {
-                      full_name: true,
-                      username: true,
-                  }
-              },
-              Bookmarks: {
-                  where: {
-                      user_id: userDbId
-                  },
-
-                  take: 1,
-                  select: {
-                      project_id: true,
-                  }
-              },
-              Likes: {
-                  where: {
-                      user_id: userDbId
-                  },
-
-                  take: 1,
-                  select: {
-                      project_id: true,
-                  }
-              },
-              visibility: true
-            }
+            ...previewCardDataQuery(userDbId)
           }
         }
     });

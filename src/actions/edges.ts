@@ -42,7 +42,7 @@ export const autoUpdateEdges = async (projectUid: string, Edges: Edge[]): Promis
 
   // syncing by delete
   try {
-      const result = await syncAndDeleteDBWithLocal("Edges", Edges, projectUid);
+      const result = await syncAndDeleteDBWithLocal("Edges", Edges, projectUid, ["id"]);
 
       console.log("syncing edges: ",result, mappedEdges)
       if(result.status == 200){
@@ -87,6 +87,7 @@ export const autoUpdateEdges = async (projectUid: string, Edges: Edge[]): Promis
         return {
             status: 200,
             message: "No edges to update",
+            data: {edges: []}
         }
     }
 

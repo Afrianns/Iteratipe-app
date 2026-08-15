@@ -7,11 +7,13 @@ import { uuidRegex } from "@/lib/regexHelpers";
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { saveCurrentStateNodes } from "@/services/nodes.service";
 import { getProjectIDbyUID } from "@/services/projects.service";
-import { syncAndDelete, syncAndDeleteDBWithLocal } from "@/services/syncTimeline.service";
+import { syncAndDeleteDBWithLocal } from "@/services/syncTimeline.service";
 
 import { returnDataType, timelineNodeType } from "@/types/types";
 import { Sql } from "@prisma/client/runtime/client";
-import { storeImage } from "./upload";
+import axios from "axios";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL
 
 export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeType[]): Promise<returnDataType<{
     nodes: timelineNodeType[]
@@ -38,10 +40,33 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
             };
         }
 
+        
+        if(node.data.image_url.trim() == "" || node.data.image_url == undefined) {
+            const asset_id: string = await prisma.$queryRaw`SELECT asset_id FROM "Nodes" WHERE uid = ${uid}`
+
+            if(asset_id.length > 0) {
+                const response = await axios.delete(`${APP_URL}/api/image`, {
+                    data: asset_id[0]
+                })
+                
+                if(response.status == 200) {
+                    console.log("response ",response.data)
+                } 
+    
+                if(response.status != 200) 
+                    return {
+                        status: 500,
+                        message: "Something went wrong while updating the image"
+                    };
+            }
+
+        }
+
         mappedNodes.push(Prisma.sql`(
             ${uid},
             (SELECT id FROM "Projects" WHERE uid = ${projectUid}),
             ${node.data.image_url},
+            COALESCE(${node.data.asset_id}, (SELECT asset_id FROM "Nodes" WHERE uid = ${uid})),
             ${node.data.title},
             ${node.data.type},
             ${startDate}::timestamp,
@@ -55,27 +80,42 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
 
     // syncing by delete
     try {
-        const result = await syncAndDeleteDBWithLocal("Nodes", Nodes, projectUid);
+        const result = await syncAndDeleteDBWithLocal("Nodes", Nodes, projectUid, ["id", "asset_id"]);
 
-        if(result.status == 200){
-            console.log(result);
+        console.log(result)
+
+        if(result.status == 200 && result.data){
+
+            await result.data.forEach( async (node: {id: number, asset_id: string}) => {
+                if(node.asset_id != null || node.asset_id != "") {
+                    const response = await axios.delete(`${APP_URL}/api/image`, {
+                        data: {
+                            asset_id: node.asset_id
+                        }
+                    })
+
+                    if(response.status == 200) {
+                        console.log("response ",response.data)
+                    } 
+                    if(response.status != 200) 
+                        throw new Error(response.statusText);
+                }
+            });
         }
-        
         if(result.status == 500){
-            throw new Error("Failed to fetch");   
+            throw new Error(result.message);   
         }
     } catch (error) {
         return tempErrorHandle(error);
     }
 
     try {
-        if(mappedNodes.length > 0){
 
+        if(mappedNodes.length > 0){
             const result = await saveCurrentStateNodes(mappedNodes)
             
             if(result.status == 200 && result.data){
 
-                console.log("node: ",result.data)
                 let mappedTimelineNodes: timelineNodeType[] = result.data.map((node) => {
                     return {
                         id: node.uid,
@@ -84,8 +124,8 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
                             handleType: node.handle_type,
                             title: node.title,
                             type: node.type,
-                            start_at: node.start_date,
-                            end_at: node.end_date,
+                            start_at: node.start_date || "",
+                            end_at: node.end_date || "",
                             image_url: node.image_url,
                             content: node.content
                         },
@@ -101,13 +141,18 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
                         nodes: mappedTimelineNodes
                     }
                 }
-            } 
+            } else{
+                throw new Error(result.message)
+            }
         }
 
 
         return {
             status: 200,
             message: "no syncing happend",
+            data: {
+                nodes: []
+            }
         }
         
     } catch (error) {
@@ -152,6 +197,7 @@ export const updateNode = async (projectUid: string, nodeToStore: timelineNodeTy
                 start_at: nodeToStore.data.start_at,
                 end_at: nodeToStore.data.end_at,
                 image_url: nodeToStore.data.image_url,
+                asset_id: nodeToStore.data.asset_id as string,
                 content: nodeToStore.data.content
             },
             create: {
@@ -165,6 +211,7 @@ export const updateNode = async (projectUid: string, nodeToStore: timelineNodeTy
                 start_at: nodeToStore.data.start_at,
                 end_at: nodeToStore.data.end_at,
                 image_url: nodeToStore.data.image_url,
+                asset_id: nodeToStore.data.asset_id as string,
                 content: nodeToStore.data.content,
             }
         })

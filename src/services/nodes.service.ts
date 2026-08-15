@@ -46,6 +46,7 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
             uid,
             project_id,
             image_url,
+            asset_id,
             title,
             type,
             start_at,
@@ -61,6 +62,7 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
           DO UPDATE SET 
             title = EXCLUDED.title,
             image_url = EXCLUDED.image_url,
+            asset_id = EXCLUDED.asset_id,
             type = EXCLUDED.type,
             start_at = EXCLUDED.start_at,
             end_at = EXCLUDED.end_at,

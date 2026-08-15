@@ -35,7 +35,7 @@ export const DatePickerRange = ({ durationDateFn, updateNodeData, initialStartDa
     console.log("date picker: ", start, end)
 
     if(start != null && end != null) {
-      updateNodeData({"start_at": convertDate(start), "end_at": convertDate(end)})
+      updateNodeData({"start_at": convertDate(start) || "", "end_at": convertDate(end) || ""})
     }
   };
 

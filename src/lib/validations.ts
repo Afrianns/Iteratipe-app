@@ -1,6 +1,8 @@
 import * as z from "zod"; 
 import { convertDateToISOString } from "./convertDate";
 
+const URL = process.env.NEXT_PUBLIC_APP_URL
+
 const LabelSchema = z.object({
   id: z.number(),
   name: z.string("no a string").min(2, "status is too sort").max(30, "status is too long")
@@ -89,8 +91,14 @@ export const NodeDataSchema = z.object({
     const date = convertDateToISOString(val)
     return date
   }),
-  content: z.string("not a string").max(200, "content is too long")
+  content: z.string("not a string").max(200, "content is too long"),
 }).partial();
+
+export const NodeDataSchemaBE = z.object({
+  ...NodeDataSchema.partial().shape,
+  image_url: z.string("image url is not valid").startsWith("https://res.cloudinary.com/cloud-store-images/image").or(z.literal("")).nullish(),
+  asset_id: z.string("not valid asset id").or(z.literal("")).nullish()
+}).partial()
 
 export const NodeSchema = z.object({ 
   id: z.guid(),
@@ -102,7 +110,22 @@ export const NodeSchema = z.object({
     handleType: z.enum(["start", "end", "main"], {
       error: () => ({ message: "Please select a valid handle." }),
     }),
-    ...NodeDataSchema.partial().shape
+    ...NodeDataSchema.partial().shape,
+    image_url: z.string("image url is not valid").refine((val) => val.startsWith("https://res.cloudinary.com/cloud-store-images/image") || val.startsWith(`blob:${URL}`)).or(z.literal("")).nullish(),
+  })
+});
+
+export const NodeSchemaBE = z.object({ 
+  id: z.guid(),
+  position: z.object({
+    x: z.number("not a number"),
+    y: z.number("not a number")
+  }),
+  data: z.object({
+    handleType: z.enum(["start", "end", "main"], {
+      error: () => ({ message: "handle is not a valid." }),
+    }),
+    ...NodeDataSchemaBE.partial().shape
   })
 });
 
@@ -110,3 +133,4 @@ export const NodeSchema = z.object({
 
 
 export const NodeListSchema = z.array(NodeSchema)
+export const NodeListSchemaBE = z.array(NodeSchemaBE)

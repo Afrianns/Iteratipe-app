@@ -22,7 +22,12 @@ export interface TimelineStateType {
   lastGlobalNodes: timelineNodeType[] | []
   lastGlobalEdges: Edge[] | []
   getNodeById: (id: string) => timelineNodeType | undefined
-  updateDataNode: (id: string, nodes: nodeDataType) => void
+  updateSingleNode: (node: timelineNodeType) => void
+  updateSingleNodeToLastAndCurrent: (node: timelineNodeType) => void
+
+  setBothLastAndNewEdges: (edges: Edge[]) => void
+  setBothLastAndNewNodes: (nodes: timelineNodeType[]) => void
+
   setGlobalNodes: (nodes: setNode<timelineNodeType>) => void
   setGlobalEdges: (edges: Edge[]) => void
   setLastGlobalNodes: (nodes: timelineNodeType[]) => void
@@ -351,6 +356,9 @@ export interface ProjectPreviewType {
         username: string
     }
     visibility: VISIBLE
+    Nodes: {
+        image_url: string | null;
+    }[]
 }
 
 export type SortingType = "ASC" | "DSC"

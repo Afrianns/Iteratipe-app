@@ -6,7 +6,7 @@ import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { returnDataType, timelineNodeType } from "@/types/types";
 
 
-export const syncAndDeleteDBWithLocal = async <T extends { id: string }>(tbName: string, items: T[], projectUid: string) => {
+export const syncAndDeleteDBWithLocal = async <T extends { id: string }>(tbName: string, items: T[], projectUid: string, itemToReturn: string[]) => {
     
     let nodeIDs = items.map((node: T) => node.id);
 
@@ -15,12 +15,13 @@ export const syncAndDeleteDBWithLocal = async <T extends { id: string }>(tbName:
     }
     
     try {
-        const result = await syncAndDelete(tbName, nodeIDs, projectUid)
+        const result = await syncAndDelete(tbName, nodeIDs, projectUid, itemToReturn)
 
         if(result.status == 200){
             return {
                 status: 200,
-                message: "Sync delete sucessfuly"
+                message: result.message,
+                data: result.data
             }
         }
 
@@ -36,36 +37,39 @@ interface DeletedRow {
     id: number
 }
 
-export async function syncAndDelete(dbName: string, mappedID: string[], projectUid: string): Promise<returnDataType<DeletedRow[]>> {
-  
-   try {
+export async function syncAndDelete(dbName: string, mappedID: string[], projectUid: string, itemToReturn: string[]): Promise<returnDataType<DeletedRow[]>> {
+
+    const rawFields = itemToReturn.map(field => Prisma.raw(`"${field}"`));
+    const separatedReturningClause = Prisma.join(rawFields, ", ")
+
+    try {
         let result: DeletedRow[] = [];
     
         if(mappedID.length > 0){
-          result = await prisma.$queryRaw<DeletedRow[]>`
+        result = await prisma.$queryRaw<DeletedRow[]>`
                 DELETE FROM "${Prisma.raw(dbName)}" WHERE uid NOT IN (${Prisma.join(mappedID)}) AND project_id = (SELECT id FROM "Projects" WHERE uid = ${projectUid})
-                RETURNING id`;
+                RETURNING ${separatedReturningClause}`;
         }
 
         if(mappedID.length <= 0){
-          result = await prisma.$queryRaw<DeletedRow[]>`
-                DELETE FROM "${Prisma.raw(dbName)}" WHERE project_id = (SELECT id FROM "Projects" WHERE uid = ${projectUid}) RETURNING id`;
+        result = await prisma.$queryRaw<DeletedRow[]>`
+                DELETE FROM "${Prisma.raw(dbName)}" WHERE project_id = (SELECT id FROM "Projects" WHERE uid = ${projectUid}) RETURNING ${separatedReturningClause}`;
         }
-      
-      if(result && Array.isArray(result) && result.length > 0){
-          return {
-              status: 200,
-              message: `Successfully deleted ${dbName.toLowerCase()}`,
-              data: result
-          };
+    
+    if(result && Array.isArray(result) && result.length > 0){
+        return {
+            status: 200,
+            message: `Successfully deleted ${dbName.toLowerCase()}`,
+            data: result
+        };
         } else if (result && Array.isArray(result) && result.length === 0){
-          return {
-              status: 200,
-              message: `No ${dbName.toLowerCase()} to deleted`,
-          };
-      } else{
-          throw new Error("error while fetching data")
-      }
+        return {
+            status: 200,
+            message: `No ${dbName.toLowerCase()} to deleted`,
+        };
+    } else{
+        throw new Error("error while fetching data")
+    }
       
   } catch (error) {
     return tempErrorHandle(error);

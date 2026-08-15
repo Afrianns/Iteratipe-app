@@ -1,11 +1,8 @@
-import { handleTypeEnum } from '@/generated/prisma/enums';
+import { updateNode } from '@/actions/nodes';
 import { modeEnum } from '@/types/enum';
-import { nodeDataType, setNode, timelineNodeDataType, timelineNodeType, TimelineStateType } from '@/types/types';
-import { addEdge, applyEdgeChanges, applyNodeChanges, Connection, Edge, EdgeChange, NodeChange } from '@xyflow/react';
+import { nodeDataType, setNode, timelineNodeType, TimelineStateType } from '@/types/types';
+import { addEdge, applyEdgeChanges, Connection, Edge, EdgeChange } from '@xyflow/react';
 import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
-
-import localforage from "localforage"
 
 export const useTimelineStateStore = create<TimelineStateType>()(
   // persist(
@@ -27,12 +24,15 @@ export const useTimelineStateStore = create<TimelineStateType>()(
     // last global nodes and edges are used to store the last state of the timeline before saving.
     setLastGlobalEdges: (newEdge: Edge[]) => set({ lastGlobalEdges: newEdge }),
     setLastGlobalNodes: (newNode: timelineNodeType[]) => set({ lastGlobalNodes: newNode }),
-    setGlobalEdges: (newEdge: Edge[]) => set({ globalEdges: [...newEdge] }),
+    setGlobalEdges: (newEdge: Edge[]) => set({ globalEdges: newEdge }),
+
+    setBothLastAndNewEdges: (newEdge: Edge[]) => set({ globalEdges: newEdge, lastGlobalEdges: newEdge }),
+    setBothLastAndNewNodes: (newNodes: timelineNodeType[]) => set({ globalNodes: newNodes, lastGlobalNodes: newNodes }),
 
     setGlobalNodes: (newNode: setNode<timelineNodeType>) => {
       if (Array.isArray(newNode)) {
           set(() => ({ 
-              globalNodes: [...newNode] 
+              globalNodes: newNode
           }));
       } else {
         set((state) => ({ 
@@ -41,27 +41,35 @@ export const useTimelineStateStore = create<TimelineStateType>()(
         }));
       }
     },
-    
-    updateDataNode: (id: string, nodeData: nodeDataType) => {
-      
+
+    updateSingleNodeToLastAndCurrent: (nodeToUpdate: timelineNodeType) => {
       set((state) => {
-        const newNodes = state.globalNodes.map((node: timelineNodeType) => node.id == id ? {...node, data: {...nodeData, handleType: node.data.handleType}} : node)
-        return { 
-          globalNodes: newNodes,
-          unsavedChanges: true
+        const updatedNode = state.globalNodes.map((node: timelineNodeType) => node.id == nodeToUpdate.id ? nodeToUpdate : node);
+        const updatedLastNode = state.lastGlobalNodes.map((node: timelineNodeType) => node.id == nodeToUpdate.id ? nodeToUpdate : node);
+        
+        return {
+          globalNodes: updatedNode,
+          lastGlobalNodes: updatedLastNode,
         }
       })
     },
+    updateSingleNode: (nodeToUpdate: timelineNodeType) => {
+      set((state) => {
+        const updatedNode = state.globalNodes.map((node: timelineNodeType) => node.id == nodeToUpdate.id ? nodeToUpdate : node);        
+        return {
+          globalNodes: updatedNode,
+        }
+      })
+    },
+
     deleteNode: (nodeId: string) => set((state) => {
       return {
         globalNodes: state.globalNodes.filter((node) => node.id !== nodeId),
-        unsavedChanges: true
       }
     }),
     deleteEdge: (edgeId: string) => set((state) => {
       return {
         globalEdges: state.globalEdges.filter((edge) => edge.id !== edgeId),
-        unsavedChanges: true
       }
     }),
     setStartNode: (first: boolean) => set({ isStartNodeUsed: first}),
@@ -69,14 +77,12 @@ export const useTimelineStateStore = create<TimelineStateType>()(
     setEdgesChange: (changes: EdgeChange[]) => set((state) => {
       return { 
         globalEdges: applyEdgeChanges(changes, state.globalEdges),
-        unsavedChanges: true
       }
     
     }),
     setConnection: (connection: Connection) => {
       set((state) => ({
         globalEdges: addEdge(connection, state.globalEdges),
-        unsavedChanges: true
       }))
     },
 
@@ -93,20 +99,6 @@ export const useTimelineStateStore = create<TimelineStateType>()(
       }))
     }
   })
-  // ,{ 
-  //   name: "temp-timelines-datas",
-  //   storage: createJSONStorage(() => localforage),
-  //   partialize: (state) => ({
-  //       globalNodes: state.globalNodes,
-  //       globalEdges: state.globalEdges,
-  //       lastGlobalNodes: state.lastGlobalNodes,
-  //       lastGlobalEdges: state.lastGlobalEdges,
-  //       mode: state.mode,
-  //       isStartNodeUsed: state.isStartNodeUsed,
-  //       isEndNodeUsed: state.isEndNodeUsed,
-  //       MainNodeLeft: state.MainNodeLeft
-  //     })
-  //  })
 );
 
 

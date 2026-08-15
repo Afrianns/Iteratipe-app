@@ -10,11 +10,7 @@ export default async function AuthenticatedProjectLists() {
 
     if(userId){
         const result = await getCurrentUserProjects(userId)
-        if(result.status == 200 && result.data){
-            projects = result.data
-            console.log(projects)
-        }
-
+        if(result.status == 200 && result.data) projects = result.data
     }
     return (
         <>

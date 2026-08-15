@@ -94,29 +94,23 @@ export const CommentLists = () => {
             //     set.delete(comment.id)
             //     return set
             // })
-
-            console.log('retrieved ',retrieved)
-
             getReplies(comment)
         }
     }
 
     const toggleReplies = (id: number, comment: CommentWithReplies) => {
-        console.log("toggle ",retrieved, comment)
         setShowRepliesByID(id == showRepliesByID ? 0 : id)
         getReplies(comment);
     }
 
     const getReplies = async (comment: CommentWithReplies) => {
 
-        console.log("get replies: ", retrieved, comment)
         // cause of that this will false(id is in there)
         if(!retrieved.has(comment.id)){        
 
             const result = await getRepliesComments(comment.id)
             const replies = result.data;
 
-            console.log(result)
             if(result.status == 200){
 
                 if(replies){
@@ -201,8 +195,6 @@ export const CommentLists = () => {
 
 
 const filterComments = (comments: CommentWithReplies[], params: string) => {
-    console.log("comments", comments, params);
-
     if(params != "NOT_AN_ID") {
         return comments.filter((comment) => comment.Nodes?.uid == params)
     }

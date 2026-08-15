@@ -52,9 +52,13 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
     }
     
     return (
-        <div className="card-style-secondary p-0! w-full transition-style hover:shadow-lg! hover:-translate-y-1 h-full max-h-80 overflow-hidden space-y-3">
-            <div className="h-20 relative">
-                <Image key={imageName} src={`/images/${imageName}`} draggable={false} fill alt="thumbnail" className="absolute object-cover" />
+        <div className="card-style-secondary p-0! w-full transition-style hover:shadow-lg! hover:-translate-y-1 h-full overflow-hidden space-y-3">
+            <div className={`relative ${ projectData.Nodes[0]?.image_url ? "h-50":"h-20"}`}>
+                {projectData.Nodes[0]?.image_url ?
+                    <Image src={projectData.Nodes[0].image_url} draggable={false} fill alt="thumbnail" className="absolute object-cover" />
+                :
+                    <Image src={`/images/${imageName}`} draggable={false} fill alt="thumbnail" className="absolute object-cover" />
+                }
 
                 <span className="flex items-center gap-x-2 text-xs badge-style-secondary absolute bottom-3 left-3 rounded-2xl">
                     <Layers className="w-3 h-3 text-main-text" />
