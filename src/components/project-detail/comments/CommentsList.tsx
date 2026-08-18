@@ -16,6 +16,7 @@ import DOMPurify from 'dompurify'
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
+import { useAuth } from "@clerk/nextjs"
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL
 
@@ -31,6 +32,8 @@ type CommentTextEditorHandle = {
 export const CommentLists = () => {
 
     const { comments, projectId, selectedValuePost, setComments, selectedNodeIdComments, sortingComment } = useContext(CommentContext)
+
+    const { isSignedIn, isLoaded } = useAuth()
 
     const [hidReplyInput, setHidReplyInput] = useState<number>(0)
     const [showRepliesByID, setShowRepliesByID] = useState<number>(0)
@@ -137,9 +140,9 @@ export const CommentLists = () => {
                             <div key={comment.id} className="w-fill border border-grayish/80 px-5 py-3 rounded-md relative">
                                 <div className="relative">
                                     <CommentItem comment={comment}>
-                                            <div className={`w-fit py-0 px-3 rounded-full cursor-pointer flex items-center gap-x-1 ${showRepliesByID == comment.id ? 'bg-main hover:bg-main/90 text-whitish' : 'bg-grayish/50 hover:bg-grayish/30'}`} onClick={() => toggleReplies(comment.id, comment)}>
-                                                <MessageSquareMore className="w-3" />
-                                            </div>
+                                        <div className={`w-fit py-0 px-3 rounded-full cursor-pointer flex items-center gap-x-1 ${showRepliesByID == comment.id ? 'bg-main hover:bg-main/90 text-whitish' : 'bg-grayish/50 hover:bg-grayish/30'}`} onClick={() => toggleReplies(comment.id, comment)}>
+                                            <MessageSquareMore className="w-3" />
+                                        </div>
                                     </CommentItem>
 
                                     {/* <div className="top-10 bottom-5 left-5 z-1 border-l-5 border-gray-200 w-0 absolute" /> */}
@@ -169,21 +172,20 @@ export const CommentLists = () => {
                                         }
                                     </div>
                                 </div>
-                            
-                                <p className="text-main text-xs hover:underline cursor-pointer text-right" onClick={() => toggleReplyForm(comment.id)}>Reply</p>
-                                <div className="my-5 max-w-200 card-style-secondary space-y-3 p-3!" hidden={hidReplyInput != comment.id}>
-                                    <CommentTextEditor key={comment.id} id={comment.id} ref={editorRef.current[id]} />
-                                    <button
-                                        onClick={() => saveComment(comment, id)}
-                                        className="button-style-secondary text-xs! py-2! px-5! rounded-full text-right"
-                                    >
-                                        Post
-                                    </button>
-                                </div>
-                                {/* <form action={(e) => saveComment(comment)} className="card-style p-2 ml-5 mt-3" hidden={hidReplyInput != comment.id}>
-                                    <textarea name="comment" id="comment" className="input-style"></textarea>
-                                    <button className="py-2 px-5 bg-main/2 hover:bg-secondary cursor-pointer rounded-lg text-main text-xs">Post</button>
-                                </form> */}
+                                {(isSignedIn && isSignedIn) &&
+                                    <>
+                                        <p className="text-main text-xs hover:underline cursor-pointer text-right" onClick={() => toggleReplyForm(comment.id)}>Reply</p>
+                                        <div className="my-5 max-w-200 card-style-secondary space-y-3 p-3!" hidden={hidReplyInput != comment.id}>
+                                            <CommentTextEditor key={comment.id} id={comment.id} ref={editorRef.current[id]} />
+                                            <button
+                                                onClick={() => saveComment(comment, id)}
+                                                className="button-style-secondary text-xs! py-2! px-5! rounded-full text-right"
+                                            >
+                                                Post
+                                            </button>
+                                        </div>
+                                    </>
+                                }
                             </div>
                         )
                     })}
@@ -260,16 +262,31 @@ const LikeButton = ({comment}: {comment: CommentType}) => {
     const [liked, setLiked] = useState<boolean>(comment.Comment_likes.length == 1)
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const likeThisPost = (commentId: number) => {
-        setLiked(!liked)
+    const { isLoaded, isSignedIn } = useAuth()
 
-        if (timerRef.current) {
-            clearTimeout(timerRef.current);
+
+    const likeThisPost = (commentId: number) => {
+
+        if(isSignedIn && isLoaded) {
+            setLiked(!liked)
+    
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+    
+            timerRef.current = setTimeout(async () => {
+                const result = await likeComment(commentId);
+                
+                if(result?.status == 500){
+                    toast.warning(result.message)
+                }
+    
+            }, 500); // 500ms
+        } else{
+            toast.warning("you need to signing first")
         }
 
-        timerRef.current = setTimeout(() => {
-            likeComment(commentId);
-        }, 500); // 500ms
+
     }
     return (
         <div className={`w-fit py-0 px-3 rounded-full cursor-pointer ${liked ? 'bg-secondary hover:bg-secondary/80' : 'bg-grayish/50 hover:bg-grayish/30'}`} onClick={() => likeThisPost(comment.id)}>

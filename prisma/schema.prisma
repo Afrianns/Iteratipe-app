@@ -99,7 +99,7 @@ model Projects {
   client_name      String?         @db.VarChar(255)
   created_at       DateTime        @default(now()) @db.Timestamp(6)
   updated_at       DateTime?       @db.Timestamp(6)
-  status_id        Int             @unique
+  status_id        Int             
   Bookmarks        Bookmarks[]
   Likes            Likes[]
   Project_tags     Project_tags[]
@@ -115,7 +115,7 @@ model Projects {
 model Status {
   id       Int       @id @default(autoincrement())
   name     String    @unique @db.VarChar(60)
-  projects Projects?
+  projects Projects[]
 }
 
 model Tags {

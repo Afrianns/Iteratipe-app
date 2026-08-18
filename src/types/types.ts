@@ -239,7 +239,7 @@ export interface DBSingleProjectByID {
   // id: number
   projectTitleInfo: DBProjectTitleInfo
   overviewInfo: OverviewInfo
-  settingInfo: DBSettingInfo
+  settingInfo?: DBSettingInfo
   Nodes: timelineNodeType[]
   Edges: Edge[]
   created_at: Date | null

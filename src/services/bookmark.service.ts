@@ -15,6 +15,16 @@ export async function bookmarkProject(projectUid: string): Promise<ReturnType> {
   let userId = 0;
   let projectId = 0;
 
+
+  const user = await auth()
+
+  if(!user.isAuthenticated) {
+    return {
+      status: 500,
+      message: "You can't bookmark this right now, and you seem bypass bookmark :/"
+    }
+  }
+
   let returnValue: ReturnType = {
     status: 500,
     message: "Oops..something went wrong :/",

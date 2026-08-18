@@ -1,8 +1,9 @@
 "use client"
 
-import { ReactFlow, Background, Controls, MiniMap, ReactFlowProvider, Edge, useNodesState, useEdgesState, NodeChange, EdgeChange, Connection, addEdge } from '@xyflow/react';
+import { ReactFlow, Background, Controls, MiniMap, ReactFlowProvider, Edge, useNodesState, useEdgesState, NodeChange, EdgeChange, Connection, addEdge, useReactFlow } from '@xyflow/react';
 import { useCallback, useEffect } from 'react';
 import Card from './timeline/Card';
+import CardIntermediete from './timeline/CardIntermediete';
 import TimelineMenu from './timeline/CanvasMenu';
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
 import { modeEnum } from '@/types/enum';
@@ -11,9 +12,11 @@ import CanvasSave from './timeline/CanvasSave';
 import { useShallow } from 'zustand/react/shallow'
 import { tempErrorHandle } from '@/lib/tempErrorHandle';
 import SidebarContentWrapper from './timeline/SidebarContentWrapper';
+import { useAuth } from '@clerk/nextjs';
 
 const nodeTypes = {
   cardNode: Card,
+  cardIntermedieteNode: CardIntermediete
 };
 
 const initialNodes: timelineNodeType[] = [];
@@ -21,8 +24,13 @@ const initialEdges: Edge[] = [];
 
 export default function Timeline() {
 
-    const { mode, setStartNode, setEndNode, deleteNode, deleteEdge } = useTimelineStateStore(useShallow((state) => ({
+    const { isSignedIn, isLoaded } = useAuth()
+
+
+    const { mode, globalNodes, globalEdges, setStartNode, setEndNode, deleteNode, deleteEdge } = useTimelineStateStore(useShallow((state) => ({
         mode: state.mode,
+        globalNodes: state.globalNodes,
+        globalEdges: state.globalEdges,
         setStartNode: state.setStartNode,
         setEndNode: state.setEndNode,
         deleteNode: state.deleteNode,
@@ -31,10 +39,18 @@ export default function Timeline() {
         resetTimeline: state.resetTimeline
     })))
 
+
     const isSpectator = mode === modeEnum.SPECTATOR;
 
-    const [nodes,, onNodesChange] = useNodesState(initialNodes);
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+
+    // popluate react flow with global nodes and edges on initial render 
+    useEffect(() => {
+        setNodes(globalNodes)
+        setEdges(globalEdges)
+    }, [globalEdges, globalNodes])
 
     const nodeChanges = useCallback((changes: NodeChange<timelineNodeType>[]
     ) => {
@@ -104,23 +120,51 @@ export default function Timeline() {
     return (
         <ReactFlowProvider>
             <div className='relative h-full w-full'>
-                <ReactFlow id="ReactFlow" nodes={nodes} edges={edges} 
-                nodeTypes={nodeTypes} 
-                onNodesChange={nodeChanges} 
-                onConnect={edgeConnectionAdd}
-                defaultEdgeOptions={{ type: "step", animated: true}} 
-                onEdgesChange={edgeChanges}
-                deleteKeyCode={mode == modeEnum.DELETE ? ['Backspace', 'Delete'] : null}
-                onBeforeDelete={nodeDeletion}
-                onlyRenderVisibleElements={true}
-                fitView>
-                    <Background />
-                    <Controls showInteractive={false} />
-                    <MiniMap />
-                </ReactFlow>
-                <SidebarContentWrapper />
-                <TimelineMenu />
-                <CanvasSave />
+                {isLoaded && 
+                    <>
+                        {isSignedIn ?  
+                            <>
+                                <ReactFlow id="ReactFlow" nodes={nodes} edges={edges} 
+                                nodeTypes={nodeTypes}
+                                onNodesChange={nodeChanges} 
+                                onConnect={edgeConnectionAdd}
+                                defaultEdgeOptions={{ type: "step", animated: true}} 
+                                onEdgesChange={edgeChanges}
+                                deleteKeyCode={mode == modeEnum.DELETE ? ['Backspace', 'Delete'] : null}
+                                onBeforeDelete={nodeDeletion}
+                                onlyRenderVisibleElements={true}
+                                fitView>
+                                    <Background />
+                                    <Controls showInteractive={false} />
+                                    <MiniMap />
+                                </ReactFlow>
+                                <SidebarContentWrapper />
+                                <TimelineMenu />
+                                <CanvasSave />
+                            </>
+                        
+                        : 
+                            <>
+                                <ReactFlow id="ReactFlow" nodes={nodes} edges={edges}
+                                nodeTypes={nodeTypes}
+                                onNodesChange={nodeChanges} 
+                                onEdgesChange={edgeChanges}
+                                defaultEdgeOptions={{ type: "step", animated: true}}
+                                onlyRenderVisibleElements={true} 
+                                nodesDraggable={false}
+                                nodesConnectable={false}
+                                edgesFocusable={false}
+                                elementsSelectable={true}
+                                fitView>
+                                    <Background />
+                                    <Controls showInteractive={false} />
+                                    <MiniMap />
+                                </ReactFlow>
+                                <SidebarContentWrapper />
+                            </>
+                        }
+                    </>
+                }
             </div>
         </ReactFlowProvider>
     )

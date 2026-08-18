@@ -13,7 +13,6 @@ export default function CanvasSave() {
   
   const pathname = usePathname();
 
-  
   const unsaveChanges = useCheckModifiedTimeline();
 
   const { globalNodes, globalEdges, setGlobalNodes, setGlobalEdges, setBothLastAndNewEdges, setBothLastAndNewNodes } = useTimelineStateStore(useShallow((state) => ({
@@ -27,16 +26,9 @@ export default function CanvasSave() {
     setBothLastAndNewEdges: state.setBothLastAndNewEdges,
   })))
 
-  const { setNodes, setEdges } = useReactFlow();
   
   const nodes = useNodes();
   const edges = useEdges();
-
-  // popluate react flow with global nodes and edges on initial render 
-  useEffect(() => {
-    setNodes(globalNodes)
-    setEdges(globalEdges)
-  }, [globalEdges, globalNodes])
 
   
   // save current state of react flow to global state every 1 second

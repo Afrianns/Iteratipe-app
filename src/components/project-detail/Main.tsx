@@ -18,6 +18,9 @@ import Comments from './Comments';
 import Settings from './Settings';
 import DetailMenu from '@/components/project-detail/main/DetailMenu';
 import Link from 'next/link';
+import { useAuth } from '@clerk/nextjs';
+import { handleEnum } from '@/types/enum';
+import { is } from 'zod/v4/locales';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL 
 
@@ -94,10 +97,12 @@ export default function Main({ projectID }: {projectID: string}) {
 
     const projectId = projectID.split("%E2%80%94")[1];
 
+    const { isSignedIn } = useAuth()
+
     const [project, setProject] = useState<DBSingleProjectByID>({
         projectTitleInfo: initialProjectTitleInfo,
         overviewInfo: initialOverviewDataInfo,
-        settingInfo: initialSettingData,
+        settingInfo: initialSettingData || undefined,
         Nodes: [],
         Edges: [],
         created_at: null,
@@ -105,11 +110,13 @@ export default function Main({ projectID }: {projectID: string}) {
     })
 
     useEffect(() => {
+        if(isSignedIn == undefined) return
 
         const getProjectByID = async () => {
             const result = await getProjectDetailById(projectId)
             if(result.status == 200 && result.data){
                 setProject(result.data) 
+                console.log('check--- ',result)
                 return result.data
             }
         } 
@@ -127,11 +134,24 @@ export default function Main({ projectID }: {projectID: string}) {
             
             setStartandEndNode(containSTART, containEND, true)
 
+            let modifiedNodes: timelineNodeType[] = []
+            let modifiedEdges: Edge[] = []
+
+            console.log(isSignedIn, edges.length)
+
+            if(!isSignedIn && edges.length > 0) {
+                const modifieditems = simplifiedNodesAndEdges(nodes, edges)
+                modifiedNodes = modifieditems.newIntemedieteNodes
+                modifiedEdges = modifieditems.newEdges
+            } else{
+                modifiedEdges = edges
+            }
+
             if(edges.length > 0) {
-                setBothLastAndNewEdges(edges)
+                setBothLastAndNewEdges(modifiedEdges)
             }
             
-            setBothLastAndNewNodes(nodes)
+            setBothLastAndNewNodes([...nodes, ...modifiedNodes])
         }
 
         getProjectByID().then((project) => {
@@ -161,7 +181,7 @@ export default function Main({ projectID }: {projectID: string}) {
             resetTimeline()
         };
         
-    }, [])
+    }, [isSignedIn])
 
 
     const searchParam = useSearchParams();
@@ -248,11 +268,13 @@ export default function Main({ projectID }: {projectID: string}) {
                         <Comments projectId={projectId} ownerProjectId={project.overviewInfo.user.id} />
                     </div>
 
-                    <div className={menu === "settings" ? "block" : "hidden"}>
-                        <SettingContext.Provider value={{ generalSettings: generalSettings, setGeneralSettings: setGeneralSettings, generalSettingErrors: generalSettingErrors, setGeneralSettingErrors: setGeneralSettingErrors }}>
-                            <Settings />
-                        </SettingContext.Provider>
-                    </div>
+                    {isSignedIn && 
+                        <div className={menu === "settings" ? "block" : "hidden"}>
+                            <SettingContext.Provider value={{ generalSettings: generalSettings, setGeneralSettings: setGeneralSettings, generalSettingErrors: generalSettingErrors, setGeneralSettingErrors: setGeneralSettingErrors }}>
+                                <Settings />
+                            </SettingContext.Provider>
+                        </div>
+                    }
                     <div id="date-picker-root"></div>
                 </div>
             </div>
@@ -269,3 +291,146 @@ const ProjectTitleLoading = () => {
         </div>
     )
 }
+
+
+const simplifiedNodesAndEdges = (nodes: timelineNodeType[], edges: Edge[]) => {
+
+    let edgeStep = 1
+    let newEdges: Edge[] = []
+    let newIntemedieteNodes: timelineNodeType[] = []
+
+    for (const key in nodes) {
+        const result = checkConnectedEdge(nodes[key].id, edges, nodes, edgeStep)
+
+        if(result.target){
+            let intermedieteNodeId = crypto.randomUUID()
+            
+            newEdges.push({
+                "id": `e-${nodes[key].id}-to-${intermedieteNodeId}`,
+                "source": nodes[key].id,
+                "target": intermedieteNodeId
+            }, 
+            {
+                "id": `e-${intermedieteNodeId}-to-${result.target}`,
+                "source": intermedieteNodeId,
+                "target": result.target
+            })
+
+            newIntemedieteNodes.push({
+                "id": intermedieteNodeId,
+                "position": {
+                    "x": (nodes[key].position.x + result.position_x)/2 - 20,
+                    "y": (nodes[key].position.y + result.position_y)/2 - 20
+                },
+                "data": {
+                    "handleType": handleEnum.MAIN,
+                    "image_url": "",
+                    "title": "",
+                    "type": "",
+                    "content": "",
+                    "start_at": "",
+                    "end_at": ""
+                },
+                "origin": [
+                    0.5,
+                    0.5
+                ],
+                "type": "cardIntermedieteNode"
+            })
+        }
+    }
+
+    return { newIntemedieteNodes, newEdges };
+}
+
+
+const checkConnectedEdge = (id: string, edges: Edge[], nodes: timelineNodeType[], edgeStep: number) => {
+    const data = edges.find((edge) => edge.source == id)
+    if(!data?.target) return {
+        "target": null
+    }
+    const existItem = nodes.find(node => node.id == data.target)
+    if(existItem) {
+        return {
+            target: data.target,
+            position_x: existItem.position.x,
+            position_y: existItem.position.y
+        }
+    } else{
+        edgeStep++
+        return checkConnectedEdge(data.target, edges, nodes, edgeStep)
+    }
+}
+// Edge
+// [
+//     null,
+//     "dd56ad9a-365a-4458-8ef9-08d66cafa4e9"
+// ]
+// [
+//     {
+//         "id": "e-56f9855a-f53b-4a62-b17f-4e6d14913c94-to-99d95b8a-a4d8-4357-a3f0-d8be02859baa",
+//         "source": "56f9855a-f53b-4a62-b17f-4e6d14913c94",
+//         "target": "99d95b8a-a4d8-4357-a3f0-d8be02859baa"
+//     },
+//     {
+//         "id": "e-99d95b8a-a4d8-4357-a3f0-d8be02859baa-to-ff5e0463-fe43-4aff-a6e2-cff203fdf378",
+//         "source": "99d95b8a-a4d8-4357-a3f0-d8be02859baa",
+//         "target": "ff5e0463-fe43-4aff-a6e2-cff203fdf378"
+//     },
+//     {
+//         "id": "e-ff5e0463-fe43-4aff-a6e2-cff203fdf378-to-2d366cbe-d618-4e54-818f-69462e136bde",
+//         "source": "ff5e0463-fe43-4aff-a6e2-cff203fdf378",
+//         "target": "2d366cbe-d618-4e54-818f-69462e136bde"
+//     },
+//     {
+//         "id": "e-2d366cbe-d618-4e54-818f-69462e136bde-to-dd56ad9a-365a-4458-8ef9-08d66cafa4e9",
+//         "source": "2d366cbe-d618-4e54-818f-69462e136bde",
+//         "target": "dd56ad9a-365a-4458-8ef9-08d66cafa4e9"
+//     }
+// ]
+
+// Node
+// [
+//     {
+//         "id": "dd56ad9a-365a-4458-8ef9-08d66cafa4e9",
+//         "position": {
+//             "x": 1770.461495215179,
+//             "y": 415.8925015558855
+//         },
+//         "data": {
+//             "image_url": "https://res.cloudinary.com/cloud-store-images/image/upload/v1786789561/gkinwa2zw1rnxjci5ikt.jpg",
+//             "title": "The Tallest",
+//             "type": "concept",
+//             "content": "If you are updating state inside an uncleaned async fetch: If these state setters are inside an async/await block or a .then() promise.",
+//             "start_at": "18 August 2026",
+//             "end_at": "21 August 2026",
+//             "handleType": "end"
+//         },
+//         "origin": [
+//             0.5,
+//             0.5
+//         ],
+//         "type": "cardNode"
+//     },
+//     {
+//         "id": "56f9855a-f53b-4a62-b17f-4e6d14913c94",
+//         "position": {
+//             "x": 791.9919080564341,
+//             "y": 318.6125718302045
+//         },
+//         "data": {
+//             "image_url": "https://res.cloudinary.com/cloud-store-images/image/upload/v1786805355/eajqtwzsobx0gihuylfs.jpg",
+//             "title": "Mobile Marketing",
+//             "type": "mockup",
+//             "content": "music to calm your soul, to fall asleep to or to overthink.\r\ni hope you can emerge into these beautiful tones. ",
+//             "start_at": "21 August 2026",
+//             "end_at": "28 August 2026",
+//             "handleType": "start"
+//         },
+//         "origin": [
+//             0.5,
+//             0.5
+//         ],
+//         "type": "cardNode"
+//     }
+// ]

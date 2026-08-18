@@ -11,6 +11,7 @@ import { NodeListSchema } from "./validations";
 import z from "zod";
 import uploadImage from "./uploadImage";
 import treeifyErrorHandling from "./treeifyErrorHandling";
+import { useAuth } from "@clerk/nextjs";
 
 
 interface SaveTimelineTimelineType {
@@ -27,6 +28,10 @@ const URL = process.env.NEXT_PUBLIC_APP_URL
 export const saveTimeline = async ({paths, globalNodes, globalEdges, setBothLastAndNewEdges, setBothLastAndNewNodes}: SaveTimelineTimelineType) => {
 
   console.log('be validation ',globalNodes)
+  
+  const user = useAuth()
+  if(!user.isSignedIn) return
+
   const validations = NodeListSchema.safeParse(globalNodes);
   
   try{
@@ -111,6 +116,9 @@ export const saveNodes = async (paths: string[], nodes: timelineNodeType[], setB
 
 
 export const useCheckModifiedTimeline = () => {
+  const user = useAuth()
+  if(!user.isSignedIn) return
+  
   const { globalNodes, globalEdges, lastGlobalNodes, lastGlobalEdges } = useTimelineStateStore(useShallow((state) => ({
     globalNodes: state.globalNodes,
     globalEdges: state.globalEdges,
@@ -156,7 +164,7 @@ export const useCheckModifiedTimeline = () => {
     const currentState = JSON.stringify([...sanitizeNodes(globalNodes), ...sanitizeEdges(globalEdges)]);
     const lastState = JSON.stringify([...sanitizeNodes(lastGlobalNodes), ...sanitizeEdges(lastGlobalEdges)]);
     
-    console.log("check unsaved: ", sanitizeNodes(globalNodes), sanitizeEdges(globalEdges), currentState, lastState)
+    // console.log("check unsaved: ", sanitizeNodes(globalNodes), sanitizeEdges(globalEdges), currentState, lastState)
     return currentState === lastState;
   }, [globalNodes, globalEdges, lastGlobalNodes, lastGlobalEdges])
 

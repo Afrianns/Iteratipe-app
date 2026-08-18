@@ -17,6 +17,7 @@ import { CommentContext } from "@/lib/commentsContex";
 import dynamic from "next/dynamic";
 
 import DOMPurify from 'dompurify';
+import { useAuth } from "@clerk/nextjs";
 
 
 const CommentTextEditor = dynamic(() => import('./comments/CommentTextEditor'), { 
@@ -35,6 +36,8 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
     const [selectedValuePost, setSelectedValuePost] = useState<string>("NOT_AN_ID")
 
     const [isCommentsSet, setIsCommentsSet] = useState<boolean>(false) 
+
+    const { isSignedIn, isLoaded } = useAuth()
     
     const [comments, setComments] = useImmer<CommentWithReplies[]>([])
 
@@ -122,24 +125,26 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
                         </div>
 
                     </div>
-                    <div className="my-5 max-w-200 card-style-secondary space-y-3 p-5!">
-                        <h3 className="">Write your feedback</h3>
-                        <div>
-                            <CommentTextEditor id={1} ref={editorRef} />
-                        </div>
-                        <div className="flex items-center gap-x-10 justify-between">
-                            <div className="max-w-50 w-full relative">
-                                <p className="p-style">Post for</p>
-                                <NodesListDropdown direction="top" setSelectedId={setSelectedValuePost} />
+                    {(isLoaded && isSignedIn) && 
+                        <div className="my-5 max-w-200 card-style-secondary space-y-3 p-5!">
+                            <h3 className="">Write your feedback</h3>
+                            <div>
+                                <CommentTextEditor id={1} ref={editorRef} />
                             </div>
-                            <button
-                                onClick={beforeSaveComment}
-                                className="button-style-secondary text-xs! py-2! px-5! rounded-full text-right"
-                            >
-                                Post
-                            </button>
+                            <div className="flex items-center gap-x-10 justify-between">
+                                <div className="max-w-50 w-full relative">
+                                    <p className="p-style">Post for</p>
+                                    <NodesListDropdown direction="top" setSelectedId={setSelectedValuePost} />
+                                </div>
+                                <button
+                                    onClick={beforeSaveComment}
+                                    className="button-style-secondary text-xs! py-2! px-5! rounded-full text-right"
+                                >
+                                    Post
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
         </CommentContext.Provider>

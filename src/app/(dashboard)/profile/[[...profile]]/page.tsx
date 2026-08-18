@@ -12,11 +12,9 @@ export default async function User({ searchParams }: {searchParams: Promise<{ ad
     return (
         <div className="col-span-5 w-full">
             <div className="container-style container-accent-style">
-                <div className="limit-breaker">
-                    <Header showSearch={false} />
-                </div>
+                <Header showSearch={false} />
             </div>
-            <div className="container-style limit-breaker">
+            <div className="container-style">
                 <div className="space-y-5 mb-5">
                     <h3 className="h-two-style">Settings</h3>
                     <ProfileNav />

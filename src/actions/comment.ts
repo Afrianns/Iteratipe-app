@@ -4,6 +4,7 @@ import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { saveComment, setLikeComment } from "@/services/comments.service";
 import { getProjectIDbyUID } from "@/services/projects.service";
 import { CommentType, returnDataType } from "@/types/types";
+import { auth } from "@clerk/nextjs/server";
 
 export const saveCommentForm = async (messages: string, projectUid: string, selectedValuePost: string, commentId?: number): Promise<returnDataType<CommentType>> => {
 
@@ -47,7 +48,11 @@ export const saveCommentForm = async (messages: string, projectUid: string, sele
 
 
 export const likeComment = async (commentId: number) => {
+
+    const { isAuthenticated } = await auth()
+
     try {
+        if(!isAuthenticated) throw new Error("Bypass is prohibited, signing first!");
         if(commentId){
             const result = await setLikeComment(commentId)
     
@@ -58,7 +63,7 @@ export const likeComment = async (commentId: number) => {
             }
         } 
     } catch (error) {
-        tempErrorHandle(error)
+        return tempErrorHandle(error)
     }
     
 }

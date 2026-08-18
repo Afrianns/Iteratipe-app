@@ -46,23 +46,26 @@ export async function POST(request: Request) {
       email: user?.primaryEmailAddressId,
       image_url: user?.imageUrl
     })
+
     let result = await saveProject(initialProjectsSetup)
-    if(result.status == 200){
-      redirect("/explore/andreas-ideas-logo")
-    }
     
-    return Response.json({ 
-      data: initialProjectsSetup
-    }, {
-      status: 200, 
-      statusText: "Succefuly saved"
-    })
+    if(result.status == 200){
+      return redirect(`/explore/${initialProjectsSetup.title.toLowerCase().split(" ").join("-")}—${result.data?.uid}`)
+    } else{
+      return Response.json({
+        status: 500,
+        statusText: "Failed to save"
+      })
+    }
+  
   }
+
+
   return Response.json({ 
     data: initialProjectsSetup.title
   }, {
     status: 400, 
-    statusText: "User is not valid"
+    statusText: "An error occur"
   })
 }
 

@@ -7,6 +7,7 @@ import { SettingContext } from "@/lib/settingContext";
 export default function VisibilityForm() {
 
     const { generalSettings, setGeneralSettings, generalSettingErrors, setGeneralSettingErrors } = useContext(SettingContext);
+    console.log(generalSettingErrors)
     return (
         <>
             <div className="flex items-center gap-2">

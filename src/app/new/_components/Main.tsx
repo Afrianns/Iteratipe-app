@@ -10,6 +10,12 @@ import GeneralForm from "@/components/GeneralForm";
 import VisibilityForm from "@/components/VisibilityForm";
 import axios from "axios";
 
+import { toast } from "sonner";
+import { createInitialProject } from "@/actions/project";
+import { redirect } from "next/navigation";
+
+
+const URL = process.env.NEXT_PUBLIC_APP_URL
 
 const stepOneFields = {
     title: "",
@@ -118,6 +124,7 @@ export default function Main() {
         }
 
         if(resultGeneral.success && currentStep == 1){
+            setGeneralSettingErrors({})
             changeStepFn(currentStep + 1);
         }
     }
@@ -132,28 +139,27 @@ export default function Main() {
 
         if(resultVisibility.success && currentStep == 2){
             changeStepFn(currentStep + 1);
+            setGeneralSettingErrors({})
         }
     }
 
 
     const stepThreeFn =  async (currentStep: number) => {
         if(currentStep != 3) return
-        // STEP THREE
-        try {
-            const result = await axios.post("http://localhost:3000/api/project", 
-                generalSettings
-            )
 
-            if(result.status == 200){
-                console.log(result)
-                // return result;
-            }
+        const result = await createInitialProject(generalSettings)
 
-        } catch (error: unknown) {
-            if(axios.isAxiosError<{ errors_message: Record<string, string[]> }>(error) && error.response){
-                setGeneralSettingErrors(error.response.data.errors_message)
-                console.log("sss -", error.response)
-            }
+        if(result.status == 200 && result.data){
+            toast.success(result.message)
+            return redirect(`/explore/${result.data.title.toLowerCase().split(" ").join("-")}—${result.data.uid}`)
+        }
+
+        if(result.errorMessage){
+            setGeneralSettingErrors(result.errorMessage)
+        }
+
+        if(result.status == 500 || result.status == 300){
+            toast.error(result.message)
         }
     }
 

@@ -5,7 +5,7 @@ import { convertDate } from "@/lib/convertDate";
 import { prisma } from "@/lib/db";
 import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import { handleEnum } from "@/types/enum";
-import { ProjectStoreType, labelType, returnDataType, timelineNodeType, DBSingleProjectByID, ProjectPreviewType } from "@/types/types";
+import { ProjectStoreType, labelType, returnDataType, timelineNodeType, DBSingleProjectByID, ProjectPreviewType, VISIBLE } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { Decimal } from "@prisma/client/runtime/client";
 import { Edge } from "@xyflow/react";
@@ -14,7 +14,7 @@ import { previewCardDataQuery } from "@/lib/prismaQuery";
 
 
 interface actionDataType {
-    id: number
+    uid: string
 }
 
 interface quickStatusType {
@@ -22,6 +22,38 @@ interface quickStatusType {
     pending: number
     in_progress: number
     completed: number 
+}
+
+
+export async function getAllProjects(): Promise<returnDataType<ProjectPreviewType[]>> {
+    const { userId } = await auth()
+    let userDbId: number = 0;
+
+    try {
+        if(userId){
+            const resultUserId = await getUserID(userId)
+        
+            if(resultUserId.status == 200 && resultUserId.data?.id){
+                userDbId = resultUserId.data.id
+            } else{
+                throw new Error("User id not found. Please try again later!")
+            }
+
+        }
+
+        const result = await prisma.projects.findMany(previewCardDataQuery(userDbId))
+
+        return {
+            status: 200,
+            message: "Sucessfully retrieved",
+            data: result as ProjectPreviewType[]
+        }
+
+        
+
+    } catch (error) {
+        return tempErrorHandle(error)
+    }
 }
 
 export async function getProjectIDbyUID(projectUid: string): Promise<returnDataType<{
@@ -65,6 +97,7 @@ export async function saveProject(initialProject: ProjectStoreType): Promise<ret
         message: "successful"
     }
     
+    let userDbId = {} as { id: number }
     try {
 
         const user = await prisma.users.findUnique({
@@ -76,25 +109,20 @@ export async function saveProject(initialProject: ProjectStoreType): Promise<ret
 
         if(!user?.id) throw new Error("user not found");
 
-        result = {
-            status: 200,
-            message: "successful",
-            data: {
-                id: user.id
-            }
+        userDbId = {
+            id: user.id
         }
         
     } catch (error) {
         return tempErrorHandle(error)
     }
 
-
     try {
-        await prisma.projects.create({
+        const projectResult = await prisma.projects.create({
             data: {
-                title: initialProject.title ?? Prisma.skip,
+                title: initialProject.title,
                 clerk_user_id: userId,
-                summary: initialProject.summary,
+                summary: initialProject.summary.replace(/[\u2014\u2013]/g, '-'),
                 Type: {
                     connect: initialProject.type
                 },
@@ -102,7 +130,7 @@ export async function saveProject(initialProject: ProjectStoreType): Promise<ret
                     connect: initialProject.status
                 },
                 Users: {
-                    connect: result.data
+                    connect: userDbId
                 },
                 Project_tags: {
                     create: initialProject.tags
@@ -115,13 +143,16 @@ export async function saveProject(initialProject: ProjectStoreType): Promise<ret
                 client_name: initialProject.client_name
             },
             select: {
-                id: true
+                uid: true
             }
         });
 
         result = {
             status: 200,
-            message: "successful"
+            message: "successful",
+            data: {
+                uid: projectResult.uid
+            }
         }
 
     } catch (error) {
@@ -227,6 +258,8 @@ const filterProject = (projects: { id: number;
 
 export async function getProjectDetailById(projectUid: string): Promise<returnDataType<DBSingleProjectByID>> {
     
+    const { isAuthenticated } = await auth()
+
     try {
         let result = await prisma.projects.findFirst({
             where: {
@@ -253,7 +286,20 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
 
                     }
                 },
-                Nodes: true,
+                Nodes: {
+                    where: !isAuthenticated ? {
+                        AND: [
+                            {content: { not: null }},
+                            {content: { not: "" }},
+                            {title: { not: null }},
+                            {title: { not: "" }},
+                            {type: {not: null}},
+                            {type: {not: ""}},
+                            {start_at: { not: null }},
+                            {end_at: { not: null }}
+                        ]
+                    } : Prisma.skip
+                },
                 Edges: true
             }
         })
@@ -280,7 +326,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                         user: result.Users,
                         ...initialInfo
                     },
-                    settingInfo: {
+                    settingInfo: isAuthenticated ? {
                         data: {
                             id: result.id,
                             title: result.title,
@@ -289,7 +335,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                             disable_comments: result.disable_comments,
                             ...initialInfo
                         }
-                    },
+                    } : undefined,
                     Nodes: remapNodes(result.Nodes),
                     Edges: remapEdges(result.Edges),
                     created_at: result.created_at,

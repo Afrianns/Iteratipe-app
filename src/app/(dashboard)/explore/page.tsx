@@ -1,9 +1,18 @@
 import Header from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
 import Sidebar from "@/components/Sidebar";
+import { getAllProjects } from "@/services/projects.service";
+import { ProjectPreviewType } from "@/types/types";
 
 export default async function ExplorePage() {
+    
+    let projects: ProjectPreviewType[] = []
 
+    const result = await getAllProjects()
+    
+    if(result.status == 200 && result.data){
+        projects = result.data
+    }
     return (
         <div className="col-span-5 w-full">
             <div className="container-style container-accent-style">
@@ -22,8 +31,10 @@ export default async function ExplorePage() {
             </div>
             <div className="container-style max-md:mb-20">
                 <div className="limit-breaker">
-                    <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:grid-cols-2">
-                        
+                    <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {projects.map((project, idx) => {
+                            return <ProjectCard key={idx} projectData={project} currentPath="home" imageName={"no-thumbnail-placeholder.png"} />
+                        })}
                     </div>
                 </div>
             </div>
