@@ -1,21 +1,26 @@
 "use server"
 
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { returnDataType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { getUserID } from "./user.service";
 import { prisma } from "@/lib/db";
 import { getProjectIDbyUID } from "./projects.service";
 import { getUserIdAndProjectId } from "./partial.service";
+import Redis from "ioredis";
 
-type ReturnType = returnDataType<{total_liked: number}>
+type ReturnType = returnDataType<{newLiked: number}>
 
 export async function likeProject(projectUid: string): Promise<ReturnType> {
   
-  let userId = 0;
-  let projectId = 0;
+  let userId = 0
+  let projectId = 0
+
+  let newLiked = 1
   
   const user = await auth()
+
+  // const redis = new Redis()
 
   if(!user.isAuthenticated) {
     return {
@@ -39,6 +44,34 @@ export async function likeProject(projectUid: string): Promise<ReturnType> {
     } else{
       throw new Error("failed fetching in: before like");
     }
+
+    // const deleteKey = await redis.del(`like:${projectId}:${userId}`)
+    // let tempLikeCount = 0;
+
+    // if(deleteKey <= 0) {
+    //   const result = await redis.set(`like:${projectId}:${userId}`, "like")
+    //   tempLikeCount = await redis.incr(`like:${projectId}:increment`)
+      
+    //   if(result){
+    //     returnValue = {
+    //       status: 200,
+    //       message: result
+    //     }
+    //   }
+    // } else{
+    //   tempLikeCount = await redis.decr(`like:${projectId}:increment`)
+    //   returnValue = {
+    //     status: 200,
+    //     message: "unliked"
+    //   }
+    // }
+    // redis.get("like:", (err, result) => {
+    //     if (err) {
+    //         console.error(err);
+    //     } else {
+    //         console.log(result); // Prints "value"
+    //     }
+    // });
 
     const resultRemove = await prisma.likes.deleteMany({
       where: {
@@ -65,29 +98,22 @@ export async function likeProject(projectUid: string): Promise<ReturnType> {
       }
 
     } else {
+      
+      newLiked--
+
       returnValue = {
         status: 200,
         message: "sucessful unlike"
       }
     }
 
-    // get newest bookmark count
-    const resultUpdatedLike = await prisma.likes.findMany({
-        where: {
-          project_id: projectId
-        }, 
-        select: {
-          id: true
-        }
-      })
-
     return {...returnValue, 
       data: {
-        total_liked: resultUpdatedLike.length
+        newLiked: newLiked
       } 
     }
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }
 
@@ -125,6 +151,6 @@ export async function getTotalAuthUserProjectLikes(): Promise<returnDataType<{pr
       } 
     }
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }

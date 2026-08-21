@@ -3,7 +3,7 @@
 import { handleTypeEnum, Prisma } from "@/generated/prisma/client";
 import { convertDate } from "@/lib/convertDate";
 import { prisma } from "@/lib/db";
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { handleEnum } from "@/types/enum";
 import { ProjectStoreType, labelType, returnDataType, timelineNodeType, DBSingleProjectByID, ProjectPreviewType, VISIBLE } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
@@ -52,7 +52,7 @@ export async function getAllProjects(): Promise<returnDataType<ProjectPreviewTyp
         
 
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 }
 
@@ -77,7 +77,7 @@ export async function getProjectIDbyUID(projectUid: string): Promise<returnDataT
             throw new Error(err)
         })
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 }
 
@@ -114,7 +114,7 @@ export async function saveProject(initialProject: ProjectStoreType): Promise<ret
         }
         
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 
     try {
@@ -156,7 +156,7 @@ export async function saveProject(initialProject: ProjectStoreType): Promise<ret
         }
 
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 
     return result;
@@ -200,7 +200,7 @@ export async function getCurrentUserProjects(clerkUserId: string): Promise<retur
         }
 
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 }
 
@@ -258,9 +258,24 @@ const filterProject = (projects: { id: number;
 
 export async function getProjectDetailById(projectUid: string): Promise<returnDataType<DBSingleProjectByID>> {
     
-    const { isAuthenticated } = await auth()
+    const { isAuthenticated, userId } = await auth()
+
+    let userDbId = 0
 
     try {
+
+        if(userId){            
+            const result = await getUserID(userId)
+
+            if(result.status == 200 && result.data){
+                userDbId = result.data?.id
+            }
+        }
+
+        console.log("checking ",userId, userDbId)
+
+        // if(userDbId == 0) if only there is no user id - 0, or it will get those user with id 0
+
         let result = await prisma.projects.findFirst({
             where: {
                 uid: projectUid
@@ -283,7 +298,15 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                         id: true,
                         full_name: true,
                         username: true,
-
+                        Followers: {
+                            where: {
+                                following_id: userDbId
+                            },
+                            select: {
+                                id: true
+                            },
+                            take: 1
+                        }
                     }
                 },
                 Nodes: {
@@ -347,7 +370,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
             throw new Error("No project found")
         }
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 }
 
@@ -405,7 +428,7 @@ export async function updateProjectById(clerkUserId: string, newUpdated: any): P
         }
 
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 }
 

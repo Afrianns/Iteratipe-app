@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
 import { handleEnum } from '@/types/enum';
 import { is } from 'zod/v4/locales';
+import Follow from './main/follow';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL 
 
@@ -51,6 +52,7 @@ let initialOverviewDataInfo = {
         id: 0,
         full_name: "",
         username: "",
+        Followers: []
     },
     ...initialData
 }
@@ -229,7 +231,7 @@ export default function Main({ projectID }: {projectID: string}) {
                             <div className="flex-centering gap-x-2 ml-auto">
                                 <button className="button-style-tertiary"><Heart strokeWidth="3" className="w-4 h-4 text-main" /></button>
                                 <button className="button-style-tertiary"><Bookmark strokeWidth="3" className="w-4 h-4 text-main" /></button>
-                                <button className="button-style">Follow <span className='underline text-sm'>Andreas Bunchaco</span></button>
+                                <Follow project={project} setProject={setProject} />
                             </div>
                         </div>
                         <div className="flex items-center justify-between max-lg:flex-col-reverse">
@@ -361,76 +363,3 @@ const checkConnectedEdge = (id: string, edges: Edge[], nodes: timelineNodeType[]
         return checkConnectedEdge(data.target, edges, nodes, edgeStep)
     }
 }
-// Edge
-// [
-//     null,
-//     "dd56ad9a-365a-4458-8ef9-08d66cafa4e9"
-// ]
-// [
-//     {
-//         "id": "e-56f9855a-f53b-4a62-b17f-4e6d14913c94-to-99d95b8a-a4d8-4357-a3f0-d8be02859baa",
-//         "source": "56f9855a-f53b-4a62-b17f-4e6d14913c94",
-//         "target": "99d95b8a-a4d8-4357-a3f0-d8be02859baa"
-//     },
-//     {
-//         "id": "e-99d95b8a-a4d8-4357-a3f0-d8be02859baa-to-ff5e0463-fe43-4aff-a6e2-cff203fdf378",
-//         "source": "99d95b8a-a4d8-4357-a3f0-d8be02859baa",
-//         "target": "ff5e0463-fe43-4aff-a6e2-cff203fdf378"
-//     },
-//     {
-//         "id": "e-ff5e0463-fe43-4aff-a6e2-cff203fdf378-to-2d366cbe-d618-4e54-818f-69462e136bde",
-//         "source": "ff5e0463-fe43-4aff-a6e2-cff203fdf378",
-//         "target": "2d366cbe-d618-4e54-818f-69462e136bde"
-//     },
-//     {
-//         "id": "e-2d366cbe-d618-4e54-818f-69462e136bde-to-dd56ad9a-365a-4458-8ef9-08d66cafa4e9",
-//         "source": "2d366cbe-d618-4e54-818f-69462e136bde",
-//         "target": "dd56ad9a-365a-4458-8ef9-08d66cafa4e9"
-//     }
-// ]
-
-// Node
-// [
-//     {
-//         "id": "dd56ad9a-365a-4458-8ef9-08d66cafa4e9",
-//         "position": {
-//             "x": 1770.461495215179,
-//             "y": 415.8925015558855
-//         },
-//         "data": {
-//             "image_url": "https://res.cloudinary.com/cloud-store-images/image/upload/v1786789561/gkinwa2zw1rnxjci5ikt.jpg",
-//             "title": "The Tallest",
-//             "type": "concept",
-//             "content": "If you are updating state inside an uncleaned async fetch: If these state setters are inside an async/await block or a .then() promise.",
-//             "start_at": "18 August 2026",
-//             "end_at": "21 August 2026",
-//             "handleType": "end"
-//         },
-//         "origin": [
-//             0.5,
-//             0.5
-//         ],
-//         "type": "cardNode"
-//     },
-//     {
-//         "id": "56f9855a-f53b-4a62-b17f-4e6d14913c94",
-//         "position": {
-//             "x": 791.9919080564341,
-//             "y": 318.6125718302045
-//         },
-//         "data": {
-//             "image_url": "https://res.cloudinary.com/cloud-store-images/image/upload/v1786805355/eajqtwzsobx0gihuylfs.jpg",
-//             "title": "Mobile Marketing",
-//             "type": "mockup",
-//             "content": "music to calm your soul, to fall asleep to or to overthink.\r\ni hope you can emerge into these beautiful tones. ",
-//             "start_at": "21 August 2026",
-//             "end_at": "28 August 2026",
-//             "handleType": "start"
-//         },
-//         "origin": [
-//             0.5,
-//             0.5
-//         ],
-//         "type": "cardNode"
-//     }
-// ]

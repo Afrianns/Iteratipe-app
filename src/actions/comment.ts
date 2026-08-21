@@ -1,6 +1,6 @@
 "use server"
 
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { saveComment, setLikeComment } from "@/services/comments.service";
 import { getProjectIDbyUID } from "@/services/projects.service";
 import { CommentType, returnDataType } from "@/types/types";
@@ -42,7 +42,7 @@ export const saveCommentForm = async (messages: string, projectUid: string, sele
             }
         }
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 }
 
@@ -63,7 +63,7 @@ export const likeComment = async (commentId: number) => {
             }
         } 
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
     
 }

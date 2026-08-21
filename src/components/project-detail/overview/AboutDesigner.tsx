@@ -15,7 +15,11 @@ export default function AboutDesigner({designerId}: {designerId: number}) {
         last_name: "",
         image_url: "",
         description: "",
-        username: ""
+        username: "",
+         _count: {
+            Followers: 0,
+            Followings: 0,
+        }
     })
 
     useEffect(() =>{
@@ -26,7 +30,6 @@ export default function AboutDesigner({designerId}: {designerId: number}) {
                 setPreviewUser(user.data as UserPreviewType)
             }
         }
-
         previewUserFn();
     }, [])
     return (
@@ -46,8 +49,8 @@ export default function AboutDesigner({designerId}: {designerId: number}) {
                 <div className="space-y-2">
                     <h3 className="text-lg font-medium underline hover:no-underline">{previewUser.first_name} {previewUser.last_name}</h3>
                     <div className="flex gap-x-2 text-sm">
-                        <p><span className="font-medium">5</span> Following</p>
-                        <p><span className="font-medium">43</span> Followers</p>
+                        <p><span className="font-medium">{previewUser._count.Followings}</span> Following</p>
+                        <p><span className="font-medium">{previewUser._count.Followers}</span> Followers</p>
                     </div>
                     <p className="p-style">{previewUser.description || <span className="text-main-text/50 italic">Hi there, I'am passionate about designing thing...</span>}</p>
                 </div>

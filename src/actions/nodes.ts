@@ -4,7 +4,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { convertDateToISOString } from "@/lib/convertDate";
 import { prisma } from "@/lib/db";
 import { uuidRegex } from "@/lib/regexHelpers";
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { saveCurrentStateNodes } from "@/services/nodes.service";
 import { getProjectIDbyUID } from "@/services/projects.service";
 import { syncAndDeleteDBWithLocal } from "@/services/syncTimeline.service";
@@ -106,7 +106,7 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
             throw new Error(result.message);   
         }
     } catch (error) {
-        return tempErrorHandle(error);
+        return await serverSideErrorHandle(error);
     }
 
     try {
@@ -156,7 +156,7 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
         }
         
     } catch (error) {
-        return tempErrorHandle(error);
+        return await serverSideErrorHandle(error);
     }
 }
 
@@ -241,6 +241,6 @@ export const updateNode = async (projectUid: string, nodeToStore: timelineNodeTy
             
         }
     } catch (error) {
-        return tempErrorHandle(error);
+        return await serverSideErrorHandle(error);
     }
 }

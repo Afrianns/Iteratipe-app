@@ -2,7 +2,7 @@
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { returnDataType } from "@/types/types";
 import { Sql } from "@prisma/client/runtime/client";
 
@@ -43,6 +43,6 @@ export async function saveCurrentStateEdges(mappedEdges: Sql[]): Promise<returnD
       }
       
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }

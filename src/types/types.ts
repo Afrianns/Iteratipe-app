@@ -218,6 +218,10 @@ export interface UserPreviewType {
   image_url: string
   description: string | null
   username: string
+  _count: {
+    Followers: number
+    Followings: number
+  }
 }
 
 
@@ -266,13 +270,16 @@ interface DBProjectTitleInfo {
     type: labelType
 }
 
+export interface overviewUser {
+  id: number
+  full_name: string
+  username: string
+  Followers: {id: number}[]
+}
+
 interface OverviewInfo extends initialInfo{
   id: number
-  user: {
-    id: number
-    full_name: string
-    username: string
-  }
+  user: overviewUser
 }
 
 interface initialInfo {

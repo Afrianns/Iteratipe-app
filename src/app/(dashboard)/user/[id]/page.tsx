@@ -12,15 +12,19 @@ import About from "./_components/about"
 import { auth } from "@clerk/nextjs/server"
 import Link from "next/link"
 import { Settings } from "lucide-react"
+import Follow from "./_components/follow"
+import Profile from "./_components/profile"
 
-interface UserProjectPreviewType extends UserType {
+type CurrentUserFollow = {id: number}
+
+export interface UserProjectPreviewType extends UserType {
+  Followers: CurrentUserFollow[]
+  _count: {Followers: number, Followings: number}
   Projects: ProjectPreviewType[]
 }
 export default async function Page({params, searchParams}: {params: Promise<{id: string}>, searchParams: Promise<{ [key: string]: string | string[] | undefined }>}) {
   const data = await params
   const param = await searchParams
-
-  const { userId } = await auth()
 
   let initialUser: UserProjectPreviewType = {
     id: 0,
@@ -36,6 +40,8 @@ export default async function Page({params, searchParams}: {params: Promise<{id:
     twitter_link: "",
     website_link: "",
     created_at: null,
+    _count: {Followers: 0, Followings: 0},
+    Followers: [],
     Projects: []
   }
 
@@ -44,7 +50,8 @@ export default async function Page({params, searchParams}: {params: Promise<{id:
   const resultUserData = await getUserByUsername(data.id.replace("%40", ""))
 
   if(resultUserData.status == 200 && resultUserData.data){
-    initialUser = resultUserData.data
+    console.log(resultUserData.data)
+    initialUser = resultUserData.data as UserProjectPreviewType
     types = resultUserData.data.Projects.map((project) => ({id: project.Type.id, name: project.Type.name}));
   } else{
     notFound()
@@ -63,39 +70,7 @@ export default async function Page({params, searchParams}: {params: Promise<{id:
                     <p className="capitalized font-extralight mb-5 text-xs opacity-45">Designer since {formatDistanceStrict(new Date(initialUser.created_at), new Date(), { addSuffix: true })}</p>
                 }
                 <div className="card-style-secondary space-y-5 w-full h-fit py-5!">
-                  <div className="mx-auto flex gap-x-5 items-start justify-around max-w-4xl rounded-md">
-                    <div className="flex gap-x-4">
-                      <div className="relative w-20 h-20 rounded-md overflow-hidden shrink-0 z-2">
-                      {initialUser.image_url && (
-                            <>
-                                <Image alt="user profile placeholder" src={initialUser.image_url} fill className="object-cover"/>
-                            </>
-                            )
-                        }
-                      </div>
-                      <div>
-                        <h1 className="h-two-style text-2xl! flex items-center">{initialUser.full_name} 
-                          <span className="bg-main-text text-secondary text-xs ml-2 py-1 px-3 rounded">Pro</span> </h1>
-                        <p className="p-style text-main!">@{initialUser.username}</p>
-
-                        <div className="flex items-center gap-x-3 mt-2">
-                            <p className="span-style">5 Followers</p>
-                            <p className="span-style">12 Following</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-3 text-right">
-                      {userId == initialUser.clerk_user_id ?
-                        <Link href="/profile">
-                          <div className="button-style-tertiary rounded-full flex items-center gap-x-2">
-                            {/* Settings */}
-                            <Settings className="w-4 h-4" />
-                          </div>
-                        </Link>
-                        : <div className="button-style rounded-full">Follow</div>
-                      }
-                    </div>
-                  </div>
+                  <Profile initialUser={initialUser} />
                 </div>
                 {/* it list of type project and aboutuser */}
                 <ListMenus types={types} />

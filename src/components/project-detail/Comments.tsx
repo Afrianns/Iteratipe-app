@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { CommentLists } from "./comments/CommentsList";
 import NodesListDropdown from "./comments/NodesListDropdown";
 import { getCommentsByProjectId } from "@/services/comments.service";
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { clientSideErrorHandle } from "@/lib/clientErrorHandle"
 import { toast } from "sonner";
 import { saveCommentForm } from "@/actions/comment";
 import { CommentWithReplies, SortingType } from "@/types/types";
@@ -24,7 +24,6 @@ const CommentTextEditor = dynamic(() => import('./comments/CommentTextEditor'), 
   ssr: false 
 });
 
-// Define the RichTextEditorHandle type
 type RichTextEditorHandle = {
   getContent: () => string
   resetContent: () => void
@@ -93,7 +92,7 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
             }
              
         } catch (error) {
-            tempErrorHandle(error)
+            clientSideErrorHandle(error)
         }
     }
 

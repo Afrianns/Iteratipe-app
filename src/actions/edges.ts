@@ -2,7 +2,7 @@
 
 import { Prisma } from "@/generated/prisma/client"
 import { uuidRegex } from "@/lib/regexHelpers"
-import { tempErrorHandle } from "@/lib/tempErrorHandle"
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle"
 import { saveCurrentStateEdges } from "@/services/edges.service"
 import { syncAndDeleteDBWithLocal } from "@/services/syncTimeline.service"
 import { returnDataType, timelineNodeType } from "@/types/types"
@@ -53,7 +53,7 @@ export const autoUpdateEdges = async (projectUid: string, Edges: Edge[]): Promis
           throw new Error("Failed to fetch");   
       }
   } catch (error) {
-      return tempErrorHandle(error);
+      return await serverSideErrorHandle(error);
   }
 
 
@@ -92,6 +92,6 @@ export const autoUpdateEdges = async (projectUid: string, Edges: Edge[]): Promis
     }
 
 } catch (error) {
-    return tempErrorHandle(error);   
+    return await serverSideErrorHandle(error);   
 }
 }

@@ -1,4 +1,4 @@
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { returnDataType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { getUserID } from "./user.service";
@@ -48,6 +48,6 @@ export async function getUserIdAndProjectId(projectId: string): Promise<returnDa
     }
 
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }

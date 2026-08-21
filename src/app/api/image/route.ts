@@ -1,4 +1,3 @@
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
 import axios from "axios";
 
 const credentialUpload = {

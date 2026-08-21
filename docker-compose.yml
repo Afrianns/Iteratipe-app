@@ -1,13 +1,13 @@
 
 services:
-  # 1. Local Redis (Replaces Vercel KV for autosave testing)
+  # 1. Local Redis
   redis:
     image: redis:7-alpine
     container_name: iteratipe-redis
     ports:
       - "6379:6379" # Maps your Windows port 6379 to the container's 6379
 
-  # 2. Local PostgreSQL (Pre-Neon local testing environment)
+  # 2. Local PostgreSQL
   db:
     image: postgres:16-alpine
     container_name: iteratip-postgres

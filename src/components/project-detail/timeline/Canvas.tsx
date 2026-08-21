@@ -9,7 +9,7 @@
 // import { timelineNodeType } from '@/types/types';
 // import CanvasSave from './CanvasSave';
 // import { useShallow } from 'zustand/react/shallow'
-// import { tempErrorHandle } from '@/lib/tempErrorHandle';
+// import { serverSideErrorHandle } from '@/lib/serverSideErrorHandle';
 // import SidebarContentWrapper from './SidebarContentWrapper';
 
 // const nodeTypes = {

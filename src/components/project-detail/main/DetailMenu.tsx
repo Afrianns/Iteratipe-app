@@ -11,6 +11,8 @@ export default function DetailMenu() {
     const { isSignedIn } = useAuth()
     const currentMenu = searchParams.get('menu') || "timeline";
 
+    
+
     const activeSubMenu = (current: subMenuEnum) => currentMenu == current ? "border-main text-main" : "border-transparent";    
     return (
         <div className="list-none text-gray-600 text-sm mt-2 flex items-center">

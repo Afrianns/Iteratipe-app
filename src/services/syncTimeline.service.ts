@@ -2,7 +2,7 @@
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { returnDataType, timelineNodeType } from "@/types/types";
 
 
@@ -28,7 +28,7 @@ export const syncAndDeleteDBWithLocal = async <T extends { id: string }>(tbName:
         throw new Error("An error occur");
 
     } catch (error) {
-        return tempErrorHandle(error);
+        return await serverSideErrorHandle(error);
     }
 
 }
@@ -72,6 +72,6 @@ export async function syncAndDelete(dbName: string, mappedID: string[], projectU
     }
       
   } catch (error) {
-    return tempErrorHandle(error);
+    return await serverSideErrorHandle(error);
   } 
 } 

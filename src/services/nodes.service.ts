@@ -2,7 +2,7 @@
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { NodeDBType, returnDataType } from "@/types/types";
 import { Sql } from "@prisma/client/runtime/client";
 
@@ -85,7 +85,7 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
       }
       
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }
 
@@ -114,6 +114,6 @@ export async function getNodeIdByUid(uuid: string): Promise<returnDataType<{
         }
         
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
   }
 }

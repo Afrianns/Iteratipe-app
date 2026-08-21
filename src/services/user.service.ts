@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { previewCardDataQuery } from "@/lib/prismaQuery";
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { labelType, ProjectPreviewType, returnDataType, UserPreviewType, UserType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 
@@ -33,15 +33,27 @@ export const getUserID = async (userId: string): Promise<returnDataType<{
     }
         
   } catch (error) {
-      return tempErrorHandle(error)
+      return await serverSideErrorHandle(error)
   }
 }
 
-export const getUser = async (clerkUserId: string): Promise<returnDataType<UserType | null>> => {
+interface userDataWithFollow extends UserType {
+   _count: {Followers: number, Followings: number}
+} 
+
+export const getUser = async (clerkUserId: string): Promise<returnDataType<userDataWithFollow | null>> => {
   try {
     let user = await prisma.users.findFirst({
         where: {
           clerk_user_id: clerkUserId
+        },
+        include: {
+          _count: {
+            select: {
+              Followers: true,
+              Followings: true
+            }
+          }
         }
     });
 
@@ -51,7 +63,7 @@ export const getUser = async (clerkUserId: string): Promise<returnDataType<UserT
       data: user
     }    
   } catch (error) {
-      return tempErrorHandle(error)
+      return await serverSideErrorHandle(error)
   } 
 }
 
@@ -68,6 +80,12 @@ export const getPreviewUser = async (userId: number): Promise<returnDataType<Use
           first_name: true,
           last_name: true,
           username: true,
+          _count: {
+            select: {
+              Followers: true,
+              Followings: true
+            }
+          }
         }
     })
 
@@ -77,7 +95,7 @@ export const getPreviewUser = async (userId: number): Promise<returnDataType<Use
       data: previewUser
     }    
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   } 
 }
 
@@ -108,6 +126,20 @@ export const getUserByUsername = async (username: string): Promise<returnDataTyp
         },
 
         include: {
+          _count: {
+            select: {
+              Followers: true,
+              Followings: true,
+            }
+          },
+          Followers: {
+            where: {
+              following_id: userDbId
+            }, 
+            select: {
+              id: true
+            }
+          },
           Projects: {
             ...previewCardDataQuery(userDbId)
           }
@@ -124,6 +156,6 @@ export const getUserByUsername = async (username: string): Promise<returnDataTyp
       throw new Error("username not found. try again later");
     }
   } catch (error) {
-      return tempErrorHandle(error)
+      return await serverSideErrorHandle(error)
   }
 }

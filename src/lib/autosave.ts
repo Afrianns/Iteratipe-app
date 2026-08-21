@@ -3,7 +3,7 @@ import { autoUpdateEdges } from "@/actions/edges";
 import { setNode, timelineNodeType } from "@/types/types";
 import { toast } from "sonner";
 import { Edge } from "@xyflow/react";
-import { tempErrorHandle } from "./tempErrorHandle";
+import { clientSideErrorHandle } from "@/lib/clientErrorHandle"
 import { useTimelineStateStore } from "@/hooks/useTimelineStateStore";
 import { useShallow } from "zustand/react/shallow";
 import { useMemo } from "react";
@@ -53,7 +53,7 @@ export const saveTimeline = async ({paths, globalNodes, globalEdges, setBothLast
     }
 
   } catch (error) {
-    return tempErrorHandle(error);
+    clientSideErrorHandle(error);
   }
 }
 

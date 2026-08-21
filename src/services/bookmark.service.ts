@@ -1,6 +1,6 @@
 "use server"
 
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { ProjectPreviewType, returnDataType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { getUserID } from "./user.service";
@@ -87,7 +87,7 @@ export async function bookmarkProject(projectUid: string): Promise<ReturnType> {
       } 
     }
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }
 
@@ -129,7 +129,7 @@ export async function getBookmarkedProject(): Promise<returnDataType<ProjectPrev
       }
 
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 }
 

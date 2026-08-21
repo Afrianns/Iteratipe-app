@@ -1,5 +1,5 @@
 import axios from "axios"
-import { tempErrorHandle } from "./tempErrorHandle"
+import { serverSideErrorHandle } from "./serverErrorHandle"
 import { returnDataType } from "@/types/types"
 
 
@@ -32,7 +32,7 @@ export default async function uploadImage(blobUrl: string): Promise<returnDataTy
     throw new Error("Image not found")
     
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }
 

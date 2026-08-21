@@ -6,7 +6,7 @@ import { CommentType, returnDataType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { getUserID } from "./user.service";
 import { getNodeIdByUid } from "./nodes.service";
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { getProjectIDbyUID } from "./projects.service";
 
 export async function saveComment(projectID: number, comments: string, nodeUID?: string, commentID?: number): Promise<returnDataType<CommentType>> {
@@ -85,7 +85,7 @@ export async function saveComment(projectID: number, comments: string, nodeUID?:
     }
       
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }
 
@@ -173,7 +173,7 @@ export async function getCommentsByProjectId(projectUid: string, nodeUID?: strin
       throw new Error("No comments found");
     }
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }
 
@@ -234,7 +234,7 @@ export async function setLikeComment(commentId: number): Promise<returnDataType<
         }
       }
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }
 
@@ -298,6 +298,6 @@ export async function getRepliesComments(commentId: number): Promise<returnDataT
       }
     }
   } catch (error) {
-    return tempErrorHandle(error)
+    return await serverSideErrorHandle(error)
   }
 }

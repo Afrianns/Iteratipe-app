@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/db";
-import { tempErrorHandle } from "@/lib/tempErrorHandle";
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { labelType, returnDataType } from "@/types/types";
 
 export default async function getStatusFn(query?: string): Promise<returnDataType<labelType[]>> {
@@ -27,6 +27,6 @@ export default async function getStatusFn(query?: string): Promise<returnDataTyp
         }
         
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 }

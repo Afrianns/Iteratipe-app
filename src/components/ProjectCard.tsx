@@ -46,11 +46,12 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
     const likeThis = async () => {
         if(!user.isSignedIn) return toast.warning("You need to signin first!")
 
+        console.log(projectData)
         setLike(!like)
         const result = await likeProject(projectData.uid)
         
         if(result.status == 200 && result.data){
-            setLikeCount(result.data.total_liked)
+            setLikeCount(projectData._count.Likes+result.data.newLiked)
             toast.success(`${result.message}: ${projectData.title}`)
         } else{
             toast.warning(result.message)

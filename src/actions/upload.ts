@@ -4,7 +4,7 @@ import { NodeSchemaBE } from "@/lib/validations"
 import axios from "axios"
 import { updateNode } from "./nodes"
 import { handleEnum } from "@/types/enum"
-import { tempErrorHandle } from "@/lib/tempErrorHandle"
+import { serverSideErrorHandle } from "@/lib/serverErrorHandle"
 import z from "zod"
 import { timelineNodeType } from "@/types/types"
 import { prisma } from "@/lib/db"
@@ -175,6 +175,6 @@ const deleteImageByAssetId = async (nodeId: string, imageUrl: string) => {
         }
         
     } catch (error) {
-        return tempErrorHandle(error)
+        return await serverSideErrorHandle(error)
     }
 } 

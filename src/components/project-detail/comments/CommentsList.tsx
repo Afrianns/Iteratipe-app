@@ -8,7 +8,7 @@ import { Heart, MessageSquareMore, SquareArrowOutUpRight } from "lucide-react"
 import { createRef, useContext, useEffect, useRef, useState } from "react"
 import { CommentsLoading } from "./CommentListsLoading"
 import { toast } from "sonner"
-import { tempErrorHandle } from "@/lib/tempErrorHandle"
+import { clientSideErrorHandle } from "@/lib/clientErrorHandle"
 import { CommentContext } from "@/lib/commentsContex"
 import { usePathname } from "next/navigation"
 
@@ -86,7 +86,7 @@ export const CommentLists = () => {
             }
              
         } catch (error) {
-            tempErrorHandle(error)
+            clientSideErrorHandle(error)
         } finally {
             setShowRepliesByID(comment.id)
 

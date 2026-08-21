@@ -10,7 +10,6 @@ import { modeEnum } from '@/types/enum';
 import { timelineNodeType } from '@/types/types';
 import CanvasSave from './timeline/CanvasSave';
 import { useShallow } from 'zustand/react/shallow'
-import { tempErrorHandle } from '@/lib/tempErrorHandle';
 import SidebarContentWrapper from './timeline/SidebarContentWrapper';
 import { useAuth } from '@clerk/nextjs';
 

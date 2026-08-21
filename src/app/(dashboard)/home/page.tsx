@@ -10,13 +10,22 @@ import useMasonry from "@/hooks/useMasonry";
 import { getUser } from "@/services/user.service";
 import { UserType } from "@/types/types";
 import { getTotalAuthUserProjectLikes } from "@/services/like.service";
-import { Link2, SquareArrowOutUpRight } from "lucide-react";
+import { Link2 } from "lucide-react";
 import Link from "next/link";
+
+import Redis from "ioredis"
+
+
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL
 
+interface userDataWithFollow extends UserType {
+   _count: {Followers: number, Followings: number}
+} 
+
 export default async function Home() {
     const { isAuthenticated, userId } = await auth()
+
 
     let totalLike = 0
 
@@ -27,7 +36,7 @@ export default async function Home() {
     }
 
 
-    let userAdditionalData: UserType = {
+    let userAdditionalData: userDataWithFollow = {
         id: 0,
         clerk_user_id: "",
         first_name: "",
@@ -41,6 +50,10 @@ export default async function Home() {
         twitter_link: "",
         website_link: "",
         created_at: null,
+        _count: {
+            Followers: 0,
+            Followings: 0
+        }
     }
 
     if(userId){
@@ -51,8 +64,6 @@ export default async function Home() {
         }
     }
 
-    
-    
     return (
         <div className="col-span-5 w-full">
             <div className="container-style container-accent-style">
@@ -75,8 +86,8 @@ export default async function Home() {
                             
 
                             <div className="flex gap-x-3 items-center my-5">
-                                <div className="py-1 px-6 rounded-md bg-lightish">5 Followers</div>
-                                <div className="py-1 px-6 rounded-md bg-lightish">23 Following</div>
+                                <div className="py-1 px-6 rounded-md bg-lightish">{userAdditionalData._count.Followers} Followers</div>
+                                <div className="py-1 px-6 rounded-md bg-lightish">{userAdditionalData._count.Followings} Following</div>
                                 <div className="py-1 px-6 rounded-md bg-lightish">{totalLike > 1 ? `${totalLike} Likes` : `${totalLike} Like`}</div>
                             </div>
                         </div>
