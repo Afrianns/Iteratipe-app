@@ -32,10 +32,10 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
         if(!user.isSignedIn) return toast.warning("You need to signin first!")
 
         setBookmark(!bookmark)
-        const result = await bookmarkProject(projectData.uid)
+        const result = await bookmarkProject(projectData.Users.username, projectData.uid, projectData.title)
         
         if(result.status == 200 && result.data){
-            setBookmarkCount(result.data.total_bookmarked)
+            setBookmarkCount(projectData._count.Bookmarks+result.data.newBookmarked)
             toast.success(`${result.message}: ${projectData.title}`)
         } else{
             toast.warning(result.message)
@@ -48,7 +48,7 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
 
         console.log(projectData)
         setLike(!like)
-        const result = await likeProject(projectData.uid)
+        const result = await likeProject(projectData.Users.username, projectData.uid, projectData.title)
         
         if(result.status == 200 && result.data){
             setLikeCount(projectData._count.Likes+result.data.newLiked)

@@ -11,6 +11,9 @@ import { Decimal } from "@prisma/client/runtime/client";
 import { Edge } from "@xyflow/react";
 import { getUserID } from "./user.service";
 import { previewCardDataQuery } from "@/lib/prismaQuery";
+import CapitalizedFirstLetter from "@/lib/capitalizedFirstLetter";
+import capitalizedFirstLetter from "@/lib/capitalizedFirstLetter";
+import { notFound } from "next/navigation";
 
 
 interface actionDataType {
@@ -256,15 +259,18 @@ const filterProject = (projects: { id: number;
     return projects.filter((project) => project.Status?.name == params).length
 }
 
-export async function getProjectDetailById(projectUid: string): Promise<returnDataType<DBSingleProjectByID>> {
+export async function getProjectDetailById(projectId: string): Promise<returnDataType<DBSingleProjectByID>> {
     
     const { isAuthenticated, userId } = await auth()
 
+    let projectIdArr = projectId.split("%E2%80%94")
     let userDbId = 0
+
+    let projectClerkId = ""
 
     try {
 
-        if(userId){            
+        if(userId){         
             const result = await getUserID(userId)
 
             if(result.status == 200 && result.data){
@@ -272,13 +278,33 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
             }
         }
 
-        console.log("checking ",userId, userDbId)
+        const getInitialProjectInfo = await prisma.projects.findFirst({
+            where:{ 
+                uid: projectIdArr[1], 
+                title: {
+                    equals: projectIdArr[0].split("-").join(" "),
+                    mode: "insensitive"
+                }
+            },
+            select:{ clerk_user_id: true }
+        })
+
+
+        if(getInitialProjectInfo?.clerk_user_id){
+            projectClerkId = getInitialProjectInfo?.clerk_user_id
+        } else{
+            return {
+                status: 404,
+                message:"Oops..project not found"
+            }
+            
+        }
 
         // if(userDbId == 0) if only there is no user id - 0, or it will get those user with id 0
 
         let result = await prisma.projects.findFirst({
             where: {
-                uid: projectUid
+                uid: projectIdArr[1]
             },
             include: {
                 Status: true,
@@ -310,7 +336,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                     }
                 },
                 Nodes: {
-                    where: !isAuthenticated ? {
+                    where: (!isAuthenticated || projectClerkId != userId) ? {
                         AND: [
                             {content: { not: null }},
                             {content: { not: "" }},
@@ -339,7 +365,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                 status: 200,
                 message: "Successfuly get project",
                 data: { 
-                    // id: result.id,
+                    ownerClerkId: result.clerk_user_id,
                     projectTitleInfo: {
                         title: result.title,
                         type: result.Type,
@@ -349,7 +375,7 @@ export async function getProjectDetailById(projectUid: string): Promise<returnDa
                         user: result.Users,
                         ...initialInfo
                     },
-                    settingInfo: isAuthenticated ? {
+                    settingInfo: (isAuthenticated && (projectClerkId == userId)) ? {
                         data: {
                             id: result.id,
                             title: result.title,

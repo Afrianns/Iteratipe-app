@@ -11,12 +11,15 @@ import Redis from "ioredis";
 
 type ReturnType = returnDataType<{newLiked: number}>
 
-export async function likeProject(projectUid: string): Promise<ReturnType> {
+const URL = process.env.NEXT_PUBLIC_APP_URL
+
+export async function likeProject(projectOwner: string, projectUid: string, projectTitle: string): Promise<ReturnType> {
   
   let userId = 0
   let projectId = 0
+  let usernameWhoDoTheAction = ""
 
-  let newLiked = 1
+  let newLiked = 0
   
   const user = await auth()
 
@@ -41,9 +44,15 @@ export async function likeProject(projectUid: string): Promise<ReturnType> {
     if(resultGetId.status == 200 && resultGetId.data){
       projectId = resultGetId.data.project_id
       userId = resultGetId.data.user_id
+      usernameWhoDoTheAction = resultGetId.data.username
+
     } else{
       throw new Error("failed fetching in: before like");
     }
+
+    // this, it will be store in temporary redis then do cron (1 hours?maybe) to store to db and queue notification to targeted activities
+
+    // for now store to db first
 
     // const deleteKey = await redis.del(`like:${projectId}:${userId}`)
     // let tempLikeCount = 0;
@@ -93,17 +102,34 @@ export async function likeProject(projectUid: string): Promise<ReturnType> {
           status: 200,
           message: "sucessful liked this project"
         }
+
+        newLiked = 1
       } else{
         throw new Error("Failed to like");
       }
 
     } else {
       
-      newLiked--
+      newLiked = -1
 
       returnValue = {
         status: 200,
         message: "sucessful unlike"
+      }
+    }
+
+
+    if(newLiked == 1){
+      const ownerId = await prisma.users.findFirst({where: {username: projectOwner}, select: {id: true}})
+
+      if(ownerId?.id){
+
+        await prisma.activities.create({
+          data: {
+            messages: `<a href="${URL}/user/${usernameWhoDoTheAction}" rel="noopener noreferrer">${usernameWhoDoTheAction}</a> Liked your project <a href="${URL}/home/${projectTitle.split(" ").join("-").toLowerCase()}%E2%80%94${projectUid}" rel="noopener noreferrer">${projectTitle.toLowerCase()}</a>`,
+            user_id: ownerId.id
+          }
+        })
       }
     }
 
@@ -134,12 +160,16 @@ export async function getTotalAuthUserProjectLikes(): Promise<returnDataType<{pr
       }
     }
 
-    const resultTotalLikes = await prisma.likes.findMany({
+    const resultTotalLikes = await prisma.projects.findMany({
         where: {
           user_id: userDbId
         }, 
         select: {
-          id: true
+          _count: {
+            select: {
+              Likes: true
+            }
+          }
         }
     })
 
@@ -147,10 +177,16 @@ export async function getTotalAuthUserProjectLikes(): Promise<returnDataType<{pr
       status: 200, 
       message: "Successful retrieved total likes",
       data: {
-        project_total_likes: resultTotalLikes.length
+        project_total_likes: combineTheLikes(resultTotalLikes)
       } 
     }
   } catch (error) {
     return await serverSideErrorHandle(error)
   }
+}
+
+
+const combineTheLikes = (projectLikes: {_count:{Likes: number}}[]) => {
+  let result = projectLikes.reduce((a,b) => ({_count: {Likes: a._count.Likes + b._count.Likes}}))
+  return result._count.Likes
 }

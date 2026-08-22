@@ -5,20 +5,23 @@ import { getUserID } from "./user.service";
 import { getProjectIDbyUID } from "./projects.service";
 
 export async function getUserIdAndProjectId(projectId: string): Promise<returnDataType<{
- user_id: number;
- project_id: number;
+ user_id: number
+ project_id: number
+ username: string
 }>> {
 
   const { userId } = await auth()
   let userDbId: number = 0;
   let projectDbId: number = 0;
+  let username: string = ""
 
   try {
     if(userId){
       const resultUserId = await getUserID(userId)
   
-      if(resultUserId.status == 200 && resultUserId.data?.id){
-        userDbId = resultUserId.data.id
+      if(resultUserId.status == 200 && resultUserId.data?.id && resultUserId.data?.username){
+        userDbId = resultUserId.data.id,
+        username = resultUserId.data.username
       } else{
         throw new Error("User id not found. Please try again later!");
       }
@@ -39,7 +42,8 @@ export async function getUserIdAndProjectId(projectId: string): Promise<returnDa
         message: "fetched the id",
         data: {
           user_id: userDbId,
-          project_id: projectDbId
+          project_id: projectDbId,
+          username: username
         }
       }
     } else{

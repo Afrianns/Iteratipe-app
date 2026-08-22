@@ -5,7 +5,7 @@ import '@xyflow/react/dist/style.css';
 import { Bookmark, Heart } from 'lucide-react';
 import { DBSingleProjectByID, generalDataType, generalSettingErrorsType, timelineNodeType, VISIBLE } from '@/types/types';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { notFound, useSearchParams } from 'next/navigation';
 import { getProjectDetailById } from '@/services/projects.service';
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
 import { SettingContext } from '@/lib/settingContext';
@@ -20,8 +20,8 @@ import DetailMenu from '@/components/project-detail/main/DetailMenu';
 import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
 import { handleEnum } from '@/types/enum';
-import { is } from 'zod/v4/locales';
 import Follow from './main/follow';
+import { toast } from 'sonner';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL 
 
@@ -91,7 +91,7 @@ let settings = {
     client_name: "",
 }
 
-export default function Main({ projectID }: {projectID: string}) {
+export default function Main({ projectFromDB, projectID }: {projectFromDB: DBSingleProjectByID, projectID: string}) {
 
     const { resetTimeline, setStartNode, setEndNode, setBothLastAndNewNodes, setBothLastAndNewEdges } = useTimelineStateStore()
     const [generalSettingErrors, setGeneralSettingErrors] = useState<generalSettingErrorsType>({})
@@ -99,9 +99,10 @@ export default function Main({ projectID }: {projectID: string}) {
 
     const projectId = projectID.split("%E2%80%94")[1];
 
-    const { isSignedIn } = useAuth()
+    const { isSignedIn, isLoaded, userId } = useAuth()
 
     const [project, setProject] = useState<DBSingleProjectByID>({
+        ownerClerkId: "",
         projectTitleInfo: initialProjectTitleInfo,
         overviewInfo: initialOverviewDataInfo,
         settingInfo: initialSettingData || undefined,
@@ -112,16 +113,22 @@ export default function Main({ projectID }: {projectID: string}) {
     })
 
     useEffect(() => {
+
         if(isSignedIn == undefined) return
 
-        const getProjectByID = async () => {
-            const result = await getProjectDetailById(projectId)
-            if(result.status == 200 && result.data){
-                setProject(result.data) 
-                console.log('check--- ',result)
-                return result.data
-            }
-        } 
+        setProject(projectFromDB)
+
+        // const getProjectByID = async () => {
+        //     const result = await getProjectDetailById(projectID)
+        //     if(result.status == 200 && result.data){
+        //         setProject(result.data)
+        //         return result.data
+        //     }
+            
+        //     if(result.status == 500){
+        //         toast.error(result.message)
+        //     }
+        // }
         
         const setTimelineData = (nodes: timelineNodeType[], edges: Edge[]) => {
             let containEND = false
@@ -139,9 +146,9 @@ export default function Main({ projectID }: {projectID: string}) {
             let modifiedNodes: timelineNodeType[] = []
             let modifiedEdges: Edge[] = []
 
-            console.log(isSignedIn, edges.length)
+            console.log(isSignedIn, edges.length, userId, project.ownerClerkId)
 
-            if(!isSignedIn && edges.length > 0) {
+            if((!isSignedIn || userId != projectFromDB.ownerClerkId) && edges.length > 0) {
                 const modifieditems = simplifiedNodesAndEdges(nodes, edges)
                 modifiedNodes = modifieditems.newIntemedieteNodes
                 modifiedEdges = modifieditems.newEdges
@@ -156,34 +163,31 @@ export default function Main({ projectID }: {projectID: string}) {
             setBothLastAndNewNodes([...nodes, ...modifiedNodes])
         }
 
-        getProjectByID().then((project) => {
-            const settings = project?.settingInfo 
-            const nodes = project?.Nodes
-            const edges = project?.Edges || []
-            
-            if(nodes) setTimelineData(nodes, edges)
+        const settings = projectFromDB.settingInfo 
+        const nodes = projectFromDB.Nodes
+        const edges = projectFromDB.Edges || []
+        
+        if(nodes) setTimelineData(nodes, edges)
 
-            if(settings) {
-                setGeneralSettings({
-                    id: settings.data.id,
-                    title: settings.data.title,
-                    summary: settings.data.summary,
-                    type: settings.data.type,
-                    status: settings.data.status,
-                    tags: settings.data.tags,
-                    tools: settings.data.tools,
-                    visibility: settings.data.visibility,
-                    disable_comments: settings.data.disable_comments,
-                    client_name: settings.data.client_name || "",
-                })
-            }
-        })
+        if(settings) {
+            setGeneralSettings({
+                id: settings.data.id,
+                title: settings.data.title,
+                summary: settings.data.summary,
+                type: settings.data.type,
+                status: settings.data.status,
+                tags: settings.data.tags,
+                tools: settings.data.tools,
+                visibility: settings.data.visibility,
+                disable_comments: settings.data.disable_comments,
+                client_name: settings.data.client_name || "",
+            })
+        }
 
         return () => {
             resetTimeline()
         };
-        
-    }, [isSignedIn])
+    }, [projectFromDB.ownerClerkId, isSignedIn])
 
 
     const searchParam = useSearchParams();
@@ -235,7 +239,7 @@ export default function Main({ projectID }: {projectID: string}) {
                             </div>
                         </div>
                         <div className="flex items-center justify-between max-lg:flex-col-reverse">
-                            <DetailMenu />
+                            <DetailMenu ownerClerkId={project.ownerClerkId} />
                             <div className="flex items-center gap-x-5 text-main-text/60 text-sm mt-2 pb-3">
                                 <p className="text-xs font-light flex items-center gap-x-2">
                                     Published on 
@@ -259,7 +263,7 @@ export default function Main({ projectID }: {projectID: string}) {
                 </div>
                 <div className="w-full h-fit bg-light-gray border-b border-gray-200 shadow-xs flex-1 max-md:mb-20">
                     <div className={`contents ${(menu === "timeline" || !menu) ? "block" : "hidden"}`}>
-                        <Timeline />
+                        <Timeline ownerClerkId={project.ownerClerkId} />
                     </div>
 
                     <div className={menu === "overview" ? "block" : "hidden"}>
@@ -270,12 +274,16 @@ export default function Main({ projectID }: {projectID: string}) {
                         <Comments projectId={projectId} ownerProjectId={project.overviewInfo.user.id} />
                     </div>
 
-                    {isSignedIn && 
-                        <div className={menu === "settings" ? "block" : "hidden"}>
-                            <SettingContext.Provider value={{ generalSettings: generalSettings, setGeneralSettings: setGeneralSettings, generalSettingErrors: generalSettingErrors, setGeneralSettingErrors: setGeneralSettingErrors }}>
+                    {isLoaded &&
+                        <>
+                            {(isSignedIn && project.ownerClerkId == userId) && 
+                                <div className={menu === "settings" ? "block" : "hidden"}>
+                                <SettingContext.Provider value={{ generalSettings: generalSettings, setGeneralSettings: setGeneralSettings, generalSettingErrors: generalSettingErrors, setGeneralSettingErrors: setGeneralSettingErrors }}>
                                 <Settings />
-                            </SettingContext.Provider>
-                        </div>
+                                </SettingContext.Provider>
+                                </div>
+                            }
+                        </>
                     }
                     <div id="date-picker-root"></div>
                 </div>

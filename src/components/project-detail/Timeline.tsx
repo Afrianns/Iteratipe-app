@@ -21,9 +21,9 @@ const nodeTypes = {
 const initialNodes: timelineNodeType[] = [];
 const initialEdges: Edge[] = [];
 
-export default function Timeline() {
+export default function Timeline({ownerClerkId}: {ownerClerkId:string}) {
 
-    const { isSignedIn, isLoaded } = useAuth()
+    const { isSignedIn, isLoaded, userId } = useAuth()
 
 
     const { mode, globalNodes, globalEdges, setStartNode, setEndNode, deleteNode, deleteEdge } = useTimelineStateStore(useShallow((state) => ({
@@ -121,7 +121,7 @@ export default function Timeline() {
             <div className='relative h-full w-full'>
                 {isLoaded && 
                     <>
-                        {isSignedIn ?  
+                        {(isSignedIn && ownerClerkId == userId) ?  
                             <>
                                 <ReactFlow id="ReactFlow" nodes={nodes} edges={edges} 
                                 nodeTypes={nodeTypes}

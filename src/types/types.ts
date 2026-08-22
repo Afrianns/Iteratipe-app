@@ -240,7 +240,7 @@ export interface returnDataType<T> {
 export type Tab = "general" | "visibility"
 
 export interface DBSingleProjectByID {
-  // id: number
+  ownerClerkId: string
   projectTitleInfo: DBProjectTitleInfo
   overviewInfo: OverviewInfo
   settingInfo?: DBSettingInfo

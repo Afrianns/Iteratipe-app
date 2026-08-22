@@ -9,13 +9,14 @@ import { auth } from "@clerk/nextjs/server";
 
 export const getUserID = async (userId: string): Promise<returnDataType<{
   id: number
+  username: string
 }>> => {
   try {
     const user = await prisma.users.findUnique({
         where: {
             clerk_user_id: userId as string
         },
-        select: { id: true },
+        select: { id: true, username: true },
     });
 
     if(!user?.id) throw new Error("user not found");
@@ -25,7 +26,8 @@ export const getUserID = async (userId: string): Promise<returnDataType<{
         status: 200,
         message: "successful",
         data: {
-          id: user.id
+          id: user.id,
+          username: user.username
         }
       }
     } else{
@@ -38,7 +40,13 @@ export const getUserID = async (userId: string): Promise<returnDataType<{
 }
 
 interface userDataWithFollow extends UserType {
-   _count: {Followers: number, Followings: number}
+  _count: {Followers: number, Followings: number}
+  Activities: {
+      id: number
+      user_id: number
+      messages: string
+      created_at: Date
+  }[]
 } 
 
 export const getUser = async (clerkUserId: string): Promise<returnDataType<userDataWithFollow | null>> => {
@@ -48,6 +56,7 @@ export const getUser = async (clerkUserId: string): Promise<returnDataType<userD
           clerk_user_id: clerkUserId
         },
         include: {
+          Activities: true,
           _count: {
             select: {
               Followers: true,

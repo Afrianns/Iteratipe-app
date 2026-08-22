@@ -14,13 +14,25 @@ import { Link2 } from "lucide-react";
 import Link from "next/link";
 
 import Redis from "ioredis"
+import Activity from "./_components/Activity";
+import dynamic from "next/dynamic";
 
-
+// const Activity = dynamic(() => import('./_components/Activity'), { 
+//   ssr: false,
+//   // This shows up on the server pre-render while the client loads the component
+//   loading: () => <p className="text-sm text-gray-500">Loading activities...</p> 
+// })
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL
 
-interface userDataWithFollow extends UserType {
+interface userWithAdditionalData extends UserType {
    _count: {Followers: number, Followings: number}
+   Activities: {
+      id: number
+      user_id: number
+      messages: string
+      created_at: Date
+  }[]
 } 
 
 export default async function Home() {
@@ -36,7 +48,7 @@ export default async function Home() {
     }
 
 
-    let userAdditionalData: userDataWithFollow = {
+    let userAdditionalData: userWithAdditionalData = {
         id: 0,
         clerk_user_id: "",
         first_name: "",
@@ -53,7 +65,8 @@ export default async function Home() {
         _count: {
             Followers: 0,
             Followings: 0
-        }
+        },
+        Activities: []
     }
 
     if(userId){
@@ -103,10 +116,7 @@ export default async function Home() {
                                     <AuthenticatedProjectLists />
                                 </Suspense>
                             </div>
-                            <div className="max-md:row-start-1 card-style-secondary h-fit max-md:col-span-2">
-                                <h3 className="h-three-style">Recent Activities</h3>
-                                <hr className="hr-style my-2" />
-                            </div>
+                            <Activity Activities={userAdditionalData.Activities} />
                         </div>
                     </div>
                 }

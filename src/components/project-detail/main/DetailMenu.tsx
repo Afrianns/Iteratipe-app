@@ -5,10 +5,10 @@ import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-export default function DetailMenu() {
+export default function DetailMenu({ownerClerkId}: {ownerClerkId: string}) {
 
     const searchParams = useSearchParams();
-    const { isSignedIn } = useAuth()
+    const { isLoaded, isSignedIn, userId } = useAuth()
     const currentMenu = searchParams.get('menu') || "timeline";
 
     
@@ -19,8 +19,12 @@ export default function DetailMenu() {
             <Link href="?menu=timeline" className={`detail-list-style ${activeSubMenu(subMenuEnum.TIMELINE)}`}>Timeline</Link>
             <Link href="?menu=overview" className={`detail-list-style ${activeSubMenu(subMenuEnum.OVERVIEW)}`}>Overview</Link>
             <Link href="?menu=comments" className={`detail-list-style ${activeSubMenu(subMenuEnum.COMMENTS)}`}>Comments</Link>
-            {isSignedIn &&
-                <Link href="?menu=settings" className={`detail-list-style ${activeSubMenu(subMenuEnum.SETTINGS)}`}>Settings</Link>
+            {isLoaded &&
+                <>
+                    {(isSignedIn && ownerClerkId == userId) &&
+                        <Link href="?menu=settings" className={`detail-list-style ${activeSubMenu(subMenuEnum.SETTINGS)}`}>Settings</Link>
+                    }
+                </>
             }
         </div>
     )
