@@ -271,7 +271,7 @@ export default function Main({ projectFromDB, projectID }: {projectFromDB: DBSin
                     </div>
 
                     <div className={menu === "comments" ? "block" : "hidden"}>
-                        <Comments projectId={projectId} ownerProjectId={project.overviewInfo.user.id} />
+                        <Comments projectId={projectId} projectOwner={project.overviewInfo.user.username} ownerProjectId={project.overviewInfo.user.id} />
                     </div>
 
                     {isLoaded &&

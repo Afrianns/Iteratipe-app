@@ -51,8 +51,8 @@ export default function CanvasSave() {
   const saveCurrentState = async () => {
   
     const paths = pathname.split("/")
-
-    await saveTimeline({paths, globalNodes, globalEdges, setBothLastAndNewNodes, setBothLastAndNewEdges})
+    
+    await saveTimeline({paths, globalNodes, globalEdges, setBothLastAndNewEdges, setBothLastAndNewNodes})
   }
   
   return (

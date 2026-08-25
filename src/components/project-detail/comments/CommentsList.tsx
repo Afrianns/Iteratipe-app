@@ -29,11 +29,11 @@ type CommentTextEditorHandle = {
   resetContent: () => void
 }
 
-export const CommentLists = () => {
+export const CommentLists = ({ projectOwner }:{ projectOwner: string }) => {
 
     const { comments, projectId, selectedValuePost, setComments, selectedNodeIdComments, sortingComment } = useContext(CommentContext)
 
-    const { isSignedIn, isLoaded } = useAuth()
+    const { isSignedIn } = useAuth()
 
     const [hidReplyInput, setHidReplyInput] = useState<number>(0)
     const [showRepliesByID, setShowRepliesByID] = useState<number>(0)
@@ -41,7 +41,6 @@ export const CommentLists = () => {
     const [retrieved, setRetrieved] = useState<Set<number>>(new Set())
 
     let editorRef = useRef<React.RefObject<CommentTextEditorHandle | null>[]>([])
-    const [editorContent, setEditorContent] = useState<string>("")
 
     const toggleReplyForm = (id: number) => {
         setHidReplyInput(id == hidReplyInput ? 0 : id)
@@ -57,18 +56,17 @@ export const CommentLists = () => {
     
     const saveComment = async (comment: CommentWithReplies, id: number) => {
         const quillRef = editorRef.current[id].current;
-        console.log(quillRef, "?")
+        
         if(!quillRef) return;
+        
         let purifiedComment = '';
+        
         const impureComment = quillRef.getContent();
 
-        setEditorContent(quillRef.getContent())
-        
         if(impureComment) purifiedComment = DOMPurify.sanitize(impureComment);
 
-        console.log(impureComment, purifiedComment)
         try {
-            const result = await saveCommentForm(purifiedComment, projectId, selectedValuePost, comment.id)
+            const result = await saveCommentForm(purifiedComment, projectOwner, projectId, selectedValuePost, comment.id)
             
             const reply = result.data 
             if(result.status == 200 && reply){

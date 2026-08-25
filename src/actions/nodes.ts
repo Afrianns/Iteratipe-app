@@ -41,7 +41,7 @@ export const autoUpdateNodes = async (projectUid: string, Nodes: timelineNodeTyp
         }
 
         
-        if(node.data.image_url.trim() == "" || node.data.image_url == undefined) {
+        if(node.data.image_url.trim() == "" || !node.data.image_url) {
             const asset_id: string = await prisma.$queryRaw`SELECT asset_id FROM "Nodes" WHERE uid = ${uid}`
 
             if(asset_id.length > 0) {

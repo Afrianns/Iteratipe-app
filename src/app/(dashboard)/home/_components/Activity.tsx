@@ -2,26 +2,38 @@
 
 import { useEffect, useState } from "react"
 import { convertDate } from "@/lib/convertDate"
-import DOMPurify from "dompurify"
-import { ArrowDownWideNarrow, ArrowUpWideNarrow } from "lucide-react"
-import { formatDistance, subDays } from "date-fns"
 
-export interface ActivityType {
-  id: number
-  user_id: number
-  messages: string
-  created_at: Date
-}
+import { ArrowDownWideNarrow, ArrowUpWideNarrow } from "lucide-react"
+import { formatDistance } from "date-fns"
+import { useAuth } from "@clerk/nextjs"
+import Image from "next/image"
+import { channel } from "@/lib/pusher"
+import { ActivityType } from "@/types/types"
+import ActivityList from "@/components/ActivityList"
+
 
 export default function Activity({ Activities }: {Activities: ActivityType[]}) {
 
-  const [loading, setLoading] = useState<boolean>(false)
+
+  const [loading, setLoading] = useState<boolean>(true)
+
+  const [activities, setActivities] = useState<ActivityType[]>([])
+
+  const { userId } = useAuth()
 
   const [sorting, setSorting] = useState<"ASC"|"DSC">("ASC")
 
   useEffect(() => {
-    setLoading(true)
-  }, [])
+    console.log(Activities)
+    setLoading(false)
+    setActivities(Activities)
+
+    return () => {
+      setActivities([])
+      setLoading(false)
+    }
+    
+  }, [Activities])
 
   const setSortingActivities = () => {
     if(sorting == "ASC"){
@@ -30,6 +42,19 @@ export default function Activity({ Activities }: {Activities: ActivityType[]}) {
       setSorting("ASC")
     }
   }
+
+  useEffect(() => {
+    const handleNotify = (activity: ActivityType) => {
+      setActivities((prevActivities) => [...prevActivities, {...activity, created_at: new Date(activity.created_at)}])
+      console.log("counting-- ",activities, {...activity, created_at: new Date(activity.created_at)})
+    }
+
+    channel.bind(`notify-${userId}`, handleNotify)
+
+    return () => {
+      channel.unbind(`notify-${userId}`, handleNotify)
+    }
+  }, [userId])
 
   return (
     <div className="max-md:row-start-1 card-style-secondary p-0! h-fit max-md:col-span-2">
@@ -44,18 +69,11 @@ export default function Activity({ Activities }: {Activities: ActivityType[]}) {
         </button>
       </div>
       <hr className="hr-style opacity-45" />
-      <div className="p-5">
-        {loading ?
+      <div className="p-5 space-y-5">
+        {!loading ?
           <>
-            {sortActivities(Activities, sorting).map((activity) => {
-              return <div key={activity.id} className='my-5 space-y-3'>
-                  <div className='message-content' dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(activity.messages) }} />
-                  <div className="flex items-center justify-between my-2">
-                    <p className="p-style">{formatDistance(new Date(activity.created_at), new Date(), { addSuffix: true })}</p>
-                    <p className='span-style'>{convertDate(activity.created_at)}</p>
-                  </div>
-                  {/* <hr className="hr-style" /> */}
-              </div>
+            {sortActivities(activities, sorting).map((activity) => {
+              return <ActivityList key={activity.id} activity={activity} />
             })}
           </>
         :
@@ -67,6 +85,8 @@ export default function Activity({ Activities }: {Activities: ActivityType[]}) {
 }
 
 const sortActivities = (activities: ActivityType[], sorting: "ASC"|"DSC") =>{
+  if(activities.length <= 0) return []
+
   return activities.sort((activityA, activityB) => {
     
     let A = activityA.created_at

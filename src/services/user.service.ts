@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { previewCardDataQuery } from "@/lib/prismaQuery";
 import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
-import { labelType, ProjectPreviewType, returnDataType, UserPreviewType, UserType } from "@/types/types";
+import { ActivityType, labelType, ProjectPreviewType, returnDataType, UserPreviewType, UserType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 
 
@@ -45,6 +45,8 @@ interface userDataWithFollow extends UserType {
       id: number
       user_id: number
       messages: string
+      seen: boolean
+      user_image_url: string
       created_at: Date
   }[]
 } 
@@ -56,7 +58,15 @@ export const getUser = async (clerkUserId: string): Promise<returnDataType<userD
           clerk_user_id: clerkUserId
         },
         include: {
-          Activities: true,
+          Object: {
+            include: {
+              Subject: {
+                select: {
+                  image_url: true
+                }
+              }
+            }              
+          },
           _count: {
             select: {
               Followers: true,
@@ -66,11 +76,18 @@ export const getUser = async (clerkUserId: string): Promise<returnDataType<userD
         }
     });
 
-    return {
-      status: 200,
-      message: "Successfully",
-      data: user
-    }    
+    console.log("user is ",user)
+
+    if(user) { 
+      return {
+        status: 200,
+        message: "Successfully",
+        data: {...user, Activities: user?.Object ? mapActivities(user.Object) : []}
+      }    
+    } else{
+      throw new Error("Ops... Something went wrong");
+      
+    }
   } catch (error) {
       return await serverSideErrorHandle(error)
   } 
@@ -167,4 +184,31 @@ export const getUserByUsername = async (username: string): Promise<returnDataTyp
   } catch (error) {
       return await serverSideErrorHandle(error)
   }
+}
+
+
+const mapActivities = (activities: {
+      id: number
+      Subject_user_id: number
+      Object_user_id: number
+      messages: string
+      seen: boolean
+      created_at: Date
+      Subject: {
+        image_url: string
+      }
+  }[]): ActivityType[] =>  {
+    const newActivities = activities.map((activity) => {
+      return {
+        user_image_url: activity.Subject.image_url,
+        id: activity.id,
+        user_id: activity.Subject_user_id,
+        messages: activity.messages,
+        seen: activity.seen,
+        created_at: activity.created_at
+      }
+    })
+
+    return newActivities
+  
 }

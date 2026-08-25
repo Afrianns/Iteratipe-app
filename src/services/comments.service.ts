@@ -8,8 +8,11 @@ import { getUserID } from "./user.service";
 import { getNodeIdByUid } from "./nodes.service";
 import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { getProjectIDbyUID } from "./projects.service";
+import storeAndNotify from "@/lib/notifications";
 
-export async function saveComment(projectID: number, comments: string, nodeUID?: string, commentID?: number): Promise<returnDataType<CommentType>> {
+const URL = process.env.NEXT_PUBLIC_APP_URL
+
+export async function saveComment(projectID: number, projectOwner: string, comments: string, nodeUID?: string, commentID?: number): Promise<returnDataType<CommentType>> {
   
   const { userId } = await auth()
 
@@ -49,6 +52,12 @@ export async function saveComment(projectID: number, comments: string, nodeUID?:
         node_id: nodeResultID ?? Prisma.skip
       },
       include: {
+        Projects: {
+          select: {
+            title: true,
+            uid: true
+          }
+        },
         Users: {
           select: {
             id: true,
@@ -75,13 +84,27 @@ export async function saveComment(projectID: number, comments: string, nodeUID?:
     });
 
     if(result){
-        return {
-            status: 200,
-            message: "Success retrieved data",
-            data: result
-        };
+
+      const projectLink = `${URL}/home/${result.Projects.title.split(" ").join("-").toLowerCase()}%E2%80%94${result.Projects.uid}`
+
+      let withNode = " for general section"; 
+
+      if(result.Nodes?.title && result.Nodes?.title?.length > 0){ 
+        withNode = ` for <a href="${projectLink}?menu=timeline&node=${result.Nodes?.uid}">${result.Nodes?.title} section</a>`
+      }
+      
+      const message = `<a href="${URL}/user/${result.Users.username}" rel="noopener noreferrer">${result.Users.username}</a> comments on your project <a href="${projectLink}" rel="noopener noreferrer">${result.Projects.title.toLowerCase()}</a>${withNode}`
+
+      storeAndNotify(message, userID, projectOwner)
+      
+      return {
+          status: 200,
+          message: "Success retrieved data",
+          data: result
+      };
+      
     } else{
-        throw new Error("error saving comments")
+      throw new Error("error saving comments")
     }
       
   } catch (error) {
@@ -235,6 +258,43 @@ export async function setLikeComment(commentId: number): Promise<returnDataType<
       }
   } catch (error) {
     return await serverSideErrorHandle(error)
+  }
+}
+
+export async function hasReadAllNotification(): Promise<returnDataType<{
+  totalUpdated: number
+}>> {
+
+  const {userId} = await auth()
+
+  try {
+
+    if(userId) {
+
+      const user = await getUserID(userId)
+
+      if(user.data?.id && user.status == 200) {
+        const result = await prisma.activities.updateMany({
+          where: {
+            Object_user_id: user.data?.id
+          },
+          data: {
+            seen: true
+          }
+        })
+
+        return {
+          status: 200,
+          message: "updated",
+          data: {
+            totalUpdated: result.count
+          }
+        }
+      }
+    }
+    throw new Error("Ops... something went wrong")
+  } catch (error) {
+    return serverSideErrorHandle(error)
   }
 }
 

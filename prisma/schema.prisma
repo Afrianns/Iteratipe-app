@@ -41,7 +41,8 @@ model Users {
   created_at    DateTime?            @default(now()) @db.Timestamp(6)
   Followers     Follows[]            @relation("followers")
   Followings    Follows[]            @relation("followings")
-  Activities    Activities[]
+  Object        Activities[]         @relation("Object")
+  Subject       Activities[]         @relation("Subject")
 }
 
 model Follows {
@@ -201,11 +202,14 @@ model Comments {
 }
 
 model Activities {
-  id       Int    @id @default(autoincrement())
-  user_id  Int
-  messages String @db.Text
-  Users    Users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  created_at DateTime @default(now()) @db.Timestamp(6)
+  id              Int      @id @default(autoincrement())
+  Object_user_id  Int
+  Subject_user_id Int
+  messages        String   @db.Text
+  Object          Users    @relation("Object", fields: [Object_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Subject         Users    @relation("Subject", fields: [Subject_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seen            Boolean
+  created_at      DateTime @default(now()) @db.Timestamp(6)
 }
 
 model User_like_comments {

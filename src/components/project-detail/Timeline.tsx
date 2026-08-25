@@ -58,6 +58,8 @@ export default function Timeline({ownerClerkId}: {ownerClerkId:string}) {
             change.type === 'select' || 
             change.type === 'remove'
         );
+
+        console.log(hasUserInteractions, isSpectator)
         if (isSpectator && hasUserInteractions) return;
         
         onNodesChange(changes);
@@ -119,30 +121,9 @@ export default function Timeline({ownerClerkId}: {ownerClerkId:string}) {
     return (
         <ReactFlowProvider>
             <div className='relative h-full w-full'>
-                {isLoaded && 
+                {isLoaded &&
                     <>
-                        {(isSignedIn && ownerClerkId == userId) ?  
-                            <>
-                                <ReactFlow id="ReactFlow" nodes={nodes} edges={edges} 
-                                nodeTypes={nodeTypes}
-                                onNodesChange={nodeChanges} 
-                                onConnect={edgeConnectionAdd}
-                                defaultEdgeOptions={{ type: "step", animated: true}} 
-                                onEdgesChange={edgeChanges}
-                                deleteKeyCode={mode == modeEnum.DELETE ? ['Backspace', 'Delete'] : null}
-                                onBeforeDelete={nodeDeletion}
-                                onlyRenderVisibleElements={true}
-                                fitView>
-                                    <Background />
-                                    <Controls showInteractive={false} />
-                                    <MiniMap />
-                                </ReactFlow>
-                                <SidebarContentWrapper />
-                                <TimelineMenu />
-                                <CanvasSave />
-                            </>
-                        
-                        : 
+                        {(!isSignedIn && ownerClerkId != userId) ?  
                             <>
                                 <ReactFlow id="ReactFlow" nodes={nodes} edges={edges}
                                 nodeTypes={nodeTypes}
@@ -160,6 +141,26 @@ export default function Timeline({ownerClerkId}: {ownerClerkId:string}) {
                                     <MiniMap />
                                 </ReactFlow>
                                 <SidebarContentWrapper />
+                            </>
+                        : 
+                            <>
+                                <ReactFlow id="ReactFlow" nodes={nodes} edges={edges} 
+                                nodeTypes={nodeTypes}
+                                onNodesChange={nodeChanges} 
+                                onConnect={edgeConnectionAdd}
+                                defaultEdgeOptions={{type: "step", animated: true}} 
+                                onEdgesChange={edgeChanges}
+                                deleteKeyCode={mode == modeEnum.DELETE ? ['Backspace', 'Delete'] : null}
+                                onBeforeDelete={nodeDeletion}
+                                onlyRenderVisibleElements={true}
+                                fitView>
+                                    <Background />
+                                    <Controls showInteractive={false} />
+                                    <MiniMap />
+                                </ReactFlow>
+                                <SidebarContentWrapper />
+                                <TimelineMenu />
+                                <CanvasSave />
                             </>
                         }
                     </>

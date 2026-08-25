@@ -29,7 +29,7 @@ type RichTextEditorHandle = {
   resetContent: () => void
 }
 
-export default function Comments({projectId, ownerProjectId}: {projectId: string, ownerProjectId: number}) {
+export default function Comments({projectId, projectOwner, ownerProjectId}: {projectId: string, projectOwner: string, ownerProjectId: number}) {
     
     const [selectedNodeIdComments, setSelectedNodeIdComments] = useState<string>("NOT_AN_ID")
     const [selectedValuePost, setSelectedValuePost] = useState<string>("NOT_AN_ID")
@@ -74,6 +74,8 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
 
     // store saved comment
     const beforeSaveComment = async () => {
+
+        console.log(projectId)
         const quillRef = editorRef.current
 
         if (!quillRef) return
@@ -82,7 +84,7 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
         if(content) purifiedMessage = DOMPurify.sanitize(content, { ADD_ATTR: ['target'] });
 
         try {
-            const result = await saveCommentForm(purifiedMessage, projectId, selectedValuePost)
+            const result = await saveCommentForm(purifiedMessage, projectOwner, projectId, selectedValuePost)
             if(result?.status == 200 && result.data){
                 setComments([...comments, {...result.data, Replies: []}])
                 toast.success(result.message)
@@ -112,7 +114,7 @@ export default function Comments({projectId, ownerProjectId}: {projectId: string
                         <div className="space-y-6 p-5">
                             {isCommentsSet ? 
                                 comments.length > 0 ?
-                                    <CommentLists />
+                                    <CommentLists projectOwner={projectOwner} />
                                 :   
                                     <div className="flex flex-col justify-center items-center space-y-5 my-10">
                                         {/* <Image src="/assets/no-comments-available.svg" width={200} height={200} alt="empty post box" /> */}

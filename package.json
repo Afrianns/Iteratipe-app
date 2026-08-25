@@ -24,6 +24,8 @@
     "ioredis": "^5.11.1",
     "lucide-react": "^1.22.0",
     "next": "16.2.9",
+    "pusher": "^5.3.4",
+    "pusher-js": "^8.6.0",
     "quill": "^2.0.3",
     "react": "19.2.4",
     "react-datepicker": "^9.1.0",

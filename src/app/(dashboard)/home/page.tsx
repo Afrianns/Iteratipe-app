@@ -8,7 +8,7 @@ import { Suspense } from "react";
 import HeaderHome from "./_components/HeaderHome";
 import useMasonry from "@/hooks/useMasonry";
 import { getUser } from "@/services/user.service";
-import { UserType } from "@/types/types";
+import { ActivityType, UserType } from "@/types/types";
 import { getTotalAuthUserProjectLikes } from "@/services/like.service";
 import { Link2 } from "lucide-react";
 import Link from "next/link";
@@ -27,12 +27,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL
 
 interface userWithAdditionalData extends UserType {
    _count: {Followers: number, Followings: number}
-   Activities: {
-      id: number
-      user_id: number
-      messages: string
-      created_at: Date
-  }[]
+   Activities: ActivityType[]
 } 
 
 export default async function Home() {
@@ -109,7 +104,7 @@ export default async function Home() {
                                 <HeaderHome />
                             </Suspense>
                         </div>
-                        <div className="grid lg:grid-cols-3 gap-5 mt-5">
+                        <div className="grid items-start lg:grid-cols-3 gap-5 mt-5">
                             <div className="col-span-2 grid md:grid-cols-2 gap-5">
                                 <h3 className="col-span-full h-three-style">Your Recent Projects</h3>
                                 <Suspense fallback={<ProjectCardSkeleton />}>

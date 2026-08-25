@@ -368,6 +368,16 @@ export interface ProjectPreviewType {
     }[]
 }
 
+
+export interface ActivityType {
+  id: number
+  user_id: number
+  user_image_url: string
+  messages: string
+  seen: boolean
+  created_at: Date
+}
+
 export type SortingType = "ASC" | "DSC"
 
 export type subMenuType = "timeline" | "overview" | "comments" | "settings";

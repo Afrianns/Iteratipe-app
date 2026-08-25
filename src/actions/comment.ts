@@ -6,25 +6,24 @@ import { getProjectIDbyUID } from "@/services/projects.service";
 import { CommentType, returnDataType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 
-export const saveCommentForm = async (messages: string, projectUid: string, selectedValuePost: string, commentId?: number): Promise<returnDataType<CommentType>> => {
+export const saveCommentForm = async (messages: string, projectOwner: string, projectUid: string, selectedValuePost: string, commentId?: number): Promise<returnDataType<CommentType>> => {
 
-        // purify again the message, idk
-      let projectID = null
-      try {
-    
+    // purify again the message, idk
+    let projectID = null
+    try {
         if(projectUid) {
-          const resultProjectID = await getProjectIDbyUID(projectUid);
-          if(resultProjectID.status == 200 && resultProjectID.data?.id){
+            const resultProjectID = await getProjectIDbyUID(projectUid);
+            if(resultProjectID.status == 200 && resultProjectID.data?.id){
             projectID = resultProjectID.data.id
-          } else{
+            } else{
             throw new Error("Selected Node not found");
-          }
+            }
         }
 
         if(projectID == null) throw new Error("Can't find the project");
 
         if(messages){
-            const result = await saveComment(projectID, messages, selectedValuePost, commentId)
+            const result = await saveComment(projectID, projectOwner, messages, selectedValuePost, commentId)
 
             if(result.status == 200 && result.data){
                 return {

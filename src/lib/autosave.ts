@@ -1,6 +1,6 @@
 import { autoUpdateNodes } from "@/actions/nodes";
 import { autoUpdateEdges } from "@/actions/edges";
-import { setNode, timelineNodeType } from "@/types/types";
+import { timelineNodeType } from "@/types/types";
 import { toast } from "sonner";
 import { Edge } from "@xyflow/react";
 import { clientSideErrorHandle } from "@/lib/clientErrorHandle"
@@ -18,19 +18,13 @@ interface SaveTimelineTimelineType {
   paths: string[]
   globalEdges: Edge[] 
   globalNodes: timelineNodeType[]
-
   setBothLastAndNewEdges: (params: Edge[]) => void
   setBothLastAndNewNodes: (nodes: timelineNodeType[]) => void
 }
 
 const URL = process.env.NEXT_PUBLIC_APP_URL
 
-export const saveTimeline = async ({paths, globalNodes, globalEdges, setBothLastAndNewEdges, setBothLastAndNewNodes}: SaveTimelineTimelineType) => {
-
-  console.log('be validation ',globalNodes)
-  
-  const user = useAuth()
-  if(!user.isSignedIn) return
+export const saveTimeline = async ({paths, globalNodes, globalEdges, setBothLastAndNewEdges, setBothLastAndNewNodes }: SaveTimelineTimelineType) => {
 
   const validations = NodeListSchema.safeParse(globalNodes);
   
@@ -41,6 +35,8 @@ export const saveTimeline = async ({paths, globalNodes, globalEdges, setBothLast
       throw new Error("Data is not valid!");
 
     }
+
+    console.log(globalNodes)
 
     let edges = await saveEdges(paths, globalEdges, setBothLastAndNewEdges);
     let nodes = await saveNodes(paths, globalNodes, setBothLastAndNewNodes);
@@ -56,12 +52,12 @@ export const saveTimeline = async ({paths, globalNodes, globalEdges, setBothLast
     clientSideErrorHandle(error);
   }
 }
-
+// 
 export const saveEdges = async (paths: string[], edges: Edge[], setBothLastAndNewEdges: (params: Edge[]) => void) => {
     let result = await autoUpdateEdges(paths[2].split("%E2%80%94")[1], edges);
     
     if(result.status == 200 && result.data){
-      setBothLastAndNewEdges(result.data.edges)
+      // setBothLastAndNewEdges(result.data.edges)
       return {
         status: result.status,
         message: result.message,
@@ -74,11 +70,11 @@ export const saveEdges = async (paths: string[], edges: Edge[], setBothLastAndNe
       message: result.message
     }
 }
-
+// 
 export const saveNodes = async (paths: string[], nodes: timelineNodeType[], setBothLastAndNewNodes: (nodes: timelineNodeType[]) => void) => {
   
   const resultBatchUpload = Promise.all(nodes.map( async (node) => {
-    if(node.data.image_url.trim() != "" && node.data.image_url.startsWith(`blob:${URL}`)) {
+    if(node.data.image_url != null && node.data.image_url.trim() != "" && node.data.image_url.startsWith(`blob:${URL}`)) {
 
       const uploadResult = await uploadImage(node.data.image_url)
       
@@ -94,12 +90,13 @@ export const saveNodes = async (paths: string[], nodes: timelineNodeType[], setB
   }))
 
   const newNodes = await resultBatchUpload;
+
+  console.log(newNodes)
   
   let result = await autoUpdateNodes(paths[2].split("%E2%80%94")[1], newNodes);
   
   if(result.status == 200 && result.data){
     setBothLastAndNewNodes(result.data.nodes)
-
     return {
       status: result.status,
       message: result.message,

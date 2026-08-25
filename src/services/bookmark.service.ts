@@ -7,8 +7,11 @@ import { getUserID } from "./user.service";
 import { prisma } from "@/lib/db";
 import { getUserIdAndProjectId } from "./partial.service";
 import { previewCardDataQuery } from "@/lib/prismaQuery";
+import { pusher } from "@/lib/pusher";
+import StoreAndNotify from "@/lib/notifications";
+import storeAndNotify from "@/lib/notifications";
 
-type ReturnType = returnDataType<{newBookmarked: number}>
+type ReturnType = returnDataType<{newTotalBookmarked: number}>
 
 const URL = process.env.NEXT_PUBLIC_APP_URL
 
@@ -19,7 +22,6 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
   let usernameWhoDoTheAction = ""
 
   let newBookmarked = 0
-
 
   const user = await auth()
 
@@ -119,23 +121,50 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
     // update the the activity to relate user
 
     if(newBookmarked == 1){
+      const message = `<a href="${URL}/user/${usernameWhoDoTheAction}" rel="noopener noreferrer">${usernameWhoDoTheAction}</a> bookmarked your project <a href="${URL}/home/${projectTitle.split(" ").join("-").toLowerCase()}%E2%80%94${projectUid}" rel="noopener noreferrer">${projectTitle.toLowerCase()}</a>`
 
-      const ownerId = await prisma.users.findFirst({where:{username:projectOwner},select:{id:true}})
+      storeAndNotify(message, userId, projectOwner)
+      // const ownerId = await prisma.users.findFirst({where: {username: projectOwner}, select: {id: true, clerk_user_id: true}})
 
-      if(ownerId?.id){
-        await prisma.activities.create({
-              data: {
-                messages: `<a href="${URL}/user/${usernameWhoDoTheAction}" rel="noopener noreferrer">${usernameWhoDoTheAction}</a> bookmarked your project <a href="${URL}/home/${projectTitle.split(" ").join("-").toLowerCase()}%E2%80%94${projectUid}" rel="noopener noreferrer">${projectTitle.toLowerCase()}</a>`,
-                user_id: ownerId.id
-              }
-          })
-      }
+      
+      // if(ownerId?.id){
+
+      //   const newlyActivity = await prisma.activities.create({
+      //     data: {
+      //       messages: `<a href="${URL}/user/${usernameWhoDoTheAction}" rel="noopener noreferrer">${usernameWhoDoTheAction}</a> bookmarked your project <a href="${URL}/home/${projectTitle.split(" ").join("-").toLowerCase()}%E2%80%94${projectUid}" rel="noopener noreferrer">${projectTitle.toLowerCase()}</a>`,
+      //       Object_user_id: ownerId.id,
+      //       Subject_user_id: userId,
+      //       seen: false
+      //     },
+      //     include: {
+      //       Subject: {
+      //         select: {
+      //           image_url: true
+      //         }
+      //       }
+      //     }
+      //   })
+
+      //   pusher.trigger("notification-channel", `notify-${ownerId.clerk_user_id}`, {         
+      //     id: newlyActivity.id as number,
+      //     user_id: newlyActivity.Subject_user_id as number,
+      //     messages: newlyActivity.messages as string,
+      //     created_at: newlyActivity.created_at as Date,
+      //     user_image_url: newlyActivity.Subject.image_url as string
+      //   });
+      // }
     }
     // end, it will change
 
+    const totalLikes = await prisma.bookmarks.count({
+      where: {
+        project_id: projectId
+      }
+    })
+
     return {...returnValue, 
       data: {
-        newBookmarked: newBookmarked
+        newTotalBookmarked: totalLikes
       } 
     }
   } catch (error) {

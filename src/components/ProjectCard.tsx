@@ -35,7 +35,7 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
         const result = await bookmarkProject(projectData.Users.username, projectData.uid, projectData.title)
         
         if(result.status == 200 && result.data){
-            setBookmarkCount(projectData._count.Bookmarks+result.data.newBookmarked)
+            setBookmarkCount(result.data.newTotalBookmarked)
             toast.success(`${result.message}: ${projectData.title}`)
         } else{
             toast.warning(result.message)
@@ -51,7 +51,7 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
         const result = await likeProject(projectData.Users.username, projectData.uid, projectData.title)
         
         if(result.status == 200 && result.data){
-            setLikeCount(projectData._count.Likes+result.data.newLiked)
+            setLikeCount(result.data.newTotalLiked)
             toast.success(`${result.message}: ${projectData.title}`)
         } else{
             toast.warning(result.message)
