@@ -130,6 +130,25 @@ export const NodeSchemaBE = z.object({
 });
 
 
+// onboarding form
+
+
+export const onboardingUserIdentity = z.object({
+  username: z.string("username has to be text").min(5, "username cannot be less then 5 characters length").max(20, "username cannot be longer then 20 characters length"),
+  description: z.string("description has to be text").max(255, "description is too long").optional()
+})
+
+export const onboardingUserSocial = z.object({
+  facebook: z.string("has to be text").min(10, "facebook link is too sort").max(20, "facebook link is too long").optional().or(z.literal("")),
+  twitter: z.string("has to be text").min(10, "twitter link is too sort").max(20, "twitter link is too long").optional().or(z.literal("")),
+  website: z.string("has to be text").min(10, "webstie link is too sort").max(20, "webstie link is too long").optional().or(z.literal("")),
+})
+
+
+export const onboardingUser = z.object({
+  ...onboardingUserIdentity.shape,
+  ...onboardingUserSocial.shape
+})
 
 
 export const NodeListSchema = z.array(NodeSchema)

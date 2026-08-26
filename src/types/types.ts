@@ -185,13 +185,18 @@ export interface generalSettingErrorsType extends VisibilityErrorsType {
 
 
 // user type
-export interface UserWebhookType {
-    id: string
-    first_name: string
-    last_name: string
-    full_name: string
-    email: string
-    image_url: string
+export interface UserDataType {
+  id: string
+  first_name: string
+  last_name: string
+  full_name: string
+  username: string
+  description: string
+  facebook_link: string
+  twitter_link: string
+  website_link: string
+  email: string
+  image_url: string
 }
 
 // full user 

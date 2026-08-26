@@ -127,6 +127,10 @@ img, a {
   @apply bg-white rounded-xl border border-grayish p-6;
 }
 
+.important-style{
+  @apply text-light-red font-black text-xl;
+}
+
 .h-two-style {
   @apply font-main font-bold text-xl;
 }

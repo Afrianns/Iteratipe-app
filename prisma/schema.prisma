@@ -21,28 +21,29 @@ enum visibility {
 }
 
 model Users {
-  id            Int                  @id @default(autoincrement())
-  clerk_user_id String               @unique @db.VarChar
-  first_name    String               @db.VarChar(50)
-  last_name     String               @db.VarChar(50)
-  full_name     String               @db.VarChar(100)
-  username      String               @unique @db.VarChar(30)
-  email         String               @db.VarChar(50)
-  image_url     String               @db.VarChar(255)
-  description   String?              @db.Text
-  facebook_link String?              @db.VarChar(200)
-  twitter_link  String?              @db.VarChar(200)
-  website_link  String?              @db.VarChar(200)
-  Bookmarks     Bookmarks[]
-  Likes         Likes[]
-  Projects      Projects[]
-  Comments      Comments[]
-  Comment_like  User_like_comments[]
-  created_at    DateTime?            @default(now()) @db.Timestamp(6)
-  Followers     Follows[]            @relation("followers")
-  Followings    Follows[]            @relation("followings")
-  Object        Activities[]         @relation("Object")
-  Subject       Activities[]         @relation("Subject")
+  id                   Int                  @id @default(autoincrement())
+  clerk_user_id        String               @unique @db.VarChar
+  first_name           String               @db.VarChar(50)
+  last_name            String               @db.VarChar(50)
+  full_name            String               @db.VarChar(100)
+  username             String               @unique @db.VarChar(30)
+  email                String               @db.VarChar(50)
+  image_url            String               @db.VarChar(255)
+  description          String?              @db.Text
+  facebook_link        String?              @db.VarChar(200)
+  twitter_link         String?              @db.VarChar(200)
+  website_link         String?              @db.VarChar(200)
+  completed_onboarding Boolean              @default(false)
+  Bookmarks            Bookmarks[]
+  Likes                Likes[]
+  Projects             Projects[]
+  Comments             Comments[]
+  Comment_like         User_like_comments[]
+  created_at           DateTime?            @default(now()) @db.Timestamp(6)
+  Followers            Follows[]            @relation("followers")
+  Followings           Follows[]            @relation("followings")
+  Object               Activities[]         @relation("Object")
+  Subject              Activities[]         @relation("Subject")
 }
 
 model Follows {
@@ -155,7 +156,7 @@ model Nodes {
   position_x   Decimal
   position_y   Decimal
   handle_type  handleTypeEnum
-  Projects     Projects       @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects       @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   Comments     Comments[]
 }
 
@@ -194,7 +195,7 @@ model Comments {
   deleted_at DateTime? @db.Timestamp(6)
 
   Projects      Projects             @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Users         Users                @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users         Users                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   Nodes         Nodes?               @relation(fields: [node_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Comment_likes User_like_comments[]
   Replies       Comments[]           @relation("Replies")
@@ -206,8 +207,8 @@ model Activities {
   Object_user_id  Int
   Subject_user_id Int
   messages        String   @db.Text
-  Object          Users    @relation("Object", fields: [Object_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Subject         Users    @relation("Subject", fields: [Subject_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Object          Users    @relation("Object", fields: [Object_user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Subject         Users    @relation("Subject", fields: [Subject_user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   seen            Boolean
   created_at      DateTime @default(now()) @db.Timestamp(6)
 }

@@ -1,6 +1,5 @@
 "use server"
 
-import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { ActivityType, returnDataType } from "@/types/types";
@@ -64,5 +63,5 @@ const mappingActivities = (activities: {
         seen: activity.seen,
         created_at: activity.created_at
       }
-  }).sort((activityA, activityB) => new Date(activityA.created_at).getTime() - new Date(activityB.created_at).getTime())
+  }).sort((activityA, activityB) => new Date(activityB.created_at).getTime() - new Date(activityA.created_at).getTime())
 }

@@ -2,7 +2,6 @@
 
 import { settingsSchema } from "@/lib/validations";
 import { generalDataType, generalSettingErrorsType, ProjectStoreType, returnDataType } from "@/types/types";
-import syncUser from "./syncUser";
 import { currentUser } from "@clerk/nextjs/server";
 import { saveProject } from "@/services/projects.service";
 import { redirect } from "next/navigation";
@@ -44,15 +43,6 @@ export async function createInitialProject(data: generalDataType): Promise<{
   }
 
   if(user && user.id && user?.firstName && user?.lastName && user?.fullName && user?.primaryEmailAddressId && user?.imageUrl){
-    syncUser({
-      id: user?.id,
-      first_name: user?.firstName,
-      last_name: user?.lastName,
-      full_name: user?.fullName,
-      email: user?.primaryEmailAddressId,
-      image_url: user?.imageUrl
-    })
-
     let result = await saveProject(initialProjectsSetup)
     
     if(result.status == 200 && result.data?.uid){

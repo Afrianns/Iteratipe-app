@@ -40,12 +40,12 @@ export const handleProjectSetupFn = async (_: any, formData: FormData): Promise<
             success: successSetupStep,
             next_step: nextStep,
             step_one_fields: {
-                name : stepOneValidation.name as string,
-                summary : stepOneValidation.summary as string,
-                type : stepOneValidation.type as labelType,
-                status : stepOneValidation.status as labelType,
-                tags : stepOneValidation.tags as labelType[],
-                tools : stepOneValidation.tools as labelType[]
+                name : stepOneValidation.data?.title as string,
+                summary : stepOneValidation.data?.summary as string,
+                type : stepOneValidation.data?.type as labelType,
+                status : stepOneValidation.data?.status as labelType,
+                tags : stepOneValidation.data?.tags as labelType[],
+                tools : stepOneValidation.data?.tools as labelType[]
             },
             step_one_errors: stepOneErrors
         }
@@ -93,8 +93,6 @@ export const handleProjectSetupFn = async (_: any, formData: FormData): Promise<
             disable_comments: stepTwoValidation.data.disable_comments,
             client_name: stepTwoValidation.data.client_name,
         }
-
-        // await syncUser();
         let result = await saveProject(initialProjectsSetup)
         
         if(result.status == 200){

@@ -1,6 +1,7 @@
 import { getAuthProjectCounts } from "@/services/projects.service";
 import { auth } from "@clerk/nextjs/server";
 import { CircleCheck, Clock4, Layers } from "lucide-react";
+import PopupMessage from "./PopupMessage";
 
 export default async function HeaderHome() {
 
@@ -21,6 +22,7 @@ export default async function HeaderHome() {
 
     return (
         <>
+            <PopupMessage />
             <div className="card-style-secondary card-home-list-style">
                 <div>
                     <p className="text-sm text-main-text/40 font-bold">Total Projects.</p>

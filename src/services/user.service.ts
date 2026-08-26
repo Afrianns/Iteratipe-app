@@ -3,9 +3,70 @@
 import { prisma } from "@/lib/db";
 import { previewCardDataQuery } from "@/lib/prismaQuery";
 import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
-import { ActivityType, labelType, ProjectPreviewType, returnDataType, UserPreviewType, UserType } from "@/types/types";
+import { ActivityType, labelType, ProjectPreviewType, returnDataType, UserDataType, UserPreviewType, UserType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 
+
+interface actionDataType {
+    clerk_user_id: string
+}
+
+export default async function syncUser(params: UserDataType): Promise<returnDataType<actionDataType>> {
+    let resultAction: returnDataType<actionDataType>
+
+    try {
+        const dbActionResult = await prisma.users.upsert({
+            where: { clerk_user_id: params.id },
+            update: { 
+                first_name: params.first_name,
+                last_name: params.last_name,
+                full_name: params.full_name,
+                username: params.username,
+                description: params.description,
+                facebook_link: params.facebook_link,
+                twitter_link: params.twitter_link,
+                website_link: params.website_link,
+                completed_onboarding: true,
+                image_url: params.image_url
+            },
+            create: { 
+                clerk_user_id: params.id,
+                first_name: params.first_name,
+                last_name: params.last_name,
+                full_name: params.full_name,
+                username: params.username,
+                description: params.description,
+                facebook_link: params.facebook_link,
+                twitter_link: params.twitter_link,
+                website_link: params.website_link,
+                email: params.email,
+                completed_onboarding: true,
+                image_url: params.image_url
+            },
+            select: {
+                id: true,
+                clerk_user_id: true
+            }
+        })
+
+        resultAction = {
+            status: 200,
+            message: "Successfully",
+            data: {
+                clerk_user_id: dbActionResult.clerk_user_id
+            }
+        }
+
+    } catch (er) {
+        resultAction = {
+            status: 500,
+            message: "Failed"
+        }
+        
+    }
+
+    return resultAction
+}
 
 export const getUserID = async (userId: string): Promise<returnDataType<{
   id: number

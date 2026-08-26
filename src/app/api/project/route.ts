@@ -1,7 +1,6 @@
-import syncUser from "@/actions/syncUser";
-import { generalSettingSchema, settingsSchema, updateSettingSchema } from "@/lib/validations";
+import { settingsSchema, updateSettingSchema } from "@/lib/validations";
 import { saveProject, updateProjectById } from "@/services/projects.service";
-import { generalDataType, ProjectStoreType } from "@/types/types";
+import { ProjectStoreType } from "@/types/types";
 import { currentUser, auth } from '@clerk/nextjs/server'
 
 import { redirect } from "next/navigation";
@@ -38,14 +37,6 @@ export async function POST(request: Request) {
   }
 
   if(user && user.id && user?.firstName && user?.lastName && user?.fullName && user?.primaryEmailAddressId && user?.imageUrl){
-    syncUser({
-      id: user?.id,
-      first_name: user?.firstName,
-      last_name: user?.lastName,
-      full_name: user?.fullName,
-      email: user?.primaryEmailAddressId,
-      image_url: user?.imageUrl
-    })
 
     let result = await saveProject(initialProjectsSetup)
     
