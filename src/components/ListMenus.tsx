@@ -5,8 +5,10 @@ import { labelType } from "@/types/types";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { handleScroll } from "@/lib/handleScroll";
+import React from "react";
+import { persistedURL } from "@/lib/appendingURL";
 
-export default function ListMenus({types}: {types: labelType[]}) {
+export default function ListMenus({children, types, additional = ""}: {children: React.ReactNode, types: labelType[], additional?: string}) {
 
   let colorFrom = "from-whitish"
 
@@ -26,14 +28,14 @@ export default function ListMenus({types}: {types: labelType[]}) {
         }`}></span>
         
         <div className="scroll-container-style" ref={scrollLabelsRef}>
-          <Link href={`?type=${initialType}`} className={`text-xs py-2 px-4 rounded-md cursor-pointer ${params.get("type") === initialType || !params.has("type") && !params.has("section") ? "bg-secondary text-main": "hover:bg-secondary"}`}>{initialType}</Link>
+          <Link href={persistedURL(params, "type", initialType)} className={`text-xs py-2 px-4 rounded-md cursor-pointer ${params.get("type") === initialType || !params.has("type") && !params.has("section") ? "bg-secondary text-main": "hover:bg-secondary"}`}>{initialType}</Link>
           {types.map((type) => (
-            <Link href={`?type=${type .name}`} key={type.id} className={`text-nowrap text-xs py-2 px-4 rounded-md cursor-pointer ${params.get("type") === type.name ? "bg-secondary text-main": "hover:bg-secondary"}`}>{type.name}</Link>
+            <Link href={persistedURL(params, "type", type.name)} key={type.id} className={`text-nowrap text-xs py-2 px-4 rounded-md cursor-pointer ${params.get("type") === type.name ? "bg-secondary text-main": "hover:bg-secondary"}`}>{type.name}</Link>
           ))}
         </div>
       </div>
       
-      <Link href={`?section=about`} className={`col-span-2 md:col-span-1 text-center hover:bg-secondary/30 text-xs py-2 px-4 rounded-md cursor-pointer text-nowrap ${params.get("section") === "about" ? "bg-secondary text-main": "hover:bg-secondary"}`}>About Designer</Link>
+      {children}
     </div>
   )
 }

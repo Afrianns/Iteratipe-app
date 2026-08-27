@@ -7,13 +7,13 @@ import { formatDistanceStrict } from "date-fns"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import ListProjects from "./_components/projects"
-import ListMenus from "./_components/menu"
 import About from "./_components/about"
 import { auth } from "@clerk/nextjs/server"
 import Link from "next/link"
 import { Settings } from "lucide-react"
 import Follow from "./_components/follow"
 import Profile from "./_components/profile"
+import ListMenus from "@/components/ListMenus"
 
 type CurrentUserFollow = {id: number}
 
@@ -73,7 +73,9 @@ export default async function Page({params, searchParams}: {params: Promise<{id:
                   <Profile initialUser={initialUser} />
                 </div>
                 {/* it list of type project and aboutuser */}
-                <ListMenus types={types} />
+                <ListMenus types={types}> 
+                  <Link href={`?section=about`} className={`col-span-2 md:col-span-1 text-center hover:bg-secondary/30 text-xs py-2 px-4 rounded-md cursor-pointer text-nowrap ${param.section === "about" ? "bg-secondary text-main": "hover:bg-secondary"}`}>About Designer</Link>
+                </ListMenus>
 
                 {param.section != "about" ?
                   <div className="col-span-2 grid md:grid-cols-2 lg:grid-cols-3 gap-5">

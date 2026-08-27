@@ -27,3 +27,22 @@ export async function getTypesFn(query?: string): Promise<returnDataType<labelTy
         return await serverSideErrorHandle(error)
     }
 }
+
+export async function getAllTypes(): Promise<returnDataType<labelType[]>> {
+    try {
+        const result = await prisma.types.findMany()
+
+        if(result) {
+            return {
+                status: 200,
+                message: "Success retrieved data",
+                data: result
+            };
+        } else{
+            throw new Error("error while fetching data")
+        }
+        
+    } catch (error) {
+        return await serverSideErrorHandle(error)
+    }
+}

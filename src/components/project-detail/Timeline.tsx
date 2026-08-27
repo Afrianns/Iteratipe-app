@@ -123,7 +123,7 @@ export default function Timeline({ownerClerkId}: {ownerClerkId:string}) {
             <div className='relative h-full w-full'>
                 {isLoaded &&
                     <>
-                        {(!isSignedIn && ownerClerkId != userId) ?  
+                        {(!isSignedIn || ownerClerkId != userId) ?  
                             <>
                                 <ReactFlow id="ReactFlow" nodes={nodes} edges={edges}
                                 nodeTypes={nodeTypes}

@@ -28,7 +28,7 @@ interface quickStatusType {
 }
 
 
-export async function getAllProjects(): Promise<returnDataType<ProjectPreviewType[]>> {
+export async function getAllProjects(sortType: "asc"|"desc", type: string = "all"): Promise<returnDataType<ProjectPreviewType[]>> {
     const { userId } = await auth()
     let userDbId: number = 0;
 
@@ -44,12 +44,23 @@ export async function getAllProjects(): Promise<returnDataType<ProjectPreviewTyp
 
         }
 
-        const result = await prisma.projects.findMany(previewCardDataQuery(userDbId))
+        const result = await prisma.projects.findMany({
+            where: type.toLowerCase() != "all" ? {
+                Type: {
+                    is: {
+                        name: {
+                            equals: type,
+                            mode: "insensitive"
+                        },
+                    }
+                }
+            } : Prisma.skip,
+            ...previewCardDataQuery(userDbId)})
 
         return {
             status: 200,
             message: "Sucessfully retrieved",
-            data: result as ProjectPreviewType[]
+            data: sortingBy(result, sortType) as ProjectPreviewType[]
         }
 
         
@@ -536,4 +547,9 @@ const remapEdges = <T extends
 
     return newEdges;
  
+}
+
+
+const sortingBy = (projects: ProjectPreviewType[], type: "asc"|"desc") => {
+    return projects.sort((A, B) => (type == "asc") ? new Date(A.created_at).getTime() - new Date(B.created_at).getTime() : new Date(B.created_at).getTime() - new Date(A.created_at).getTime())
 }

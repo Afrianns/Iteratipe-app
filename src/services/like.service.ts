@@ -200,11 +200,13 @@ export async function getTotalAuthUserProjectLikes(): Promise<returnDataType<{pr
         }
     })
 
+    console.log("hasdjas", resultTotalLikes)
+
     return {
       status: 200, 
       message: "Successful retrieved total likes",
       data: {
-        project_total_likes: combineTheLikes(resultTotalLikes)
+        project_total_likes: resultTotalLikes.length >= 1 ? combineTheLikes(resultTotalLikes) : 0
       } 
     }
   } catch (error) {

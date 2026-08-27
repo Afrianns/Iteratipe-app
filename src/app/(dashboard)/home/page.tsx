@@ -15,13 +15,6 @@ import Link from "next/link";
 
 import Redis from "ioredis"
 import Activity from "./_components/Activity";
-import dynamic from "next/dynamic";
-
-// const Activity = dynamic(() => import('./_components/Activity'), { 
-//   ssr: false,
-//   // This shows up on the server pre-render while the client loads the component
-//   loading: () => <p className="text-sm text-gray-500">Loading activities...</p> 
-// })
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL
 

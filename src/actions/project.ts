@@ -1,10 +1,9 @@
 "use server"
 
 import { settingsSchema } from "@/lib/validations";
-import { generalDataType, generalSettingErrorsType, ProjectStoreType, returnDataType } from "@/types/types";
+import { generalDataType, generalSettingErrorsType, ProjectStoreType } from "@/types/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { saveProject } from "@/services/projects.service";
-import { redirect } from "next/navigation";
 import z from "zod";
 
 export async function createInitialProject(data: generalDataType): Promise<{

@@ -1,17 +1,38 @@
+"use server"
+
 import Header from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
-import Sidebar from "@/components/Sidebar";
 import { getAllProjects } from "@/services/projects.service";
-import { ProjectPreviewType } from "@/types/types";
+import { getAllTypes } from "@/services/types.service";
+import { labelType, ProjectPreviewType } from "@/types/types";
+import Menu from "./_components/Menu";
+import DropdownFilter from "./_components/DropdownFilter";
 
-export default async function ExplorePage() {
+export default async function ExplorePage({searchParams}: {searchParams: Promise<{sortby: string, type: string}>}) {
     
     let projects: ProjectPreviewType[] = []
+    let types: labelType[] = []
 
-    const result = await getAllProjects()
+    let sortType: "asc" | "desc" = "asc"
+
+    const param = await searchParams
+
+
+    if(param.sortby == "asc") {
+        sortType = "desc"
+    }
+
+    console.log(sortType)
+    const result = await getAllProjects(sortType, param.type)
+    const allTypes = await getAllTypes()
     
     if(result.status == 200 && result.data){
         projects = result.data
+    }
+    
+
+    if(allTypes.status == 200 && allTypes.data){
+        types = allTypes.data
     }
     return (
         <div className="col-span-5 w-full">
@@ -24,14 +45,16 @@ export default async function ExplorePage() {
 
                         <div className="flex gap-5 mt-10 bg-grayish/50 w-full rounded-lg relative">
                             <input type="text" name="search" className="w-full p-5 rounded-lg border outline-main border-grayish focus:ring-0 text-sm" placeholder="Search designs..." />
-                            <button className="bg-main text-whitish right-2 top-2 bottom-2 py-2 px-6 rounded-sm absolute">Search</button>
+                            <button className="bg-main text-whitish right-2 top-2 bottom-2 py-2 px-20 rounded-sm absolute">Search</button>
                         </div>
                     </div>
+                    <Menu types={types} sortType={sortType} />
                 </div>
             </div>
             <div className="container-style max-md:mb-20">
                 <div className="limit-breaker">
-                    <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <DropdownFilter />
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {projects.map((project, idx) => {
                             return <ProjectCard key={idx} projectData={project} currentPath="home" imageName={"no-thumbnail-placeholder.png"} />
                         })}
