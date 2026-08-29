@@ -42,13 +42,13 @@ export default function Summary({ changeStepFn }: { changeStepFn: (step: number)
                     {generalSettings.tags &&
                         <div className="my-2 relative">
                             <span className="text-sm text-grayish-dark relative z-5">Tags</span>
-                            <LabelsList colorFrom="from-light-gray" labels={generalSettings.tags} />
+                            <LabelsList colorFrom="from-light-gray" labelType="tags" />
                         </div>
                     }
                     {generalSettings.tools &&
                         <div className="my-2 relative">
                             <span className="text-sm text-grayish-dark relative z-5">Tools</span>
-                            <LabelsList colorFrom="from-light-gray" labels={generalSettings.tools} />
+                            <LabelsList colorFrom="from-light-gray" labelType="tools" />
                         </div>
                     }
                 </div>

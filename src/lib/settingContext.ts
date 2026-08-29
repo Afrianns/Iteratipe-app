@@ -1,5 +1,5 @@
 import { generalDataType, generalSettingErrorsType } from "@/types/types";
-import { createContext } from "react";
+import { createContext, SetStateAction } from "react";
 
 
 // const generalData: generalDataType = 
@@ -8,29 +8,29 @@ import { createContext } from "react";
 interface SettingContextType {
   generalSettings: generalDataType
   generalSettingErrors: generalSettingErrorsType
-  setGeneralSettings: (params: generalDataType) => void
+  setGeneralSettings: (params: SetStateAction<generalDataType>) => void
   setGeneralSettingErrors: (params: generalSettingErrorsType) => void
 }
 
 export const SettingContext = createContext<SettingContextType>({
-    generalSettings: {
-      title: "",
-      summary: "",
-      type: {
-        id: 0,
-        name: ''
-      },
-      status: {
-        id: 0,
-        name: ''
-      },
-      tags: [],
-      tools: [],
-      visibility: "PUBLIC",
-      disable_comments: false,
-      client_name: ""
+  generalSettings: {
+    title: "",
+    summary: "",
+    type: {
+      id: 0,
+      name: ''
+    },
+    status: {
+      id: 0,
+      name: ''
+    },
+    tags: [],
+    tools: [],
+    visibility: "PUBLIC",
+    disable_comments: false,
+    client_name: ""
   },
   generalSettingErrors: {},
-  setGeneralSettings: (params: generalDataType) => {},
+  setGeneralSettings: (params: SetStateAction<generalDataType>) => {},
   setGeneralSettingErrors: (params: generalSettingErrorsType) => {}
 })

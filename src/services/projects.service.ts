@@ -11,9 +11,6 @@ import { Decimal } from "@prisma/client/runtime/client";
 import { Edge } from "@xyflow/react";
 import { getUserID } from "./user.service";
 import { previewCardDataQuery } from "@/lib/prismaQuery";
-import CapitalizedFirstLetter from "@/lib/capitalizedFirstLetter";
-import capitalizedFirstLetter from "@/lib/capitalizedFirstLetter";
-import { notFound } from "next/navigation";
 
 
 interface actionDataType {
@@ -28,7 +25,7 @@ interface quickStatusType {
 }
 
 
-export async function getAllProjects(sortType: "asc"|"desc", type: string = "all"): Promise<returnDataType<ProjectPreviewType[]>> {
+export async function getAllProjects(sortType: "asc"|"desc", type: string = "all", status: "pending"|"in_progress"|"completed"| "all" = "all", search: string): Promise<returnDataType<ProjectPreviewType[]>> {
     const { userId } = await auth()
     let userDbId: number = 0;
 
@@ -45,16 +42,28 @@ export async function getAllProjects(sortType: "asc"|"desc", type: string = "all
         }
 
         const result = await prisma.projects.findMany({
-            where: type.toLowerCase() != "all" ? {
-                Type: {
+            where: {
+                title: (search && search.length > 0) ? {
+                    mode: "insensitive",
+                    contains: search
+                } : Prisma.skip,
+                Status: (status && status.toLowerCase() != "all") ? {
+                    is: {
+                        name: {
+                            equals: status,
+                            mode: "insensitive"
+                        }
+                    }
+                } : Prisma.skip,
+                Type: type.toLowerCase() != "all" ? {
                     is: {
                         name: {
                             equals: type,
                             mode: "insensitive"
                         },
                     }
-                }
-            } : Prisma.skip,
+                } : Prisma.skip
+            },
             ...previewCardDataQuery(userDbId)})
 
         return {

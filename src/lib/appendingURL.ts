@@ -1,9 +1,13 @@
 import { ReadonlyURLSearchParams } from "next/navigation"
 
-export const persistedURL = (params: ReadonlyURLSearchParams, pKey: "status"|"type"|"sortby", value: string) => {
-  const keys = ["status","type","sortby"]
+type PkeyType = "status"|"type"|"sortby"|"search"
+
+export const persistedURL = (params: ReadonlyURLSearchParams, pKey: PkeyType, value: string) => {
+  const keys = ["status","type","sortby", "search"]
 
   let initialURL: string[] = []
+
+  console.log(params, pKey, value)
 
   keys.forEach((key) => {
 

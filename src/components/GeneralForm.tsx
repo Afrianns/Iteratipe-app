@@ -36,7 +36,7 @@ export default function GeneralForm() {
                 <label htmlFor="tags" className="label-style">Tags</label>
                 <DropdownListSearchable setSelectedLabels={setGeneralSettings} selectedLabels={generalSettings} name="tags" placeholder="Type your relevant tags." type="multi" />
                 <div className="relative">
-                    <LabelsList colorFrom="from-white" labels={generalSettings.tags} />
+                    <LabelsList colorFrom="from-white" labelType="tags" />
                 </div>
                 <ErrorMessageList inputName="Tags" messages={generalSettingErrors?.tags} />
             </div>
@@ -45,7 +45,7 @@ export default function GeneralForm() {
                 <label htmlFor="tools" className="label-style">Tools</label>
                 <DropdownListSearchable setSelectedLabels={setGeneralSettings} selectedLabels={generalSettings} name="tools" placeholder="Type your relevant tools." type="multi" />
                 <div className="relative">
-                    <LabelsList colorFrom="from-white" labels={generalSettings.tools} />
+                    <LabelsList colorFrom="from-white" labelType="tools" />
                 </div>
                 <ErrorMessageList inputName="Tools" messages={generalSettingErrors?.tools} />
             </div>

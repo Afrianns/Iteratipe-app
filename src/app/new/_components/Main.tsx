@@ -88,9 +88,7 @@ export default function Main() {
     const [steps, setSteps] = useState<[boolean, boolean, boolean]>([true, false, false])
 
     const [generalSettings, setGeneralSettings] = useState<generalDataType>(generalData)
-    let [generalSettingErrors, setGeneralSettingErrors] = useState<generalSettingErrorsType>({}
-
-    )
+    let [generalSettingErrors, setGeneralSettingErrors] = useState<generalSettingErrorsType>({})
 
     const createdNewProject = async (data: FormData) => {
         

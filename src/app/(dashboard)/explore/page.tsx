@@ -7,29 +7,34 @@ import { getAllTypes } from "@/services/types.service";
 import { labelType, ProjectPreviewType } from "@/types/types";
 import Menu from "./_components/Menu";
 import DropdownFilter from "./_components/DropdownFilter";
+import Search from "./_components/Search";
 
-export default async function ExplorePage({searchParams}: {searchParams: Promise<{sortby: string, type: string}>}) {
+type StatusType = "pending"|"in_progress"|"completed"|"all"
+
+export default async function ExplorePage({searchParams}: {searchParams: Promise<{sortby: string, type: string, status: StatusType, search: string}>}) {
     
     let projects: ProjectPreviewType[] = []
     let types: labelType[] = []
 
-    let sortType: "asc" | "desc" = "asc"
+    let sortType: "asc"|"desc" = "asc"
+    let status: StatusType = "all"
 
     const param = await searchParams
-
 
     if(param.sortby == "asc") {
         sortType = "desc"
     }
 
-    console.log(sortType)
-    const result = await getAllProjects(sortType, param.type)
+    if(param.status) {
+        status = param.status
+    }
+
+    const result = await getAllProjects(sortType, param.type, status, param.search)
     const allTypes = await getAllTypes()
     
     if(result.status == 200 && result.data){
         projects = result.data
     }
-    
 
     if(allTypes.status == 200 && allTypes.data){
         types = allTypes.data
@@ -42,11 +47,8 @@ export default async function ExplorePage({searchParams}: {searchParams: Promise
                     <div className="mt-10">
                         <h1 className="text-4xl font-bold mb-2">Explore Designs</h1>
                         <p className="text-gray-600">Here you can find various design and process from people around the world.</p>
-
-                        <div className="flex gap-5 mt-10 bg-grayish/50 w-full rounded-lg relative">
-                            <input type="text" name="search" className="w-full p-5 rounded-lg border outline-main border-grayish focus:ring-0 text-sm" placeholder="Search designs..." />
-                            <button className="bg-main text-whitish right-2 top-2 bottom-2 py-2 px-20 rounded-sm absolute">Search</button>
-                        </div>
+                        
+                        <Search />
                     </div>
                     <Menu types={types} sortType={sortType} />
                 </div>

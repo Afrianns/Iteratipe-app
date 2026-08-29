@@ -2,12 +2,22 @@
 
 import { useGradientScrollEdge } from "@/hooks/useGradientScrollEdge";
 import { handleScroll } from "@/lib/handleScroll";
+import { SettingContext } from "@/lib/settingContext";
 import { labelType } from "@/types/types";
+import { CircleX } from "lucide-react";
+import { useContext } from "react";
 
-interface LabelsInterface { labels: labelType[], colorFrom: string }
-
-export default function LabelsList({labels, colorFrom}: LabelsInterface) {
+export default function LabelsList({labelType, colorFrom}: {labelType: "tags"|"tools", colorFrom: string}) {
     const [scrollLabelsRef, showGradientLabelsLeft, showGradientLabelsRight] = useGradientScrollEdge(handleScroll);
+
+    const { generalSettings, setGeneralSettings } = useContext(SettingContext)
+    
+    console.log(labelType, generalSettings[labelType])
+
+    const removeThisLabel = (thisLabel: labelType) => {
+        setGeneralSettings((prevGeneralSettings) => ({...generalSettings, [labelType]: prevGeneralSettings[labelType].filter((label) => label.id != thisLabel.id)}))
+    }
+
     return (
         <>
             <span className={`scroll-edge-style right-0 bg-linear-to-l ${colorFrom} from-45% to-transparent to-90% ${
@@ -18,9 +28,14 @@ export default function LabelsList({labels, colorFrom}: LabelsInterface) {
                 showGradientLabelsLeft ? 'opacity-100' : 'opacity-0'
             }`}></span>
 
+
             <div className="scroll-container-style" ref={scrollLabelsRef}>
-                    {labels.map((label: labelType, index: number) =>
-                        <span key={index} className="badge-style-secondary">{label.name}</span>
+
+                    {generalSettings[labelType].map((label: labelType, index: number) =>
+                        <div key={index} className="badge-style-secondary flex items-center gap-x-3">
+                            {label.name}
+                            <CircleX onClick={() => removeThisLabel(label)} className="icon-style-secondary p-0! w-4! h-4!" />
+                        </div>
                     )}
             </div>
         </>

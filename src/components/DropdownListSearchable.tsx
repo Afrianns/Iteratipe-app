@@ -2,12 +2,15 @@
 
 
 import { getLabels } from "@/actions/getLabels";
+import { SettingContext } from "@/lib/settingContext";
 import { labelType, generalDataType } from "@/types/types";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+
+type NameType = "tags"|"tools"|"status"|"type"
 
 interface DropdownListType {
   type: "multi" | "single"
-  name: string
+  name: NameType
   placeholder: string 
   setSelectedLabels: (params: generalDataType) => void
   selectedLabels: generalDataType
@@ -18,6 +21,8 @@ export default function DropdownListSearchable({ type, name, setSelectedLabels, 
   
   // const [currentSelected, setCurrentSelected] = useState<string>("")
   const [allLabels, setAllLabels] = useState<labelType[]>([])
+  const { generalSettings } = useContext(SettingContext)
+
   const [isOpen, setIsOpen] = useState(false);
 
   const [query, setQuery] = useState("");
@@ -60,6 +65,10 @@ export default function DropdownListSearchable({ type, name, setSelectedLabels, 
     }
   }
 
+  console.log('check', generalSettings[name])
+
+  const selectedLength = Array.isArray(generalSettings[name]) ? (generalSettings[name] as labelType[]).length : 0
+
   return (
     <div className="relative">
         <input
@@ -75,9 +84,9 @@ export default function DropdownListSearchable({ type, name, setSelectedLabels, 
         />
         {isOpen && (
             <div className={`w-full max-h-50 rounded-md card-style space-y-0! overflow-y-auto absolute z-2 ${name == "tags" ? "top-15" : "bottom-15" }`}>
-              {allLabels.length > 0 ? 
+              {(allLabels.length - selectedLength) > 0 ? 
                 <>
-                  {allLabels.map((label: labelType, idx: number) => <p key={idx} onMouseDown={() => selectedThisLabel(label)} className="w-full block py-2 px-5 cursor-pointer hover:bg-gray-100">{label.name}</p>)}
+                  {filterAlreadyUsed(generalSettings[name] as labelType[], allLabels, name).map((label: labelType, idx: number) => <p key={idx} onMouseDown={() => selectedThisLabel(label)} className="w-full block py-2 px-5 cursor-pointer hover:bg-gray-100">{label.name}</p>)}
                 </>
               : 
                 <p className="py-3 text-center">{message}</p>
@@ -86,4 +95,14 @@ export default function DropdownListSearchable({ type, name, setSelectedLabels, 
         )}
     </div>
   );
+}
+
+const filterAlreadyUsed = (selectedLabels: labelType[], allLabels: labelType[], name: NameType) => {
+  if(name == "tools" || name == "tags") {
+    const filtered = allLabels.filter((label) => selectedLabels.findIndex((selectedLabel => selectedLabel.id == label.id)) == -1)
+    console.log(filtered, allLabels, selectedLabels.findIndex((selectedLabel => selectedLabel.id == 77)))
+    return filtered
+  } else{
+    return allLabels
+  }
 }
