@@ -1,16 +1,17 @@
 "use server"
 
-import Header from "@/components/Header";
 import { auth } from "@clerk/nextjs/server";
-import UnauthorizedInfo from "../_components/UnauthorizedInfo";
-import AuthenticatedProjectLists from "./_components/AuthenticatedProjectLists";
 import { Suspense } from "react";
-import HeaderHome from "./_components/HeaderHome";
-import useMasonry from "@/hooks/useMasonry";
 import { getUser } from "@/services/user.service";
-import { ActivityType, UserType } from "@/types/types";
+import { ActivityType, SortingType, StatusType, UserType } from "@/types/types";
 import { getTotalAuthUserProjectLikes } from "@/services/like.service";
 import { Link2 } from "lucide-react";
+
+import UnauthorizedInfo from "../_components/UnauthorizedInfo";
+import AuthenticatedProjectLists from "./_components/AuthenticatedProjectLists";
+import HeaderHome from "./_components/HeaderHome";
+import useMasonry from "@/hooks/useMasonry";
+import Header from "@/components/Header";
 import Link from "next/link";
 
 import Redis from "ioredis"
@@ -23,9 +24,8 @@ interface userWithAdditionalData extends UserType {
    Activities: ActivityType[]
 } 
 
-export default async function Home() {
+export default async function Home({searchParams}:{searchParams: Promise<{sortby: SortingType, type: string, status: StatusType }>}) {
     const { isAuthenticated, userId } = await auth()
-
 
     let totalLike = 0
 
@@ -99,9 +99,12 @@ export default async function Home() {
                         </div>
                         <div className="grid items-start lg:grid-cols-3 gap-5 mt-5">
                             <div className="col-span-2 grid md:grid-cols-2 gap-5">
-                                <h3 className="col-span-full h-three-style">Your Recent Projects</h3>
+                                <div className="col-span-full space-y-5">
+                                    <h3 className="col-span-full h-three-style">Your Recent Projects</h3>
+                                    
+                                </div>
                                 <Suspense fallback={<ProjectCardSkeleton />}>
-                                    <AuthenticatedProjectLists />
+                                    <AuthenticatedProjectLists searchParam={searchParams} />
                                 </Suspense>
                             </div>
                             <Activity Activities={userAdditionalData.Activities} />

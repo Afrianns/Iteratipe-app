@@ -1,23 +1,25 @@
 "use client"
 
-import { useGradientScrollEdge } from "@/hooks/useGradientScrollEdge";
-import { labelType } from "@/types/types";
-import Link from "next/link";
+import { labelType, SortingType } from "@/types/types";
 import { useSearchParams } from "next/navigation";
-import { handleScroll } from "@/lib/handleScroll";
-import React from "react";
 import { persistedURL } from "@/lib/appendingURL";
 
-export default function ListMenus({children, types, additional = ""}: {children: React.ReactNode, types: labelType[], additional?: string}) {
+import Link from "next/link";
+import { useGradientScrollEdge } from "@/hooks/useGradientScrollEdge";
+import { handleScroll } from "@/lib/handleScroll";
+
+export default function Menu({types, sortType}: {types: labelType[], sortType: SortingType}) {
+
+  const params = useSearchParams()
 
   let colorFrom = "from-whitish"
 
   const [scrollLabelsRef, showGradientLabelsLeft, showGradientLabelsRight] = useGradientScrollEdge(handleScroll);
-  const params = useSearchParams();
   const initialType = "All";
 
   return (
-    <div className="card-style-secondary grid grid-cols-6 items-center justify-between my-5 p-2! overflow-hidden">
+    
+    <div className="card-style-secondary grid grid-cols-6 items-center justify-between p-2! overflow-hidden">
       <div className="relative overflow-hidden  col-span-4 md:col-span-5">
         <span className={`scroll-edge-style right-0 bg-linear-to-l ${colorFrom} from-45% to-transparent to-90% ${
             showGradientLabelsRight ? 'block opacity-100' : 'hidden opacity-0'
@@ -34,8 +36,9 @@ export default function ListMenus({children, types, additional = ""}: {children:
           ))}
         </div>
       </div>
-      
-      {children}
+      <Link href={persistedURL(params, "sortby", sortType)} className={`col-span-2 md:col-span-1 text-center hover:bg-secondary/50 text-xs py-2 px-2 rounded-md cursor-pointer text-nowrap
+      `}>Sort By <span>{(sortType == "DSC" ? "newest" : "oldest").toUpperCase()}</span></Link>
     </div>
+    
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import { persistedURL } from "@/lib/appendingURL"
+import { ChevronDown } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
@@ -30,15 +31,17 @@ export default function DropdownFilter() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
   return (
-    <div className="flex items-center justify-end gap-x-5 mb-5 relative">
-      <button ref={buttonMenuRef} onClick={() => setShowFIlterList(true)} className="card-style-secondary w-fit py-2! px-10! cursor-pointer hover:bg-secondary!">Filter By</button>
+    <div className="flex items-center justify-end gap-x-5 relative">
+      <div className="card-style-secondary p-2!">
+        <button ref={buttonMenuRef} onClick={() => setShowFIlterList(true)} className="w-fit px-5 py-0 cursor-pointer hover:bg-secondary! flex items-center text-nowrap">Filter By <ChevronDown className="icon-style-secondary" /></button>
+      </div>
       {showFilterList &&
-        <div ref={menuRef} className="card-style absolute top-15 right-0 px-5 py-5! z-5 max-w-100 w-full">
+        <div ref={menuRef} className="card-style absolute top-18 right-0 px-5 py-5! z-5 w-100">
             <p className="h-four-style my-3! mt-0!">Status</p>
             <ul className="p-style space-y-2">
               <li><Link className={`block cursor-pointer py-2 px-5 rounded-md ${(params.get("status") === "all" || !params.get("status")) ? "bg-secondary text-main": "hover:bg-secondary"}`} href={persistedURL(params, "status","all")}>All</Link></li>
               <li><Link className={`block cursor-pointer py-2 px-5 rounded-md ${params.get("status") === "pending" ? "bg-secondary text-main": "hover:bg-secondary"}`} href={persistedURL(params, "status","pending")}>Pending</Link></li>
-              <li><Link className={`block cursor-pointer py-2 px-5 rounded-md ${params.get("status") === "in_progress" ? "bg-secondary text-main": "hover:bg-secondary"}`} href={persistedURL(params, "status","in_progress")}>In progress</Link></li>
+              <li><Link className={`block cursor-pointer py-2 px-5 rounded-md ${params.get("status") === "in-progress" ? "bg-secondary text-main": "hover:bg-secondary"}`} href={persistedURL(params, "status","in-progress")}>In progress</Link></li>
               <li><Link className={`block cursor-pointer py-2 px-5 rounded-md ${params.get("status") === "completed" ? "bg-secondary text-main": "hover:bg-secondary"}`} href={persistedURL(params, "status","completed")}>Completed</Link></li>
             </ul>
         </div>

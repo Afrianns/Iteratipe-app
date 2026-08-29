@@ -1,31 +1,17 @@
 "use server"
 
-import { handleTypeEnum, Prisma } from "@/generated/prisma/client";
-import { convertDate } from "@/lib/convertDate";
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
-import { handleEnum } from "@/types/enum";
-import { ProjectStoreType, labelType, returnDataType, timelineNodeType, DBSingleProjectByID, ProjectPreviewType, VISIBLE } from "@/types/types";
+import { ProjectStoreType, labelType, returnDataType, DBSingleProjectByID, ProjectPreviewType, SortingType, actionDataType, quickStatusType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
-import { Decimal } from "@prisma/client/runtime/client";
-import { Edge } from "@xyflow/react";
 import { getUserID } from "./user.service";
 import { previewCardDataQuery } from "@/lib/prismaQuery";
+import { sortingBy } from "@/lib/sorting";
+import { remapEdges, remapNodes } from "@/lib/remapping";
 
 
-interface actionDataType {
-    uid: string
-}
-
-interface quickStatusType {
-    total: number
-    pending: number
-    in_progress: number
-    completed: number 
-}
-
-
-export async function getAllProjects(sortType: "asc"|"desc", type: string = "all", status: "pending"|"in_progress"|"completed"| "all" = "all", search: string): Promise<returnDataType<ProjectPreviewType[]>> {
+export async function getAllProjects(sortType: SortingType, type: string = "all", status: "pending"|"in_progress"|"completed"| "all" = "all", search: string): Promise<returnDataType<ProjectPreviewType[]>> {
     const { userId } = await auth()
     let userDbId: number = 0;
 
@@ -202,6 +188,7 @@ export async function getCurrentUserProjects(clerkUserId: string): Promise<retur
         const result = await prisma.users.findUnique({
             where: { 
                 id: userId 
+                
             },
             select: { 
                 Projects: {
@@ -488,77 +475,4 @@ const remapPivotData = (unorganizedObj: UnorganizedObjType[], m: string) => {
         organizedObj.push(obj[m] as labelType)
     })
     return organizedObj;
-}
-
-const remapNodes = <T extends {
-  uid: string
-  title: string | null
-  updated_at: Date | null
-  type: string | null
-  project_id: number
-  image_url: string | null
-  start_at: Date | null
-  end_at: Date | null
-  content: string | null
-  published_at: Date | null
-  position_x: Decimal
-  position_y: Decimal
-  handle_type: handleTypeEnum;
-}>(nodes: T[]): timelineNodeType[] => {
-
-    let newNodes = nodes.map((node: T): timelineNodeType => {
-        return {
-            id: node.uid,
-            position: {
-                x: Number(node.position_x),
-                y: Number(node.position_y),
-            },
-            data: {
-                image_url: node.image_url || "",
-                title: node.title || "",
-                type: node.type || "",
-                content: node.content || "",
-                start_at: node.start_at ? convertDate(new Date(node.start_at)) : "",
-                end_at: node.end_at ? convertDate(new Date(node.end_at)) : "",
-                handleType: node.handle_type as handleEnum,
-                // updated_at: node.updated_at,
-                // published_at: node.published_at
-            },
-            origin: [0.5, 0.5], 
-            type: "cardNode"
-        }
-    })
-
-    return newNodes
-}
-
-
-const remapEdges = <T extends 
-    { 
-        source: string; 
-        target: string; 
-        id: number; 
-        uid: string; 
-        project_id: number; 
-    }
->(edges: T[]): Edge[] => {
-
-    const newEdges = edges.map((edge: T): Edge => {
-
-        return {
-            id: `e-${edge.source}-to-${edge.target}`,
-            source: edge.source,
-            target: edge.target,
-    //      uid: edge.uid,
-    //      project_id: edge.project_id
-        }
-    })
-
-    return newEdges;
- 
-}
-
-
-const sortingBy = (projects: ProjectPreviewType[], type: "asc"|"desc") => {
-    return projects.sort((A, B) => (type == "asc") ? new Date(A.created_at).getTime() - new Date(B.created_at).getTime() : new Date(B.created_at).getTime() - new Date(A.created_at).getTime())
 }

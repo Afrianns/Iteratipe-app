@@ -383,6 +383,20 @@ export interface ActivityType {
   created_at: Date
 }
 
+
+export interface actionDataType {
+    uid: string
+}
+
+export interface quickStatusType {
+    total: number
+    pending: number
+    in_progress: number
+    completed: number 
+}
+
 export type SortingType = "ASC" | "DSC"
+
+export type StatusType = "all"|"pending"|"in-progress"|"completed"
 
 export type subMenuType = "timeline" | "overview" | "comments" | "settings";
