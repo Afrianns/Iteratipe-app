@@ -8,6 +8,10 @@ export default function VisibilityForm() {
 
     const { generalSettings, setGeneralSettings, generalSettingErrors, setGeneralSettingErrors } = useContext(SettingContext);
     console.log(generalSettingErrors)
+
+    const handleToggle = () => {
+        setGeneralSettings({...generalSettings, disable_comments: !generalSettings.disable_comments})
+    };
     return (
         <>
             <div className="flex items-center gap-2">
@@ -34,7 +38,7 @@ export default function VisibilityForm() {
             <ErrorMessageList inputName="Visibility" messages={generalSettingErrors.visibility} />
             
             <h4 className="h-four-style">Comments Setting</h4>
-            <Toggle setGeneralSettings={setGeneralSettings} generalSettings={generalSettings} label="Disable Comments" />
+            <Toggle setValue={handleToggle} value={generalSettings.disable_comments} label="Disable Comments" />
             <ErrorMessageList inputName="Comments" messages={generalSettingErrors.disable_comments} />
             <hr className="hr-style my-6" />
 

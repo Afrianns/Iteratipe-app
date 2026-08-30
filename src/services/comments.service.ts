@@ -9,8 +9,17 @@ import { getNodeIdByUid } from "./nodes.service";
 import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { getProjectIDbyUID } from "./projects.service";
 import storeAndNotify from "@/lib/notifications";
+import DOMPurify from 'dompurify';
+import { logger } from "@/lib/logger";
 
 const URL = process.env.NEXT_PUBLIC_APP_URL
+
+// SECURITY: Sanitization configuration for comment content
+const SANITIZE_CONFIG = {
+  ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'blockquote'],
+  ALLOWED_ATTR: ['href', 'target', 'rel'],
+  KEEP_CONTENT: true,
+};
 
 export async function saveComment(projectID: number, projectOwner: string, comments: string, nodeUID?: string, commentID?: number): Promise<returnDataType<CommentType>> {
   
@@ -41,12 +50,29 @@ export async function saveComment(projectID: number, projectOwner: string, comme
       }
     }
 
-    console.log("check the messages: ", comments)
+    // SECURITY: Sanitize comment content on server-side before storing
+    const sanitizedComment = DOMPurify.sanitize(comments, SANITIZE_CONFIG);
+    
+    // Validate comment is not empty after sanitization
+    if (!sanitizedComment || sanitizedComment.trim().length === 0) {
+      return {
+        status: 400,
+        message: "Comment cannot be empty"
+      };
+    }
+
+    // Validate comment length (max 5000 characters)
+    if (sanitizedComment.length > 5000) {
+      return {
+        status: 400,
+        message: "Comment is too long (max 5000 characters)"
+      };
+    }
     
     const result = await prisma.comments.create({
       data: {
         user_id: userID,
-        message: comments,
+        message: sanitizedComment, // Store sanitized HTML
         project_id: projectID,
         commentC_id: commentID ?? Prisma.skip,
         node_id: nodeResultID ?? Prisma.skip

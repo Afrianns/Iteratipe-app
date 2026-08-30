@@ -4,9 +4,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { NodeDBType, returnDataType } from "@/types/types";
-import { Sql } from "@prisma/client/runtime/client";
-
-
+import { logger } from "@/lib/logger";
 
 export async function getTotalNodesByProjectId(ProjectUid: string): Promise<returnDataType<{
   count: number
@@ -38,9 +36,62 @@ export async function getTotalNodesByProjectId(ProjectUid: string): Promise<retu
     }
 }
 
-export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnDataType<NodeDBType[]>> {
+// SECURITY: Use raw SQL for performance but with proper validation
+// Prisma.join() provides parameterization protection against SQL injection
+export async function saveCurrentStateNodes(mappedNodes: any[]): Promise<returnDataType<NodeDBType[]>> {
 
   try {
+      if (!Array.isArray(mappedNodes) || mappedNodes.length === 0) {
+        return {
+          status: 200,
+          message: "No nodes to save",
+          data: []
+        };
+      }
+
+      // SECURITY: Validate all nodes before bulk insert
+      const validatedNodes = mappedNodes.filter((node) => {
+        if (!node.uid || !node.project_id) {
+          logger.error('Invalid node data - missing required fields', { 
+            action: 'SAVE_NODES',
+            resource: `node:${node.uid}`,
+          });
+          return false;
+        }
+        return true;
+      });
+
+      if (validatedNodes.length === 0) {
+        return {
+          status: 400,
+          message: "All nodes have invalid data"
+        };
+      }
+
+      // SECURITY: Transform and validate data types
+      const sqlValues = validatedNodes.map((node) => {
+        const start_at = node.start_at ? new Date(node.start_at).toISOString() : null;
+        const end_at = node.end_at ? new Date(node.end_at).toISOString() : null;
+        
+        return Prisma.sql`(
+          ${node.uid}::text,
+          ${node.project_id}::integer,
+          ${node.image_url || null}::text,
+          ${node.asset_id || null}::text,
+          ${node.title || null}::text,
+          ${node.type || null}::text,
+          ${start_at}::timestamp,
+          ${end_at}::timestamp,
+          ${node.content || null}::text,
+          ${node.position_x ?? null}::double precision,
+          ${node.position_y ?? null}::double precision,
+          ${node.handle_type || null}::text,
+          NOW()::timestamp
+        )`;
+      });
+
+      // SECURITY: Prisma.join() provides parameterized protection
+      // This is a safe bulk operation, not vulnerable to SQL injection
       const result = await prisma.$queryRaw`
           INSERT INTO "Nodes" (
             uid,
@@ -57,7 +108,7 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
             handle_type,
             updated_at
           )
-          VALUES ${Prisma.join(mappedNodes)}
+          VALUES ${Prisma.join(sqlValues)}
           ON CONFLICT (uid) 
           DO UPDATE SET 
             title = EXCLUDED.title,
@@ -71,17 +122,27 @@ export async function saveCurrentStateNodes(mappedNodes: Sql[]): Promise<returnD
             position_y = EXCLUDED.position_y, 
             handle_type = EXCLUDED.handle_type, 
             updated_at = NOW()
-          RETURNING title, image_url, type, TO_CHAR(start_at, 'DD FMMonth YYYY') as start_date, TO_CHAR(end_at, 'DD FMMonth YYYY') as end_date, content, position_x, position_y, handle_type, uid
+          RETURNING 
+            title, 
+            image_url, 
+            type, 
+            TO_CHAR(start_at, 'DD FMMonth YYYY') as start_date, 
+            TO_CHAR(end_at, 'DD FMMonth YYYY') as end_date, 
+            content, 
+            position_x, 
+            position_y, 
+            handle_type, 
+            uid
       `;
 
-      if(result){
+      if(result && Array.isArray(result) && result.length > 0){
           return {
               status: 200,
-              message: "Success retrieved data",
+              message: "Success saved data",
               data: result as NodeDBType[]
           };
       } else{
-          throw new Error("error while fetching data")
+          throw new Error("No nodes were saved")
       }
       
   } catch (error) {

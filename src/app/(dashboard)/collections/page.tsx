@@ -47,20 +47,27 @@ export default async function Collections({searchParams}: {searchParams: Promise
                     <UnauthorizedInfo />
                 :
                     <div className="limit-breaker space-y-5">
-                        {/* ${param.section === "about" ? "bg-secondary text-main": "hover:bg-secondary"} */}
-                        <div className="flex items-center gap-x-3 h-15 w-full">
-                            <div className="w-full">
-                                <Menu sortType={sortBy} types={types} />
+                        {projects.length > 0 ? 
+                            <>
+                                <div className="flex items-center gap-x-3 h-15 w-full">
+                                    <div className="w-full">
+                                        <Menu sortType={sortBy} types={types} />
+                                    </div>
+                                    <div className="w-fit">
+                                        <DropdownFilter />
+                                    </div>
+                                </div>
+                                <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+                                    {filtering(projects, type, sortBy, status).map((project, idx) => {
+                                        return <ProjectCard key={idx} projectData={project} currentPath="home" imageName={"no-thumbnail-placeholder.png"} />
+                                    })}
+                                </div>
+                            </>
+                        :
+                            <div className="text-center">
+                                <h1 className="h-four-style">NO BOOKMARK PROJECTS LISTED</h1>
                             </div>
-                            <div className="w-fit">
-                                <DropdownFilter />
-                            </div>
-                        </div>
-                        <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {filtering(projects, type, sortBy, status).map((project, idx) => {
-                                return <ProjectCard key={idx} projectData={project} currentPath="home" imageName={"no-thumbnail-placeholder.png"} />
-                            })}
-                        </div>
+                        }
                     </div>
                 }
             </div>

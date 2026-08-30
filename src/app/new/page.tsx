@@ -9,7 +9,7 @@ export default function New() {
             <div className="col-span-5 w-full">
                 <div className="container-style container-accent-style">
                     <div className="limit-breaker">
-                        <Header showSearch={false}/>
+                        <Header />
                     </div>
                 </div>
                 <Main />

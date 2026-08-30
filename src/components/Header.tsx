@@ -12,7 +12,7 @@ import ActivityList from "./ActivityList";
 import { hasReadAllNotification } from "@/services/comments.service";
 import { toast } from "sonner";
 
-export default function Header({ showSearch = true }: {showSearch?: boolean}) {
+export default function Header() {
     const pathname = usePathname()
 
     const {userId} = useAuth()
@@ -103,13 +103,13 @@ export default function Header({ showSearch = true }: {showSearch?: boolean}) {
                     </div>
                 })}
             </div>
-            {showSearch &&
+            {/* {showSearch &&
                 <div className="flex items-center relative w-fit lg:w-full lg:max-w-100">
                     <Search className="text-gray-400 absolute left-2 w-5 h-5" />
                     <input type="text" name="search" className="pl-9 py-2 px-5 rounded-full border border-grayish outline-main focus:ring-0 text-xs w-full" placeholder="Search designs..." />
                     <p className="absolute bg-main top-1 bottom-1 right-1 px-4 text-whitish rounded-xl cursor-pointer text-xs flex justify-center items-center">Search</p>
                 </div>
-            }
+            } */}
             <div className="relative" ref={buttonMenuRef}>
                 {notificationCount >= 1 &&
                     <span className="w-fit h-fit px-2 bg-light-red rounded-full absolute top-0 right-0 span-style text-whitish!">{notificationCount}</span>

@@ -2,7 +2,7 @@ import { ErrorMessageList } from "@/components/ErrorMessageList";
 import DropdownListSearchable from "./DropdownListSearchable";
 import { useContext } from "react";
 import { SettingContext } from "@/lib/settingContext";
-import LabelsList from "./LabelsList";
+import LabelsListEditable from "./LabelsListEditable";
 
 export default function GeneralForm() {
 
@@ -36,7 +36,7 @@ export default function GeneralForm() {
                 <label htmlFor="tags" className="label-style">Tags</label>
                 <DropdownListSearchable setSelectedLabels={setGeneralSettings} selectedLabels={generalSettings} name="tags" placeholder="Type your relevant tags." type="multi" />
                 <div className="relative">
-                    <LabelsList colorFrom="from-white" labelType="tags" />
+                    <LabelsListEditable colorFrom="from-white" labelType="tags" />
                 </div>
                 <ErrorMessageList inputName="Tags" messages={generalSettingErrors?.tags} />
             </div>
@@ -45,7 +45,7 @@ export default function GeneralForm() {
                 <label htmlFor="tools" className="label-style">Tools</label>
                 <DropdownListSearchable setSelectedLabels={setGeneralSettings} selectedLabels={generalSettings} name="tools" placeholder="Type your relevant tools." type="multi" />
                 <div className="relative">
-                    <LabelsList colorFrom="from-white" labelType="tools" />
+                    <LabelsListEditable colorFrom="from-white" labelType="tools" />
                 </div>
                 <ErrorMessageList inputName="Tools" messages={generalSettingErrors?.tools} />
             </div>

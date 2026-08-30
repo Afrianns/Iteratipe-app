@@ -209,7 +209,7 @@ export default function Main({ projectFromDB, projectID }: {projectFromDB: DBSin
             <div className="h-min-screen w-full flex flex-col">
                 <div className="container-style container-accent-style mb-0! pb-0!">
                     <div className='limit-breaker'>
-                        <Header showSearch={false} />
+                        <Header />
                         <div className="my-5 flex max-lg:flex-col gap-y-5 items-center justify-between">
                             <div className='mr-auto'>
                                 <div className="flex-centering gap-x-2">

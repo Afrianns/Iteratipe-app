@@ -3,31 +3,66 @@ import { convertDateToISOString } from "./convertDate";
 
 const URL = process.env.NEXT_PUBLIC_APP_URL
 
+// SECURITY: Stricter validation schema for labels
 const LabelSchema = z.object({
-  id: z.number(),
-  name: z.string("no a string").min(2, "status is too sort").max(30, "status is too long")
+  id: z.number().positive("Invalid label ID"),
+  name: z.string("Label must be text")
+    .min(2, "Label is too short")
+    .max(30, "Label is too long")
+    .trim()
 })
+
+// SECURITY: URL validation for Cloudinary images
+const CloudinaryUrlSchema = z.string("Image URL must be text")
+  .url("Invalid URL format")
+  .refine(
+    (url) => url.startsWith("https://res.cloudinary.com/"),
+    "Only Cloudinary images are allowed"
+  )
+  .refine(
+    (url) => {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    "Invalid image URL"
+  );
 
 // CREATE VALIDATION SECTION
 export const generalSettingSchema = z.object({ 
-  title: z.string("not a text").min(5, "name cannot be less then 5 characters").max(60, "title is too long."),
-  summary: z.string("not a text").min(5, "summary cannot be less then 10 characters").max(1000, "summary is too long."),
+  title: z.string("Title must be text")
+    .min(5, "Title must be at least 5 characters")
+    .max(60, "Title cannot exceed 60 characters")
+    .trim()
+    .regex(/^[a-zA-Z0-9\s\-_.]+$/, "Title contains invalid characters"),
+  summary: z.string("Summary must be text")
+    .min(10, "Summary must be at least 10 characters")
+    .max(1000, "Summary cannot exceed 1000 characters")
+    .trim(),
   type: LabelSchema,
   status: LabelSchema,
-  tags: z.array(LabelSchema).min(2, "please add atleast 2 tags").max(10, "Cannot be more than 10 tags"),
-  tools: z.array(LabelSchema).min(2, "please add atleast 2 tools").max(10, "Cannot be more than 10 tools")
+  tags: z.array(LabelSchema)
+    .min(2, "Please add at least 2 tags")
+    .max(10, "Cannot have more than 10 tags"),
+  tools: z.array(LabelSchema)
+    .min(2, "Please add at least 2 tools")
+    .max(10, "Cannot have more than 10 tools")
 });
-
-
 
 export const VisibilitySchema = z.object({
   visibility: z.enum(["PUBLIC", "SEMI", "PRIVATE"], {
      error: () => ({ message: "Please select a valid visibility." }),
   }),
-  disable_comments: z.boolean("input is not valid."),
-  client_name: z.string("client has to be text").min(5, "client name need atleast 5 characters").max(50, "Client name is too long."),
+  disable_comments: z.boolean("Comments setting must be a boolean"),
+  client_name: z.string("Client name must be text")
+    .min(5, "Client name must be at least 5 characters")
+    .max(50, "Client name cannot exceed 50 characters")
+    .trim()
+    .regex(/^[a-zA-Z0-9\s\-_.&,]+$/, "Client name contains invalid characters"),
 })
-
 
 export const settingsSchema = z.object({
   ...generalSettingSchema.shape,
@@ -36,68 +71,60 @@ export const settingsSchema = z.object({
 
 // UPDATE VALIDATION SECTION
 export const updateVisibilitySchema = z.object({
-  id: z.number("not valid id"),
+  id: z.number("ID must be a number").positive("ID must be positive"),
   ...VisibilitySchema.partial().shape
 })
 
 export const updateGeneralSchema = z.object({
-  id: z.number("not valid id"),
+  id: z.number("ID must be a number").positive("ID must be positive"),
   ...generalSettingSchema.partial().shape
 })
 
-
 export const updateSettingSchema = z.object({
-  id: z.number("not valid id"),
+  id: z.number("ID must be a number").positive("ID must be positive"),
   ...generalSettingSchema.partial().shape,
   ...VisibilitySchema.partial().shape
 })
 
-
-// timeline data validations
-
-// {
-//     "id": "019fc01e-d3d7-a2c8-aa9a-c642f983a5d8",
-//     "position": {
-//         "x": -73.18027331816967,
-//         "y": 113.17590577354096
-//     },
-//     "data": {
-//         "handleType": "start",
-//         "title": "Booking the king",
-//         "type": "brainstorming",
-//         "start_at": "03 August 2026",
-//         "end_at": "07 August 2026",
-//         "content": "Music video by The Weeknd performing Out Of Time (Audio).© 2022 The Weeknd XO, Inc., marketed by Republic Records, a division of UMG Recordings, Inc."
-//     },
-//     "origin": [
-//         0.5,
-//         0.5
-//     ],
-//     "type": "cardNode",
-//     "measured": {
-//         "width": 320,
-//         "height": 226
-//     }
-// }
-
+// SECURITY: Timeline data validations with strict formats
 export const NodeDataSchema = z.object({ 
-  title: z.string("not a string").max(25, "title is too long"),
-  type: z.string("not a string").max(16, "Type is too long"),
-  start_at: z.string("not a string").transform((val) => {
-    const date = convertDateToISOString(val)
-    return date
-  }),
-  end_at: z.string("not a string").transform((val) => {
-    const date = convertDateToISOString(val)
-    return date
-  }),
-  content: z.string("not a string").max(200, "content is too long"),
+  title: z.string("Title must be text")
+    .max(25, "Title is too long")
+    .trim()
+    .optional(),
+  type: z.string("Type must be text")
+    .max(16, "Type is too long")
+    .trim()
+    .optional(),
+  start_at: z.string("Start date must be text")
+    .transform((val) => {
+      const date = convertDateToISOString(val)
+      return date
+    })
+    .optional(),
+  end_at: z.string("End date must be text")
+    .transform((val) => {
+      const date = convertDateToISOString(val)
+      return date
+    })
+    .optional(),
+  content: z.string("Content must be text")
+    .max(200, "Content is too long")
+    .trim()
+    .optional(),
 }).partial();
 
 export const NodeDataSchemaBE = z.object({
   ...NodeDataSchema.partial().shape,
-  image_url: z.string("image url is not valid").startsWith("https://res.cloudinary.com/cloud-store-images/image").or(z.literal("")).nullish(),
-  asset_id: z.string("not valid asset id").or(z.literal("")).nullish()
+  // SECURITY: Strict Cloudinary URL validation
+  image_url: CloudinaryUrlSchema
+    .or(z.literal(""))
+    .nullish(),
+  // SECURITY: Validate asset ID format
+  asset_id: z.string("Asset ID must be text")
+    .regex(/^[a-zA-Z0-9_-]+$/, "Invalid asset ID format")
+    .or(z.literal(""))
+    .nullish()
 }).partial()
 
 export const NodeSchema = z.object({ 

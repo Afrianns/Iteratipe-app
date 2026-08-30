@@ -59,7 +59,7 @@ export default function Search() {
         {loading ? 
           <button type="button" className="bg-main/30 text-whitish px-20 rounded-sm hover:bg-main/20 h-full animate-pulse cursor-wait">Searching...</button>
         :
-          <button type="submit" className="bg-main text-whitish px-20 rounded-sm cursor-pointer hover:bg-main/50 h-full">Search</button>
+          <button type="submit" className="bg-main text-whitish px-20 rounded-sm cursor-pointer hover:bg-main/80 h-full">Search</button>
         }
         {valueExist &&
           <button type="button" onClick={resetSearchValue} className="bg-light-red/10 text-light-red px-10 rounded-sm cursor-pointer hover:bg-light-red/20 h-full">Reset</button>

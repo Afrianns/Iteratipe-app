@@ -43,7 +43,7 @@ export default async function ExplorePage({searchParams}: {searchParams: Promise
         <div className="col-span-5 w-full">
             <div className="container-style container-accent-style">
                 <div className="limit-breaker">
-                    <Header showSearch={false} />
+                    <Header />
                     <div className="mt-10 space-y-5">
                         <h1 className="text-4xl font-bold mb-2">Explore Designs</h1>
                         <p className="text-gray-600">Here you can find various design and process from people around the world.</p>

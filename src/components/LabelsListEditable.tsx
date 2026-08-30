@@ -7,8 +7,16 @@ import { labelType } from "@/types/types";
 import { CircleX } from "lucide-react";
 import { useContext } from "react";
 
-export default function LabelsList({labels, colorFrom}: {labels: labelType[], colorFrom: string}) {
+export default function LabelsListEditable({labelType, colorFrom}: {labelType: "tags"|"tools", colorFrom: string}) {
     const [scrollLabelsRef, showGradientLabelsLeft, showGradientLabelsRight] = useGradientScrollEdge(handleScroll);
+
+    const { generalSettings, setGeneralSettings } = useContext(SettingContext)
+    
+    console.log(labelType, generalSettings[labelType], generalSettings)
+
+    const removeThisLabel = (thisLabel: labelType) => {
+        setGeneralSettings((prevGeneralSettings) => ({...generalSettings, [labelType]: prevGeneralSettings[labelType].filter((label) => label.id != thisLabel.id)}))
+    }
 
     return (
         <>
@@ -23,9 +31,10 @@ export default function LabelsList({labels, colorFrom}: {labels: labelType[], co
 
             <div className="scroll-container-style" ref={scrollLabelsRef}>
 
-                    {labels.map((label: labelType, index: number) =>
+                    {generalSettings[labelType].map((label: labelType, index: number) =>
                         <div key={index} className="badge-style-secondary flex items-center gap-x-3">
                             {label.name}
+                            <CircleX onClick={() => removeThisLabel(label)} className="icon-style-secondary p-0! w-4! h-4!" />
                         </div>
                     )}
             </div>

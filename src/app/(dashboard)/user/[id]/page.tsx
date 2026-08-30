@@ -63,7 +63,7 @@ export default async function Page({params, searchParams}: {params: Promise<{id:
     <div className="col-span-5 w-full">
         <div className="container-style container-accent-style">
             <div className="limit-breaker">
-                <Header showSearch={false} />
+                <Header />
             </div>
         </div>
         <div className="container-style">

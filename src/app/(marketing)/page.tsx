@@ -23,27 +23,87 @@ export default function LandingPage() {
 
     const { user, isSignedIn, isLoaded } = useUser();
 
-    const startRef = useRef<HTMLHeadingElement>(null);
-    const headerRef = useRef<HTMLHeadingElement>(null);
+    const pageRef = useRef<HTMLDivElement>(null);
+    const startRef = useRef<HTMLDivElement>(null);
+    const heroNavRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        gsap.fromTo(headerRef.current, 
-            {
-                autoAlpha: 0,
-            },
-            { 
-                autoAlpha: 1,
-                yPercent: 100, 
-                duration: .2,
-                ease: "power1.inOut",
+        if (!pageRef.current) return;
+
+        const context = gsap.context(() => {
+            const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+            if (reduceMotion) {
+                gsap.set("[data-reveal]", { autoAlpha: 1, clearProps: "all" });
+                return;
+            }
+
+            const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
+            intro
+                .fromTo(heroNavRef.current,
+                    { autoAlpha: 0, y: -18 },
+                    { autoAlpha: 1, y: 0, duration: 0.7 },
+                )
+                .from("[data-hero-content] > h1, [data-hero-content] > p", {
+                    autoAlpha: 0,
+                    y: 28,
+                    duration: 0.7,
+                    stagger: 0.12,
+                }, "-=0.35")
+                .fromTo("[data-hero-action]",
+                    { autoAlpha: 0, scale: 0.92, y: 18 },
+                    { autoAlpha: 1, scale: 1, y: 0, duration: 0.45 },
+                    "-=0.25"
+                );
+
+            gsap.to(heroNavRef.current, {
+                maxWidth: "60rem",
+                backgroundColor: "rgba(255, 255, 255, 0.5)",
+                backdropFilter: "blur(16px)",
+                duration: 0.25,
+                ease: "power2.out",
                 scrollTrigger: {
                     trigger: startRef.current,
                     start: "90px 40px",
-                    scrub: 1
+                    toggleActions: "play none none reverse",
                 },
-            }
-        );
-    })
+            });
+
+            gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((element) => {
+                gsap.from(element, {
+                    autoAlpha: 0,
+                    y: 42,
+                    duration: 0.8,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: element,
+                        start: "top 82%",
+                        once: true,
+                    },
+                });
+            });
+
+            gsap.utils.toArray<HTMLElement>("[data-float]").forEach((element, index) => {
+                gsap.to(element, {
+                    y: index % 2 === 0 ? -10 : 10,
+                    duration: 2.8 + index * 0.35,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut",
+                    delay: index * 0.15,
+                });
+            });
+
+            gsap.utils.toArray<HTMLElement>("[data-hover-lift]").forEach((element) => {
+                const onEnter = () => gsap.to(element, { y: -6, duration: 0.25, ease: "power2.out" });
+                const onLeave = () => gsap.to(element, { y: 0, duration: 0.35, ease: "power2.out" });
+                element.addEventListener("mouseenter", onEnter);
+                element.addEventListener("mouseleave", onLeave);
+            });
+        }, pageRef);
+
+        return () => context.revert();
+    }, []);
 
     const toggleHeader = () => {
         if(headerDropdown){
@@ -73,15 +133,15 @@ export default function LandingPage() {
         return (
             <>
                 <Image alt="Iteratipe Logo" src="Logo.svg" width={130} height={130}/>
-                <Menu onClick={toggleHeader} className="md:hidden bg-secondary rounded-full p-1 mx-0 cursor-pointer" />
-                <ul className="hidden md:flex justify-between gap-x-5 md:text-sm items-center">
-                    <li className="cursor-pointer hover:underline"><Link href="/home">Home</Link></li>
-                    <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
-                    <li className="cursor-pointer hover:underline"><Link href="/about">About</Link></li>
+                <Menu aria-label="Open navigation menu" onClick={toggleHeader} className="md:hidden bg-secondary rounded-full p-1 mx-0 cursor-pointer transition-colors hover:bg-light-gray" />
+                <ul className="hidden md:flex justify-between gap-x-6 md:text-sm items-center text-main-text/70">
+                    <li className="cursor-pointer transition-colors hover:text-main"><Link href="/home">Home</Link></li>
+                    <li className="cursor-pointer transition-colors hover:text-main"><Link href="/explore">Explore</Link></li>
+                    <li className="cursor-pointer transition-colors hover:text-main"><Link href="/about">About</Link></li>
                 </ul>
-                <AuthenticatedUserShowFn />
+                {AuthenticatedUserShowFn()}
                 {headerDropdown && 
-                    <div className="gap-x-5 bg-white absolute p-5 top-10 right-5 card-style my-5">
+                    <div className="gap-x-5 bg-white absolute p-5 top-10 right-0 card-style my-5 min-w-40 shadow-lg">
                         <ul className="md:flex space-y-3 gap-x-5 text-sm font-light items-center">
                             <li className="cursor-pointer hover:underline"><Link href="/home">Home</Link></li>
                             <li className="cursor-pointer hover:underline"><Link href="/explore">Explore</Link></li>
@@ -96,31 +156,28 @@ export default function LandingPage() {
     }
 
     return (
-        <div>
-            <div ref={headerRef} className="bg-white/50 backdrop-blur-lg w-full h-19 md:mx-auto py-5 fixed -top-20 px-5 flex items-center justify-between gap-x-5 space-x-10 shadow-sm z-10 invisible">
-                <HeaderComp />
+        <div ref={pageRef}>
+            <div ref={heroNavRef} data-hero-nav className="bg-white h-15 max-w-160 mx-5 md:mx-auto rounded-4xl py-3 px-5 flex items-center justify-between gap-x-5 space-x-10 shadow-sm sticky top-7 z-10">
+                {HeaderComp()}
             </div>
-            <section className="bg-light-blue py-10 relative overflow-hidden z-2">
+            <section className="bg-light-blue -mt-15 pt-15 pb-16 md:pb-24 relative overflow-hidden z-2">
                 <DotsPattern />
-                <div className=" bg-white h-15 max-w-160 mx-5 md:mx-auto rounded-4xl py-3 px-5 flex items-center justify-between gap-x-5 space-x-10 shadow-sm relative">
-                    <HeaderComp />
-                </div>
-                <div ref={startRef} className="flex flex-col justify-center items-center text-center max-w-250 mx-10 md:mx-auto space-y-5 md:space-y-10 my-10">
-                    <h1 className="text-center font-black text-3xl md:text-5xl uppercase md:py-5 ">Design not only the result but the process.</h1>
-                    <p className="max-w-150 text-main">Find out how designer around the world designing from start to finished and get insight.</p>
-                    <div className="flex gap-x-5">
-                        <Link href='/auth' className="button-style rounded-md">Get Started</Link>
-                        <Link href='/explore' className="button-style-secondary rounded-md">Explore Now</Link>
+                <div ref={startRef} data-hero-content className="flex flex-col justify-center items-center text-center max-w-250 mx-6 md:mx-auto space-y-6 md:space-y-8 mt-0 mb-10 pt-15">
+                    <h1 className="text-center font-black text-3xl leading-tight md:text-5xl md:leading-tight uppercase md:pb-5 max-w-220">Design not only the result but the process.</h1>
+                    <p className="max-w-150 text-main leading-7">Find out how designer around the world designing from start to finished and get insight.</p>
+                    <div data-hero-action className="flex flex-col sm:flex-row gap-3 sm:gap-x-5 w-full sm:w-auto">
+                        <Link href='/auth' className="button-style rounded-md text-center transition-transform hover:-translate-y-1">Get Started</Link>
+                        <Link href='/explore' className="button-style-secondary rounded-md text-center transition-transform hover:-translate-y-1">Explore Now</Link>
                     </div>
                 </div>
             </section>
 
-            <Timeline />
+            <div data-reveal data-hover-lift><Timeline /></div>
 
-            <Features />
-            <section className="px-10 bg-tertiary h-fit w-full relative overflow-hidden z-2">
+            <div data-reveal><Features /></div>
+            <section data-reveal className="px-10 bg-tertiary h-fit w-full relative overflow-hidden z-2">
                 <div className="absolute -z-1 w-200 top-0 -bottom-10 -right-10">
-                    <Image alt="wavy line pattern" className="-rotate-5 opacity-70" src="/assets/wavy-line.svg" fill/>
+                    <Image data-float alt="wavy line pattern" className="-rotate-5 opacity-70" src="/assets/wavy-line.svg" fill/>
                 </div>
                 <div className="limit-breaker py-15">
                     <div className="flex max-md:flex-col items-start md:items-end justify-between">
@@ -134,7 +191,7 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
-            <section className="p-10 bg-light-blue md:h-100 relative z-1">
+            <section data-reveal className="p-10 bg-light-blue md:h-100 relative z-1">
                 <GridPattern />
                 <div className="limit-breaker my-10 flex max-md:flex-col items-start justify-between">
                     <Image alt="Iteratipe App Logo" src="Logo.svg" width={150} height={150} />
