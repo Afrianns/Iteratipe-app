@@ -5,7 +5,6 @@ import { returnDataType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { getUserID } from "./user.service";
 import { prisma } from "@/lib/db";
-import { getProjectIDbyUID } from "./projects.service";
 import { getUserIdAndProjectId } from "./partial.service";
 
 import Redis from "ioredis";
@@ -121,36 +120,7 @@ export async function likeProject(projectOwner: string, projectUid: string, proj
 
     if(type == "like"){
       const message = `<a href="${URL}/user/${usernameWhoDoTheAction}" rel="noopener noreferrer">${usernameWhoDoTheAction}</a> Liked your project <a href="${URL}/home/${projectTitle.split(" ").join("-").toLowerCase()}%E2%80%94${projectUid}" rel="noopener noreferrer">${projectTitle.toLowerCase()}</a>`
-
       storeAndNotify(message, userId, projectOwner)
-      // const ownerId = await prisma.users.findFirst({where: {username: projectOwner}, select: {id: true, clerk_user_id: true}})
-      
-      // if(ownerId?.id){
-      //   const newlyActivity = await prisma.activities.create({
-      //     data: {
-      //       messages: `<a href="${URL}/user/${usernameWhoDoTheAction}" rel="noopener noreferrer">${usernameWhoDoTheAction}</a> Liked your project <a href="${URL}/home/${projectTitle.split(" ").join("-").toLowerCase()}%E2%80%94${projectUid}" rel="noopener noreferrer">${projectTitle.toLowerCase()}</a>`,
-      //       Object_user_id: ownerId.id,
-      //       Subject_user_id: userId,
-      //       seen: false
-      //     },
-      //     include: {
-      //       Subject: {
-      //         select: {
-      //           image_url: true
-      //         }
-      //       }
-      //     }
-      //   })
-
-      //   pusher.trigger("notification-channel", `notify-${ownerId.clerk_user_id}`, {         
-      //     id: newlyActivity.id as number,
-      //     user_id: newlyActivity.Subject_user_id as number,
-      //     messages: newlyActivity.messages as string,
-      //     created_at: newlyActivity.created_at as Date,
-      //     user_image_url: newlyActivity.Subject.image_url as string
-      //   });
-
-      // }
     }
 
 

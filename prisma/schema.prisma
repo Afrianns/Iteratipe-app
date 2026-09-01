@@ -30,6 +30,7 @@ model Users {
   email                String               @db.VarChar(50)
   image_url            String               @db.VarChar(255)
   description          String?              @db.Text
+  instagram_link       String?              @db.VarChar(200)
   facebook_link        String?              @db.VarChar(200)
   twitter_link         String?              @db.VarChar(200)
   website_link         String?              @db.VarChar(200)

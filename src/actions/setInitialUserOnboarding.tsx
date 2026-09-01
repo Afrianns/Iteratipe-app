@@ -41,9 +41,9 @@ export async function formOnboarding(_: any, additionalUserData: additionalUserD
         username: validated.data.username,
         full_name: `${user.firstName} ${user.lastName}`,
         description: validated.data.description || "",
-        facebook_link: validated.data.facebook || "",
-        twitter_link: validated.data.twitter || "",
-        website_link: validated.data.website || "",
+        facebook_link: validated.data.facebook_link || "",
+        twitter_link: validated.data.twitter_link || "",
+        website_link: validated.data.website_link || "",
         email: user.primaryEmailAddressId || "-",
         image_url: user.imageUrl || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
       }

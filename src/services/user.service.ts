@@ -1,5 +1,7 @@
 "use server"
 
+import { PersonalInformationDataType } from "@/actions/updatePersonalInfo";
+import { SocialType } from "@/actions/updatePersonalSocial";
 import { prisma } from "@/lib/db";
 import { previewCardDataQuery } from "@/lib/prismaQuery";
 import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
@@ -288,6 +290,146 @@ export const getUserInformation = async (): Promise<returnDataType<{
     }
   } catch (error) {
       return await serverSideErrorHandle(error)
+  }
+}
+
+export const getUserSocial = async (): Promise<returnDataType<{
+  instagram_link: string | null
+  facebook_link: string | null
+  twitter_link: string | null
+  website_link: string | null
+}>> => {
+  const { userId } = await auth()
+  let userDbId = 0
+
+  try {
+    
+    if(userId){
+      const resultID = await getUserID(userId)
+  
+      if(resultID.status == 200 && resultID.data?.id){
+        userDbId = resultID.data.id
+      } else{
+        throw new Error("User id not found. Please try again later!");
+      }
+    }
+
+    const user = await prisma.users.findUnique({
+        where: {
+            id: userDbId
+        },
+
+        select: {
+          instagram_link: true,
+          facebook_link: true,
+          twitter_link: true,
+          website_link: true
+        }
+    });
+
+    if(user){
+      return {
+        status: 200,
+        message: "successful",
+        data: user
+      }
+    } else{
+      throw new Error("User not found. try again later");
+    }
+  } catch (error) {
+      return await serverSideErrorHandle(error)
+  }
+}
+
+
+export const updatePersonalInfo = async (dataInformation: PersonalInformationDataType): Promise<returnDataType<{
+  personalInfoData: PersonalInformationDataType
+}>> => {
+
+    const { userId } = await auth()
+  let userDbId = 0
+
+  try {
+    
+    if(userId){
+      const resultID = await getUserID(userId)
+  
+      if(resultID.status == 200 && resultID.data?.id){
+        userDbId = resultID.data.id
+      } else{
+        throw new Error("User id not found. Please try again later!");
+      }
+    }
+
+    await prisma.users.update({
+      where: {
+        id: userDbId
+      },
+      data: {
+        username: dataInformation.username,
+        description: dataInformation.description
+      },
+      select: {
+        id: true,
+      }
+    })
+
+    return {
+      status: 200,
+      message: "Successfully",
+      data: {
+        personalInfoData: dataInformation
+      }
+    }
+  } catch (error) {
+    return await serverSideErrorHandle(error)
+  }
+}
+
+
+export const updatePersonalSocial = async (dataInformationSocial: SocialType): Promise<returnDataType<{
+  personalSocialData: SocialType
+}>> => {
+
+  const { userId } = await auth()
+  let userDbId = 0
+
+  try {
+    
+    if(userId){
+      const resultID = await getUserID(userId)
+  
+      if(resultID.status == 200 && resultID.data?.id){
+        userDbId = resultID.data.id
+      } else{
+        throw new Error("User id not found. Please try again later!");
+      }
+    }
+
+    await prisma.users.update({
+      where: {
+        id: userDbId
+      },
+      data: {
+        instagram_link: dataInformationSocial.instagram_link,
+        facebook_link: dataInformationSocial.facebook_link,
+        twitter_link: dataInformationSocial.twitter_link,
+        website_link: dataInformationSocial.website_link
+      },
+      select: {
+        id: true,
+      }
+    })
+
+    return {
+      status: 200,
+      message: "Successfully",
+      data: {
+        personalSocialData: dataInformationSocial
+      }
+    }
+  } catch (error) {
+    return await serverSideErrorHandle(error)
   }
 }
 

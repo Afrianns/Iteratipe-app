@@ -160,13 +160,14 @@ export const NodeSchemaBE = z.object({
 
 export const onboardingUserIdentity = z.object({
   username: z.string("username has to be text").min(5, "username cannot be less then 5 characters length").max(20, "username cannot be longer then 20 characters length"),
-  description: z.string("description has to be text").max(255, "description is too long").optional()
+  description: z.string("description has to be text").min(20, "description is too short").max(255, "description is too long").or(z.literal("")).optional()
 })
 
 export const onboardingUserSocial = z.object({
-  facebook: z.string("has to be text").min(10, "facebook link is too sort").max(20, "facebook link is too long").optional().or(z.literal("")),
-  twitter: z.string("has to be text").min(10, "twitter link is too sort").max(20, "twitter link is too long").optional().or(z.literal("")),
-  website: z.string("has to be text").min(10, "webstie link is too sort").max(20, "webstie link is too long").optional().or(z.literal("")),
+  instagram_link: z.string("has to be text").min(10, "instagram link is too short").max(255, "instagram link is too long").or(z.literal("")),
+  facebook_link: z.string("has to be text").min(10, "facebook link is too short").max(255, "facebook link is too long").or(z.literal("")),
+  twitter_link: z.string("has to be text").min(10, "twitter link is too short").max(255, "twitter link is too long").or(z.literal("")),
+  website_link: z.string("has to be text").min(10, "website link is too short").max(255, "website link is too long").or(z.literal("")),
 })
 
 

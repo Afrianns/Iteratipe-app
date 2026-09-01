@@ -210,6 +210,7 @@ export interface UserType {
  email: string;
  image_url: string;
  description: string | null;
+ instagram_link: string | null;
  facebook_link: string | null;
  twitter_link: string | null;
  website_link: string | null;

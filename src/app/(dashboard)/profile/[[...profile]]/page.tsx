@@ -3,7 +3,7 @@ import { UserProfile } from "@clerk/nextjs";
 import Link from "next/link";
 import ProfileNav from "./_components/ProfileNav";
 import Social from "./_components/social";
-import Preferences from "./_components/preferences";
+import social from "./_components/social";
 import PersonalInformation from "./_components/PersonalInformation";
 
 export default async function User({ searchParams }: {searchParams: Promise<{ additional?: string }>}) {
@@ -17,7 +17,6 @@ export default async function User({ searchParams }: {searchParams: Promise<{ ad
             </div>
             <div className="container-style space-y-5">
                 <h3 className="h-two-style">Settings</h3>
-                <PersonalInformation />
                 <div className="space-y-5 mb-5">
                     <ProfileNav />
                 </div>
@@ -36,10 +35,10 @@ export default async function User({ searchParams }: {searchParams: Promise<{ ad
                 }} />
 
                 <ul className="flex gap-x-5 items-center my-5">
-                    <Link href="?additional=social" className={`p-style ${(params.additional != "preferences") && "text-main!"}`}>Social</Link>
-                    <Link href="?additional=preferences" className={`p-style ${params.additional == "preferences" && "text-main!"}`}>Preferences</Link>
+                    <Link href="?additional=personal-info" className={`p-style ${(params.additional != "social") && "text-main!"}`}>Personal Information</Link>
+                    <Link href="?additional=social" className={`p-style ${params.additional == "social" && "text-main!"}`}>Social</Link>
                 </ul>
-                {params.additional == "preferences" ? <Preferences /> : <Social />}
+                {params.additional == "social" ? <Social /> : <PersonalInformation />}
             </div>
         </div>
     )

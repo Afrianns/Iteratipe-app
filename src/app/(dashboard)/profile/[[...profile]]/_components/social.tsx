@@ -1,86 +1,106 @@
 "use client"
 
-import { ErrorMessageList } from "@/components/ErrorMessageList";
-import { AtSign } from "lucide-react";
-import { useState } from "react";
+import { formInformationData, SocialType, UserSocialErrorType } from "@/actions/updatePersonalSocial";
+import Links from "@/components/links";
+import { onboardingUserSocial } from "@/lib/validations";
+import { getUserSocial } from "@/services/user.service";
+import { useAuth } from "@clerk/nextjs";
+import { useActionState, useEffect, useState } from "react";
+import { toast } from "sonner";
+import z from "zod";
 
-interface UserSocialErrorType{
-  facebook?: string[] | undefined
-  twitter?: string[] | undefined
-  website?: string[] | undefined
-}
-
-interface SocialType {
-  facebook: string
-  twitter: string
-  website: string
-}
 
 export default function Social() {
   
-  const [userSocialError, setUserSocialError] = useState<UserSocialErrorType>({})
-  const [isPending, setIsPending] = useState<boolean>(false)
+  const { userId } = useAuth()
+
   const [social, setSocial] = useState<SocialType>({
-      facebook: "",
-      twitter: "",
-      website: ""
+      instagram_link: "",
+      facebook_link: "",
+      twitter_link: "",
+      website_link: ""
     })
+  const [formState, formAction, isPending] = useActionState(formInformationData, null)
+
+  useEffect(() => {
+    if(formState && formState.status != 200 && formState.data?.messageError){
+      setErrorMessages(formState.data?.messageError)
+    }
+
+    if(formState && formState.status == 200 && formState.data?.personalInfoData){
+      toast.success(formState.message)
+      setSocial(formState.data?.personalInfoData)
+    }
+
+  }, [formState])
+
+
+  useEffect(() => {
+    const getPersonalInformation = async () => {
+      const user = await getUserSocial()
+
+      console.log("checking social links",user)
+
+      if(user.status == 200 && user.data){
+        setSocial({
+          instagram_link: user.data.instagram_link || "",
+          facebook_link: user.data.facebook_link || "",
+          twitter_link: user.data.twitter_link || "",
+          website_link: user.data.website_link || ""
+        })
+        setLoading(false)
+      }
+    }
+    setLoading(true)
+    getPersonalInformation()
+
+    return () => {
+        setSocial({
+          instagram_link: "",
+          facebook_link: "",
+          twitter_link: "",
+          website_link: ""
+        })
+
+        setLoading(false)
+    }
+  }, [userId])
+
+  const [errorMessages, setErrorMessages] = useState<UserSocialErrorType>({})
+
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const beforeSave = async (formData: FormData) => {
+    setLoading(true)
+    console.log("Form Data: ", Object.fromEntries(formData.entries()))
+
+    const result = onboardingUserSocial.safeParse({
+      instagram_link: formData.get("instagram_link") as string,
+      facebook_link: formData.get("facebook_link") as string,
+      twitter_link: formData.get("twitter_link") as string,
+      website_link: formData.get("website_link") as string
+    })
+
+    if (!result.success) {
+      setErrorMessages(z.flattenError(result.error).fieldErrors as UserSocialErrorType)
+      setLoading(false)
+      return
+    } else{
+      console.log("Validated data:", result.data)
+      formAction(result.data)
+      setErrorMessages({})
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="card-style-secondary">
       <h1 className="h-two-style mb-5">Setup your social links</h1>
 
-      <form action="#" className="space-y-5">
-        <div className="space-y-3 w-full">
-            <label htmlFor="facebook" className="label-style">Facebook <span className="important-style">*</span></label>
-            <div className="flex items-center">
-              <div className="icon-style-secondary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                  <path d="M0 0h24v24H0z" fill="none" />
-                  <g fill="none">
-                    <g clipPath="url(#SVGXv8lpc2Y)">
-                      <path fill="currentColor" fillRule="evenodd" d="M0 12.067C0 18.034 4.333 22.994 10 24v-8.667H7V12h3V9.333c0-3 1.933-4.666 4.667-4.666c.866 0 1.8.133 2.666.266V8H15.8c-1.467 0-1.8.733-1.8 1.667V12h3.2l-.533 3.333H14V24c5.667-1.006 10-5.966 10-11.933C24 5.43 18.6 0 12 0S0 5.43 0 12.067" clipRule="evenodd" />
-                    </g>
-                    <defs>
-                      <clipPath id="SVGXv8lpc2Y">
-                        <path fill="#fff" d="M0 0h24v24H0z" />
-                      </clipPath>
-                    </defs>
-                  </g>
-                </svg>
-              </div>
-              <input type="text" name="facebook" placeholder="e.g. https://web.facebook.com/example" className="input-style p-3! text-xs" value={social.facebook} onChange={(e) => setSocial(prevSocial => ({...prevSocial, facebook: e.target.value}))} />
-            </div>
-            <ErrorMessageList inputName="title" messages={userSocialError?.facebook} />
-        </div>
-        <div className="space-y-3 w-full">
-            <label htmlFor="twitter" className="label-style">Twitter <span className="important-style">*</span></label>
-            <div className="flex items-center">
-              <div className="icon-style-secondary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                  <path d="M0 0h24v24H0z" fill="none" />
-                  <path fill="currentColor" d="M13.68 10.62L20.24 3h-1.55L13 9.62L8.45 3H3.19l6.88 10.01L3.19 21h1.55l6.01-6.99l4.8 6.99h5.24l-7.13-10.38Zm-2.13 2.47l-.7-1l-5.54-7.93H7.7l4.47 6.4l.7 1l5.82 8.32H16.3z" />
-                </svg>
-              </div>
-              <input type="text" name="twitter" placeholder="e.g. https://x.com/example" className="input-style p-3! text-xs" value={social.twitter} onChange={(e) => setSocial(prevSocial => ({...prevSocial, twitter: e.target.value}))}/>
-            </div>
-            <ErrorMessageList inputName="title" messages={userSocialError?.twitter} />
-        </div>
-        <div className="space-y-3">
-            <label htmlFor="website" className="label-style">Website <span className="important-style">*</span></label>
-            <div className="flex items-center">
-              <div className="icon-style-secondary" >
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                  <path d="M0 0h24v24H0z" fill="none" />
-                  <path fill="currentColor" d="M16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2m-5.15 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56M14.34 14H9.66c-.1-.66-.16-1.32-.16-2s.06-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2M12 19.96c-.83-1.2-1.5-2.53-1.91-3.96h3.82c-.41 1.43-1.08 2.76-1.91 3.96M8 8H5.08A7.92 7.92 0 0 1 9.4 4.44C8.8 5.55 8.35 6.75 8 8m-2.92 8H8c.35 1.25.8 2.45 1.4 3.56A8 8 0 0 1 5.08 16m-.82-2C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2M12 4.03c.83 1.2 1.5 2.54 1.91 3.97h-3.82c.41-1.43 1.08-2.77 1.91-3.97M18.92 8h-2.95a15.7 15.7 0 0 0-1.38-3.56c1.84.63 3.37 1.9 4.33 3.56M12 2C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2" />
-                </svg>
-              </div>
-              <input type="text" name="website" placeholder="e.g. https://example.com" className="input-style p-3! text-xs" value={social.website} onChange={(e) => setSocial(prevSocial => ({...prevSocial, website: e.target.value}))}/>
-            </div>
-            <ErrorMessageList inputName="title" messages={userSocialError?.website} />
-        </div>
+      <form action={beforeSave} className="space-y-5">
+        <Links social={social} setSocial={setSocial} errorMessages={errorMessages} />
         <div className="text-right">
-          {isPending ? 
+          {(loading || isPending) ? 
             <button type="button" disabled className="button-style text-xs! opacity-40 rounded-md uppercase cursor-wait!">Updating...</button>
           :
             <>
