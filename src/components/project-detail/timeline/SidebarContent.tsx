@@ -4,7 +4,6 @@ import { formatFlexibleDuration } from "@/lib/convertDateinDuration";
 import { handleEnum } from "@/types/enum";
 import { timelineNodeDataType } from "@/types/types";
 import { CalendarDays, Timer } from "lucide-react";
-import { ReadonlyURLSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function SidebarContent({params}: {params: string | undefined}) {

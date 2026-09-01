@@ -1,7 +1,7 @@
 "use client"
 
 import { ReactFlow, Background, Controls, MiniMap, ReactFlowProvider, Edge, useNodesState, useEdgesState, NodeChange, EdgeChange, Connection, addEdge, useReactFlow } from '@xyflow/react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import Card from './timeline/Card';
 import CardIntermediete from './timeline/CardIntermediete';
 import TimelineMenu from './timeline/CanvasMenu';
@@ -12,6 +12,7 @@ import CanvasSave from './timeline/CanvasSave';
 import { useShallow } from 'zustand/react/shallow'
 import SidebarContentWrapper from './timeline/SidebarContentWrapper';
 import { useAuth } from '@clerk/nextjs';
+import { TimelineContext } from '@/contexts/timelineContext';
 
 const nodeTypes = {
   cardNode: Card,
@@ -21,10 +22,11 @@ const nodeTypes = {
 const initialNodes: timelineNodeType[] = [];
 const initialEdges: Edge[] = [];
 
-export default function Timeline({ownerClerkId}: {ownerClerkId:string}) {
+export default function Timeline() {
 
     const { isSignedIn, isLoaded, userId } = useAuth()
 
+    const { ownerClerkId } = useContext(TimelineContext)
 
     const { mode, globalNodes, globalEdges, setStartNode, setEndNode, deleteNode, deleteEdge } = useTimelineStateStore(useShallow((state) => ({
         mode: state.mode,

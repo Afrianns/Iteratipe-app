@@ -9,7 +9,7 @@ import { createRef, useContext, useEffect, useRef, useState } from "react"
 import { CommentsLoading } from "./CommentListsLoading"
 import { toast } from "sonner"
 import { clientSideErrorHandle } from "@/lib/clientErrorHandle"
-import { CommentContext } from "@/lib/commentsContex"
+import { CommentContext } from "@/contexts/commentsContext"
 import { usePathname } from "next/navigation"
 
 import DOMPurify from 'dompurify'

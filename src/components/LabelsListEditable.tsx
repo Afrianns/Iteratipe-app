@@ -2,7 +2,7 @@
 
 import { useGradientScrollEdge } from "@/hooks/useGradientScrollEdge";
 import { handleScroll } from "@/lib/handleScroll";
-import { SettingContext } from "@/lib/settingContext";
+import { SettingContext } from "@/contexts/settingContext";
 import { labelType } from "@/types/types";
 import { CircleX } from "lucide-react";
 import { useContext } from "react";

@@ -1,6 +1,6 @@
 "use client"
 
-import { CommentContext } from "@/lib/commentsContex";
+import { CommentContext } from "@/contexts/commentsContext";
 import { ArrowDownWideNarrow, ArrowUpWideNarrow } from "lucide-react";
 import { useContext, useState } from "react";
 

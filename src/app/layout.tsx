@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Quicksand, Stack_Sans_Notch, Nunito, Basic, Stack_Sans_Headline } from "next/font/google";
+import { Quicksand, Stack_Sans_Headline } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { NextClerkProviderProps } from "@clerk/nextjs/types";
 import { Toaster } from "sonner";
+
+export const dynamic = 'force-dynamic'
 
 const main = Stack_Sans_Headline({
   variable: "--font-stack-sans-headline",
@@ -16,11 +18,6 @@ const secondary = Quicksand({
   // weight: "400",
   subsets: ["latin"],
 });
-
-// const epilogue = Epilogue({
-//   variable: "--font-epilogue",
-//   subsets: ["latin"],
-// });
 
 export const metadata: Metadata = {
   title: "Iterative App",

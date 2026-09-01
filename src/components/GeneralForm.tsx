@@ -1,7 +1,7 @@
 import { ErrorMessageList } from "@/components/ErrorMessageList";
 import DropdownListSearchable from "./DropdownListSearchable";
 import { useContext } from "react";
-import { SettingContext } from "@/lib/settingContext";
+import { SettingContext } from "@/contexts/settingContext";
 import LabelsListEditable from "./LabelsListEditable";
 
 export default function GeneralForm() {

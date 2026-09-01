@@ -1,7 +1,8 @@
 "use client"
 
 import { openSidebarFn } from "@/actions/setCookies";
-import { Compass, FileStack, House, SquareChevronRight } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
+import { Compass, FileStack, House, Plus, SquareChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -9,8 +10,27 @@ export default function SidebarMenu({isOpen}: {isOpen: boolean }) {
 
     const path = usePathname().split('/').filter((path) => path != "")[0]
 
+    const { isLoaded, isSignedIn } = useAuth()
+
     return (
-        <>
+        <> 
+            {(isLoaded && isSignedIn) &&
+                <div className="flex justify-center">
+                    <Link href="/new" className={`flex-centering hovering-detail duration-300 hover:bg-secondary group transition-colors ${path === 'new' ? 'bg-secondary' : ''} whitespace-nowrap`}>
+                        <Plus className={`menu-icon-style ${path === 'new' ? 'text-main' : ''}`} /> 
+                        <span className={`max-md:hidden menu-name-style
+                            ${
+                                path === 'new' ? 'text-main' : 'group-hover:text-main'
+                            }
+                            ${
+                            isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'
+                            }`}
+                        >
+                            New Design
+                        </span>
+                    </Link>
+                </div>
+            }
             <div className="max-md:hidden absolute -right-5 top-20 py-2 px-2 card-style cursor-pointer" onClick={openSidebarFn}>
                 <SquareChevronRight className="w-4 h-4" />
             </div>

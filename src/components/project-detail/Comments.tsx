@@ -13,7 +13,7 @@ import { CommentsLoading } from "./comments/CommentListsLoading";
 
 
 import { useImmer } from "use-immer"
-import { CommentContext } from "@/lib/commentsContex";
+import { CommentContext } from "@/contexts/commentsContext";
 import dynamic from "next/dynamic";
 
 import DOMPurify from 'dompurify';

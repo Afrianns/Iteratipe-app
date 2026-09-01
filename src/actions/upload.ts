@@ -9,6 +9,9 @@ import z from "zod"
 import { timelineNodeType } from "@/types/types"
 import { prisma } from "@/lib/db"
 import treeifyErrorHandling from "@/lib/treeifyErrorHandling"
+import { getUserID } from "@/services/user.service"
+import { auth } from "@clerk/nextjs/server"
+import { isUserValidToUpdate } from "@/services/validation.service"
 
 export interface ValidationMessagesType {
     title?: string[]
@@ -33,13 +36,20 @@ export const saveCurrentData = async (prevState: FormUpdateType, formData: FormD
 
     const nodeId = formData.get("node_id") as string
 
+    const { isAuthenticated } = await auth()
+
+    if(!isAuthenticated) {
+        return {
+            status: 401,
+            message: "You're trespassing",
+        }
+    }
     if(!nodeId) {
         return {
             status: 300,
             message: "No id present"
         }
     }
-    
     
     const project_id = formData.get("project_id") as string
 
@@ -66,12 +76,18 @@ export const saveCurrentData = async (prevState: FormUpdateType, formData: FormD
         type: "cardNode"
     } as timelineNodeType
     
+
     const validation = NodeSchemaBE.safeParse(nodeData)
 
     try {
-        console.log("check data here: ",nodeData, validation)
 
         if(validation.success){
+            
+            const { data, status, message } = await isUserValidToUpdate(project_id)
+
+            if(status != 200 && !data?.is_allowed) throw new Error(message);
+
+
             const deleteResult = await deleteImageByAssetId(nodeData.id, nodeData.data.image_url)
             
             if(deleteResult.status == 500){

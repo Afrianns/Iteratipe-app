@@ -1,6 +1,6 @@
 import { ErrorMessageList } from "@/components/ErrorMessageList";
 import LabelsList from "@/components/LabelsList";
-import { SettingContext } from "@/lib/settingContext";
+import { SettingContext } from "@/contexts/settingContext";
 import { Step } from "@/types/types";
 import { useContext } from "react";
 import { useFormStatus } from "react-dom";

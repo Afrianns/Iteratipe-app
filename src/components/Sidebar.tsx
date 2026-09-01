@@ -1,7 +1,7 @@
 "use server"
 
 import { UserButton } from "@clerk/nextjs";
-import { CircleUser, Plus } from "lucide-react";
+import { CircleUser } from "lucide-react";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,20 +38,6 @@ export default async function Sidebar() {
                         <Image alt="Iteratipe Logo" src="/sort-logo.svg" width={40} height={40} priority />
                     </div>
                 </Link>
-
-                {isAuthenticated &&
-                    <div className="flex justify-center">
-                        <Link href="/new" className="flex-centering hovering-detail duration-300 bg-secondary text-main font-medium hover:bg-secondary hover:underline justify-center whitespace-nowrap w-full">
-                            <Plus className="menu-icon-style" /> 
-                            <span className={`max-md:hidden menu-name-style ${
-                                isOpen ? 'max-w-37.5 opacity-100 ml-2' : 'max-w-0 opacity-0'
-                                }`}
-                            >
-                                New Design
-                            </span>
-                        </Link>
-                    </div>
-                }
                 <SidebarMenu isOpen={isOpen} />
             </div>
             <div className="flex justify-center">

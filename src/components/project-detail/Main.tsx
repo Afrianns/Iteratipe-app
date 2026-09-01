@@ -5,10 +5,9 @@ import '@xyflow/react/dist/style.css';
 import { Bookmark, Heart } from 'lucide-react';
 import { DBSingleProjectByID, generalDataType, generalSettingErrorsType, timelineNodeType, VISIBLE } from '@/types/types';
 import { useEffect, useState } from 'react';
-import { notFound, useSearchParams } from 'next/navigation';
-import { getProjectDetailById } from '@/services/projects.service';
+import { useSearchParams } from 'next/navigation';
 import { useTimelineStateStore } from '@/hooks/useTimelineStateStore';
-import { SettingContext } from '@/lib/settingContext';
+import { SettingContext } from '@/contexts/settingContext';
 import { Edge } from '@xyflow/react';
 
 import Header from "../Header";
@@ -19,9 +18,9 @@ import Settings from './Settings';
 import DetailMenu from '@/components/project-detail/main/DetailMenu';
 import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
-import { handleEnum } from '@/types/enum';
 import Follow from './main/follow';
-import { toast } from 'sonner';
+import { simplifiedNodesAndEdges } from '@/lib/simplifiedNodesAndEdges';
+import { TimelineContext } from '@/contexts/timelineContext';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL 
 
@@ -150,6 +149,7 @@ export default function Main({ projectFromDB, projectID }: {projectFromDB: DBSin
 
             if((!isSignedIn || userId != projectFromDB.ownerClerkId) && edges.length > 0) {
                 const modifieditems = simplifiedNodesAndEdges(nodes, edges)
+
                 modifiedNodes = modifieditems.newIntemedieteNodes
                 modifiedEdges = modifieditems.newEdges
             } else{
@@ -263,7 +263,9 @@ export default function Main({ projectFromDB, projectID }: {projectFromDB: DBSin
                 </div>
                 <div className="w-full h-fit bg-light-gray border-b border-gray-200 shadow-xs flex-1 max-md:mb-20">
                     <div className={`contents ${(menu === "timeline" || !menu) ? "block" : "hidden"}`}>
-                        <Timeline ownerClerkId={project.ownerClerkId} />
+                        <TimelineContext.Provider value={{ownerClerkId: project.ownerClerkId}}>
+                            <Timeline />
+                        </TimelineContext.Provider>
                     </div>
 
                     <div className={menu === "overview" ? "block" : "hidden"}>
@@ -279,7 +281,7 @@ export default function Main({ projectFromDB, projectID }: {projectFromDB: DBSin
                             {(isSignedIn && project.ownerClerkId == userId) && 
                                 <div className={menu === "settings" ? "block" : "hidden"}>
                                 <SettingContext.Provider value={{ generalSettings: generalSettings, setGeneralSettings: setGeneralSettings, generalSettingErrors: generalSettingErrors, setGeneralSettingErrors: setGeneralSettingErrors }}>
-                                <Settings />
+                                    <Settings />
                                 </SettingContext.Provider>
                                 </div>
                             }
@@ -300,74 +302,4 @@ const ProjectTitleLoading = () => {
             <div className="h-5 w-15 bg-slate-200 rounded-full" />
         </div>
     )
-}
-
-
-const simplifiedNodesAndEdges = (nodes: timelineNodeType[], edges: Edge[]) => {
-
-    let edgeStep = 1
-    let newEdges: Edge[] = []
-    let newIntemedieteNodes: timelineNodeType[] = []
-
-    for (const key in nodes) {
-        const result = checkConnectedEdge(nodes[key].id, edges, nodes, edgeStep)
-
-        if(result.target){
-            let intermedieteNodeId = crypto.randomUUID()
-            
-            newEdges.push({
-                "id": `e-${nodes[key].id}-to-${intermedieteNodeId}`,
-                "source": nodes[key].id,
-                "target": intermedieteNodeId
-            }, 
-            {
-                "id": `e-${intermedieteNodeId}-to-${result.target}`,
-                "source": intermedieteNodeId,
-                "target": result.target
-            })
-
-            newIntemedieteNodes.push({
-                "id": intermedieteNodeId,
-                "position": {
-                    "x": (nodes[key].position.x + result.position_x)/2 - 20,
-                    "y": (nodes[key].position.y + result.position_y)/2 - 20
-                },
-                "data": {
-                    "handleType": handleEnum.MAIN,
-                    "image_url": "",
-                    "title": "",
-                    "type": "",
-                    "content": "",
-                    "start_at": "",
-                    "end_at": ""
-                },
-                "origin": [
-                    0.5,
-                    0.5
-                ],
-                "type": "cardIntermedieteNode"
-            })
-        }
-    }
-
-    return { newIntemedieteNodes, newEdges };
-}
-
-
-const checkConnectedEdge = (id: string, edges: Edge[], nodes: timelineNodeType[], edgeStep: number) => {
-    const data = edges.find((edge) => edge.source == id)
-    if(!data?.target) return {
-        "target": null
-    }
-    const existItem = nodes.find(node => node.id == data.target)
-    if(existItem) {
-        return {
-            target: data.target,
-            position_x: existItem.position.x,
-            position_y: existItem.position.y
-        }
-    } else{
-        edgeStep++
-        return checkConnectedEdge(data.target, edges, nodes, edgeStep)
-    }
 }

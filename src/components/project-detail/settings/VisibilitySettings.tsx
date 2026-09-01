@@ -1,5 +1,5 @@
 import VisibilityForm from "@/components/VisibilityForm";
-import { SettingContext } from "@/lib/settingContext";
+import { SettingContext } from "@/contexts/settingContext";
 import { updateVisibilitySchema } from "@/lib/validations";
 import axios from "axios";
 import { toast } from 'sonner'

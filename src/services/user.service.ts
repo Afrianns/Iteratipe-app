@@ -247,6 +247,50 @@ export const getUserByUsername = async (username: string): Promise<returnDataTyp
   }
 }
 
+export const getUserInformation = async (): Promise<returnDataType<{
+  username: string
+  description: string | null
+}>> => {
+  const { userId } = await auth()
+  let userDbId = 0
+
+  try {
+    
+    if(userId){
+      const resultID = await getUserID(userId)
+  
+      if(resultID.status == 200 && resultID.data?.id){
+        userDbId = resultID.data.id
+      } else{
+        throw new Error("User id not found. Please try again later!");
+      }
+    }
+
+    const user = await prisma.users.findUnique({
+        where: {
+            id: userDbId
+        },
+
+        select: {
+          username: true,
+          description: true
+        }
+    });
+
+    if(user){
+      return {
+        status: 200,
+        message: "successful",
+        data: user
+      }
+    } else{
+      throw new Error("User not found. try again later");
+    }
+  } catch (error) {
+      return await serverSideErrorHandle(error)
+  }
+}
+
 
 const mapActivities = (activities: {
       id: number

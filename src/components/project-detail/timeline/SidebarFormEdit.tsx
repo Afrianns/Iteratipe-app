@@ -135,10 +135,13 @@ export default function SidebarFormEdit() {
                 } else{
                     throw new Error(result.message);
                 }
+                
+                console.log("which one offline")
             } 
             
             if (nodeData.data.image_url.startsWith("https://res.cloudinary.com/cloud-store-images/image")){
                 formData.append("image_url", nodeData.data.image_url)
+                console.log("which one online")
             }
 
             startTransition(() => {
@@ -158,7 +161,8 @@ export default function SidebarFormEdit() {
     return (
         <form action={beforeUpdate} className="flex flex-col h-full">
             {/* additional node data */}
-
+            
+                {nodeData.data.image_url}
             <input type="hidden" name="handle_type" value={nodeData.data.handleType} />
             <input type="hidden" name="project_id" value={paths[2].split("%E2%80%94")[1]} />
             <input type="hidden" name="node_id" value={params.get("node") || ""} />

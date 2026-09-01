@@ -25,9 +25,11 @@ interface userWithAdditionalData extends UserType {
 } 
 
 export default async function Home({searchParams}:{searchParams: Promise<{sortby: SortingType, type: string, status: StatusType }>}) {
-    const { isAuthenticated, userId } = await auth()
+    const { isAuthenticated, userId  } = await auth()
 
     let totalLike = 0
+
+    console.log(isAuthenticated)
 
     const projectLike = await getTotalAuthUserProjectLikes()
 
@@ -73,6 +75,7 @@ export default async function Home({searchParams}:{searchParams: Promise<{sortby
                 </div>
             </div>
             <div className="container-style">
+                {isAuthenticated}
                 {!isAuthenticated ? 
                     <UnauthorizedInfo />
                 :

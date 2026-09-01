@@ -1,8 +1,6 @@
 import * as z from "zod"; 
 import { convertDateToISOString } from "./convertDate";
 
-const URL = process.env.NEXT_PUBLIC_APP_URL
-
 // SECURITY: Stricter validation schema for labels
 const LabelSchema = z.object({
   id: z.number().positive("Invalid label ID"),

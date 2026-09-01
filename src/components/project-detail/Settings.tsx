@@ -5,7 +5,7 @@ import GeneralSettings from "./settings/GeneralSettings";
 import Menu from "./settings/Menu";
 import VisibilitySetting from "./settings/VisibilitySettings";
 import { createContext, useState } from "react";
-import { SettingContext } from "@/lib/settingContext";
+import { SettingContext } from "@/contexts/settingContext";
 import { generalSettingSchema } from "@/lib/validations";
 import { useSearchParams } from "next/navigation";
 

@@ -8,10 +8,11 @@ import { onboardingUser } from "@/lib/validations"
 import z from "zod"
 import Identity from "./_components/Identity"
 import Social from "./_components/Social"
-import {formOnboarding, isCompletedOnboarding } from "@/actions/setInitialUserOnboarding"
+import {formOnboarding } from "@/actions/setInitialUserOnboarding"
 import { ErrorMessageList } from "@/components/ErrorMessageList"
 import { redirect } from "next/navigation"
 import { toast } from "sonner"
+import { isCompletedOnboarding } from "@/services/validation.service"
 
 export interface UserType {
   first_name: string | null

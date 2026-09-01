@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, useState } from "react"
-import { SettingContext } from "@/lib/settingContext"
+import { SettingContext } from "@/contexts/settingContext"
 import GeneralForm from "@/components/GeneralForm"
 import axios from "axios";
 import { updateGeneralSchema } from "@/lib/validations";

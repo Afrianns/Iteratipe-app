@@ -16,9 +16,10 @@
 :root {
   color-scheme: light;
 }
-
-
-/* @theme dark {
+  
+  
+/*
+@theme dark {
   --color-secondary: #333;
   --color-lightish: #888;
   --color-grayish: #555;
@@ -26,8 +27,8 @@
   --color-light-gray: #000;
   --color-whitish: #111; 
   --color-light-blue: #999;
-} */
-
+}
+ */
 
 @theme {
   /* colors */

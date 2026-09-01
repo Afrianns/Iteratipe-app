@@ -2,9 +2,13 @@ import { clerkMiddleware } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// export default clerkMiddleware()
+
 export default clerkMiddleware(async (auth, request: NextRequest) => {
-  // Create response for security headers
-  const response = NextResponse.next();
+//   // Create response for security headers
+  const response = NextResponse.next({
+    request: request
+  });
 
   // Security Headers
   // Prevent MIME type sniffing

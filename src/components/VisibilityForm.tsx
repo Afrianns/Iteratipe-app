@@ -2,7 +2,7 @@ import { VisibilityErrorsType, VisibilityType } from "@/types/types";
 import { ErrorMessageList } from "./ErrorMessageList";
 import Toggle from "./toggle";
 import { useContext } from "react";
-import { SettingContext } from "@/lib/settingContext";
+import { SettingContext } from "@/contexts/settingContext";
 
 export default function VisibilityForm() {
 

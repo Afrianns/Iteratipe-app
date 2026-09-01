@@ -3,7 +3,7 @@
 import Summary from "./Summary";
 import { useState } from "react";
 import { generalDataType, generalSettingErrorsType, Step, VisibilityType } from "@/types/types";
-import { SettingContext } from "@/lib/settingContext";
+import { SettingContext } from "@/contexts/settingContext";
 import { generalSettingSchema, VisibilitySchema } from "@/lib/validations";
 import z from "zod";
 import GeneralForm from "@/components/GeneralForm";

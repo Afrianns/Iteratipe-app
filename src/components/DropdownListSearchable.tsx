@@ -2,7 +2,7 @@
 
 
 import { getLabels } from "@/actions/getLabels";
-import { SettingContext } from "@/lib/settingContext";
+import { SettingContext } from "@/contexts/settingContext";
 import { labelType, generalDataType } from "@/types/types";
 import { useContext, useEffect, useState } from "react";
 

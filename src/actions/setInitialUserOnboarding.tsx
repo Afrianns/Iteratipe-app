@@ -1,13 +1,12 @@
 "use server"
 
 import { onboardingUser } from "@/lib/validations"
-import { returnDataType, UserDataType } from "@/types/types"
-import { auth, currentUser } from "@clerk/nextjs/server"
 import z from "zod"
 import { redirect } from "next/navigation"
-import { prisma } from "@/lib/db"
-import { serverSideErrorHandle } from "@/lib/serverErrorHandle"
+import { currentUser } from "@clerk/nextjs/server"
+import { UserDataType } from "@/types/types"
 import syncUser from "@/services/user.service"
+import { isCompletedOnboarding } from "@/services/validation.service"
 
 interface additionalUserData {
   username: string
@@ -59,38 +58,5 @@ export async function formOnboarding(_: any, additionalUserData: additionalUserD
         message: "Oops... something went wrong"
       }
     }
-  }
-}
-
-
-export async function isCompletedOnboarding(): Promise<returnDataType<{
-  already_onboarding: boolean
-}>> {
-
-  const { userId } = await auth()
-  
-  try {
-    
-    if(userId) {
-      const result = await prisma.users.findFirst({
-        where: {
-          clerk_user_id: userId
-        },
-        select: {
-          completed_onboarding: true
-        }
-      })
-  
-      return {
-        status: 200,
-        message: "success",
-        data: {
-          already_onboarding: result?.completed_onboarding || false
-        }
-      }
-    } 
-    throw new Error("Something went wrong");
-  } catch (error) {
-    return serverSideErrorHandle(error)
   }
 }

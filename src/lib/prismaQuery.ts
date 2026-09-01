@@ -10,7 +10,29 @@ export const previewCardDataQuery = (userId: number) => {
             created_at: true,
             _count: {
                 select: {
-                    Nodes: true,
+                    Nodes: {
+                        where: {
+                            OR: [
+                                {
+                                    Projects: {
+                                        user_id: userId
+                                    }
+                                },
+                                {
+                                    Projects: {
+                                        isNot: {
+                                            user_id: userId
+                                        }
+                                    },
+                                    title: { gt: ""},
+                                    type: { gt: ""},
+                                    start_at: { gt: new Date(0)},
+                                    end_at: { gt: new Date(0)},
+                                    content: { gt: ""}
+                                }
+                            ]
+                        }
+                    },
                     Bookmarks: true,
                     Likes: true
                 }
@@ -42,14 +64,12 @@ export const previewCardDataQuery = (userId: number) => {
             visibility: true,
             Nodes: {
                 where: {
-                    AND: [
-                        {image_url: { gt: ""}},
-                        {title: { gt: ""}},
-                        {type: { gt: ""}},
-                        {start_at: { gt: new Date(0)}},
-                        {end_at: { gt: new Date(0)}},
-                        {content: { gt: ""}}
-                    ]
+                    image_url: { gt: ""},
+                    title: { gt: ""},
+                    type: { gt: ""},
+                    start_at: { gt: new Date(0)},
+                    end_at: { gt: new Date(0)},
+                    content: { gt: ""}
                 },
                 orderBy: {
                     published_at: 'asc',
