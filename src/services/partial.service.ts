@@ -1,8 +1,12 @@
+"use server"
+
 import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
 import { returnDataType } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { getUserID } from "./user.service";
 import { getProjectIDbyUID } from "./projects.service";
+import { prisma } from "@/lib/db";
+import Redis from "ioredis";
 
 export async function getUserIdAndProjectId(projectId: string): Promise<returnDataType<{
  user_id: number
@@ -53,5 +57,62 @@ export async function getUserIdAndProjectId(projectId: string): Promise<returnDa
 
   } catch (error) {
     return await serverSideErrorHandle(error)
+  }
+}
+
+export async function getItemWithTempItemByProjectUid(projectUid: string, type: string): Promise<returnDataType<{
+  totalItems: number,
+  ItemByAuthUser: string|null
+}>> {
+  const user = await auth();
+  const redis = new Redis()
+
+  const prismaClient = prisma as any;
+
+  try {
+
+    if(!user.isAuthenticated) {
+      return {
+        status: 500,
+        message: "User not found"
+      }
+    }
+
+    const userId = await getUserID(user.userId)
+
+    const projectId = await getProjectIDbyUID(projectUid)
+
+    if(projectId.status != 200 || !projectId.data?.id){
+      throw new Error("Failed to get project id")
+    }
+
+    const result = await prismaClient[`${type}s`].findMany({
+      select: {
+        project_id: true,
+        user_id: true
+      },
+      where: {
+        project_id: projectId.data.id
+      }
+    })
+
+    // console.log("inii", userId)
+
+    const tempItemCount = await redis.get(`${type}:${projectId.data.id}:increment`);
+
+    const stringifiedTempItemByAuthUser = await redis.get(`${type}:${projectId.data.id}:${userId.data?.id}`)
+
+    const tempItemByAuthUser = stringifiedTempItemByAuthUser ? JSON.parse(stringifiedTempItemByAuthUser) : null
+    return {
+      status: 200,
+      message: "Successful retrieved total Items",
+      data: {
+        totalItems: result.length + (tempItemCount ? parseInt(tempItemCount) : 0),
+        ItemByAuthUser: tempItemByAuthUser?.type
+      }
+    };
+
+  } catch(err) {
+    return await serverSideErrorHandle(err)
   }
 }

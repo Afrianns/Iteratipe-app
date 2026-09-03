@@ -11,6 +11,9 @@ import { useEffect, useRef, useState } from "react";
 import ActivityList from "./ActivityList";
 import { hasReadAllNotification } from "@/services/comments.service";
 import { toast } from "sonner";
+import axios from "axios";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL
 
 export default function Header() {
     const pathname = usePathname()
@@ -91,6 +94,18 @@ export default function Header() {
         }
     }, [userId])
 
+
+    const updateRedisToDB = async () => {
+        const response = await axios.get(`${APP_URL}/api/cron`)
+        if(response.status == 200) {
+            console.log("response ",response.data)
+            
+            toast.info(response.statusText)
+        } 
+        if(response.status != 200) 
+            throw new Error(response.statusText);
+    }
+
     return (
         <div className="flex justify-between items-center relative">
             <div className="flex items-center">
@@ -103,6 +118,9 @@ export default function Header() {
                     </div>
                 })}
             </div>
+            <button onClick={updateRedisToDB} className="button-style my-2!">
+                Update From Redis To DB
+            </button>
             {/* {showSearch &&
                 <div className="flex items-center relative w-fit lg:w-full lg:max-w-100">
                     <Search className="text-gray-400 absolute left-2 w-5 h-5" />

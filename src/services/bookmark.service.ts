@@ -10,6 +10,8 @@ import { previewCardDataQuery } from "@/lib/prismaQuery";
 import { pusher } from "@/lib/pusher";
 import StoreAndNotify from "@/lib/notifications";
 import storeAndNotify from "@/lib/notifications";
+import Redis from "ioredis";
+import { getProjectIDbyUID } from "./projects.service";
 
 type ReturnType = returnDataType<{newTotalBookmarked: number}>
 
@@ -20,6 +22,9 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
   let userId = 0;
   let projectId = 0;
   let usernameWhoDoTheAction = ""
+  let type = "bookmarked"
+
+  const redis = new Redis()
 
   let newBookmarked = 0
 
@@ -43,7 +48,7 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
 
 
   // const deleteKey = await redis.del(`bookmark:${projectId}:${userId}`)
-  // let tempLikeCount = 0;
+  // let tempBookmarkedCount = 0;
 
   // if(deleteKey <= 0) {
   //   const result = await redis.set(`bookmark:${projectId}:${userId}`, "bookmark")
@@ -81,49 +86,97 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
       throw new Error("failed fetching in: before bookmark");
     }
 
-    // start
-    const resultRemove = await prisma.bookmarks.deleteMany({
+    const bookmarked = await prisma.bookmarks.findFirst({
       where: {
         project_id: projectId,
         user_id: userId
+      },
+      select: {
+        id: true
       }
     })
+    
+    let tempBookmarkedCount = 0
 
-    if(resultRemove.count != 1) {
-      const resultAdd = await prisma.bookmarks.create({
-        data: {
-          project_id: projectId,
-          user_id: userId
-        }
-      })
+    console.log(bookmarked?.id, "bookmarked?.id")
+
+    if(bookmarked?.id) {
+      const redisValue = await redis.get(`bookmark:${projectId}:${userId}`)
+
+      const value = redisValue ? JSON.parse(redisValue) : null
+
+      if(value && value.type === "unbookmark") {
+        await redis.del(`bookmark:${projectId}:${userId}`)
+        tempBookmarkedCount = await redis.incr(`bookmark:${projectId}:increment`)
+        type = "unbookmark"
+      } else {
+        await redis.set(`bookmark:${projectId}:${userId}`, JSON.stringify({type: "unbookmark", timestamp: new Date().getTime()}))
+        tempBookmarkedCount = await redis.decr(`bookmark:${projectId}:increment`)
+      }
+
+    } else{
+      const redisValue = await redis.get(`bookmark:${projectId}:${userId}`)
       
-      if(resultAdd.id){
-        returnValue = {
-          status: 200,
-          message: "sucessful bookmark this project"
-        }
+      const value = redisValue ? JSON.parse(redisValue) : null
 
-        newBookmarked = 1
-        
-      } else{
-        throw new Error("Failed to add bookmark");
+      if(value && value.type === "bookmark") {
+        await redis.del(`bookmark:${projectId}:${userId}`)
+        tempBookmarkedCount = await redis.decr(`bookmark:${projectId}:increment`)
+        type = "unbookmark"
+      } else {
+        await redis.set(`bookmark:${projectId}:${userId}`, JSON.stringify({type: "bookmark", timestamp: new Date().getTime()}))
+        tempBookmarkedCount = await redis.incr(`bookmark:${projectId}:increment`)
       }
-
-    } else {
-      returnValue = {
-        status: 200,
-        message: "sucessful remove bookmark"
-      }
-
-      newBookmarked = -1
+      
     }
+    
+    returnValue = {
+      status: 200,
+      message: type
+    }
+    // // start
+    // const resultRemove = await prisma.bookmarks.deleteMany({
+    //   where: {
+    //     project_id: projectId,
+    //     user_id: userId
+    //   }
+    // })
 
-    // update the the activity to relate user
+    // if(resultRemove.count != 1) {
+    //   const resultAdd = await prisma.bookmarks.create({
+    //     data: {
+    //       project_id: projectId,
+    //       user_id: userId
+    //     }
+    //   })
+      
+    //   if(resultAdd.id){
+    //     returnValue = {
+    //       status: 200,
+    //       message: "sucessful bookmark this project"
+    //     }
 
-    if(newBookmarked == 1){
-      const message = `<a href="${URL}/user/${usernameWhoDoTheAction}" rel="noopener noreferrer">${usernameWhoDoTheAction}</a> bookmarked your project <a href="${URL}/home/${projectTitle.split(" ").join("-").toLowerCase()}%E2%80%94${projectUid}" rel="noopener noreferrer">${projectTitle.toLowerCase()}</a>`
+    //     newBookmarked = 1
+        
+    //   } else{
+    //     throw new Error("Failed to add bookmark");
+    //   }
 
-      storeAndNotify(message, userId, projectOwner)
+    // } else {
+    //   returnValue = {
+    //     status: 200,
+    //     message: "sucessful remove bookmark"
+    //   }
+
+    //   newBookmarked = -1
+    // }
+
+    // // update the the activity to relate user
+
+    // if(newBookmarked == 1){
+    //   const message = `<a href="${URL}/user/${usernameWhoDoTheAction}" rel="noopener noreferrer">${usernameWhoDoTheAction}</a> bookmarked your project <a href="${URL}/home/${projectTitle.split(" ").join("-").toLowerCase()}%E2%80%94${projectUid}" rel="noopener noreferrer">${projectTitle.toLowerCase()}</a>`
+
+    //   storeAndNotify(message, userId, projectOwner)
       // const ownerId = await prisma.users.findFirst({where: {username: projectOwner}, select: {id: true, clerk_user_id: true}})
 
       
@@ -153,10 +206,10 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
       //     user_image_url: newlyActivity.Subject.image_url as string
       //   });
       // }
-    }
+    // }
     // end, it will change
 
-    const totalLikes = await prisma.bookmarks.count({
+    const totalBookmarked = await prisma.bookmarks.count({
       where: {
         project_id: projectId
       }
@@ -164,7 +217,7 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
 
     return {...returnValue, 
       data: {
-        newTotalBookmarked: totalLikes
+        newTotalBookmarked: totalBookmarked + tempBookmarkedCount
       } 
     }
   } catch (error) {
@@ -176,6 +229,7 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
 export async function getBookmarkedProject(): Promise<returnDataType<ProjectPreviewType[]>> {
   const { userId } = await auth()
   let userDbId: number = 0;
+  const redis = new Redis()
 
   try {
       if(userId){
@@ -188,9 +242,30 @@ export async function getBookmarkedProject(): Promise<returnDataType<ProjectPrev
         }
       }
 
+
+      // get a temporary redis bookmark id
+      const keys = await redis.keys(`bookmark:*:${userDbId}`)
+      let undoValue: number[] = []
+      let doValue: number[] = []
+
+      for(let key of keys) {
+        const result = await redis.get(key)
+        const val = result ? JSON.parse(result) : null
+
+        if(val.type == "bookmark") {
+          doValue.push(Number(key.split(":")[1]))
+        } else{
+          undoValue.push(Number(key.split(":")[1]))
+        }
+      }
+
+      // also filtering redis id that maybe unbookmark
       const result = await prisma.bookmarks.findMany({
           where: {
-            user_id: userDbId
+            user_id: userDbId,
+            project_id: {
+              notIn: undoValue
+            }
           },
           select: {
             Projects: {
@@ -199,11 +274,21 @@ export async function getBookmarkedProject(): Promise<returnDataType<ProjectPrev
           }
       })
 
+      // find the right project that has those temp redis id
+      const resultTemp = await prisma.projects.findMany({
+        where: {
+          id: {
+            in: doValue
+          }
+        },
+        ...previewCardDataQuery(userDbId)
+      })
+
       if(result) {
         return {
           status: 200,
           message: "Sucessfully retrieved",
-          data: mappingBookmarkedProjects(result)
+          data: [...mappingBookmarkedProjects(result), ...mappingBookmarkedProjects(resultTemp.map((temp) => ({Projects: temp})))]
       }
       } else {
         throw new Error("Error getting bookmarked project")
@@ -219,3 +304,58 @@ const mappingBookmarkedProjects = (bookmarkedProjects: {Projects: ProjectPreview
   return bookmarkedProjects.flatMap((bookmarkedProject) => (bookmarkedProject.Projects != null) ? bookmarkedProject.Projects : [])
 }
 
+
+// export async function getBookmarkedWithTempBookmarkedByProjectUid(projectUid: string): Promise<returnDataType<{
+//   totalLikes: number,
+//   bookmarkedByAuthUser: "bookmark"|"unbookmark"|null
+// }>> {
+//   const user = await auth();
+//   const redis = new Redis()
+
+//   try {
+
+//     if(!user.isAuthenticated) {
+//       return {
+//         status: 500,
+//         message: "User not found"
+//       }
+//     }
+
+//     const userId = await getUserID(user.userId)
+
+//     const projectId = await getProjectIDbyUID(projectUid)
+
+//     if(projectId.status != 200 || !projectId.data?.id){
+//       throw new Error("Failed to get project id")
+//     }
+
+//     const result = await prisma.bookmarks.findMany({
+//       select: {
+//         project_id: true,
+//         user_id: true
+//       },
+//       where: {
+//         project_id: projectId.data.id
+//       }
+//     })
+
+//     // console.log("inii", userId)
+
+//     const tempBookmarkCount = await redis.get(`bookmark:${projectId.data.id}:increment`);
+
+//     const stringifiedTempBookmarkedByAuthUser = await redis.get(`bookmark:${projectId.data.id}:${userId.data?.id}`)
+
+//     const tempBookmarkedByAuthUser = stringifiedTempBookmarkedByAuthUser ? JSON.parse(stringifiedTempBookmarkedByAuthUser) : null
+//     return {
+//       status: 200,
+//       message: "Successful retrieved total bookmarks",
+//       data: {
+//         totalLikes: result.length + (tempBookmarkCount ? parseInt(tempBookmarkCount) : 0),
+//         bookmarkedByAuthUser: tempBookmarkedByAuthUser?.type as "bookmark"|"unbookmark"|null
+//       }
+//     };
+
+//   } catch(err) {
+//     return await serverSideErrorHandle(err)
+//   }
+// }

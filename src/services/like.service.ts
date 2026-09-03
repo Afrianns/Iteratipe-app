@@ -10,6 +10,7 @@ import { getUserIdAndProjectId } from "./partial.service";
 import Redis from "ioredis";
 
 import storeAndNotify from "@/lib/notifications";
+import { getProjectIDbyUID } from "./projects.service";
 
 type ReturnType = returnDataType<{newTotalLiked: number}>
 
@@ -20,14 +21,13 @@ export async function likeProject(projectOwner: string, projectUid: string, proj
   let userId = 0
   let projectId = 0
   let usernameWhoDoTheAction = ""
+  let type = "like"
+
+  const redis = new Redis()
 
   const user = await auth()
 
-  let type = "like"
-
-  // const redis = new Redis()
-
-  if(!user.isAuthenticated) {
+  if(!user || !user.isAuthenticated) {
     return {
       status: 500,
       message: "You can't like this right now, and you seem bypass like :/"
@@ -56,8 +56,58 @@ export async function likeProject(projectOwner: string, projectUid: string, proj
 
     // for now store to db first
 
+    // get if already liked
+    const liked = await prisma.likes.findFirst({
+      where: {
+        project_id: projectId,
+        user_id: userId
+      },
+      select: {
+        id: true
+      }
+    })
+    
+    let tempLikeCount = 0
+
+    console.log(liked?.id, "liked?.id")
+
+    if(liked?.id) {
+      const redisValue = await redis.get(`like:${projectId}:${userId}`)
+
+      const value = redisValue ? JSON.parse(redisValue) : null
+
+      if(value && value.type === "unlike") {
+        await redis.del(`like:${projectId}:${userId}`)
+        tempLikeCount = await redis.incr(`like:${projectId}:increment`)
+        type = "unlike"
+      } else {
+        await redis.set(`like:${projectId}:${userId}`, JSON.stringify({type: "unlike", timestamp: new Date().getTime()}))
+        tempLikeCount = await redis.decr(`like:${projectId}:increment`)
+      }
+
+    } else{
+
+      const redisValue = await redis.get(`like:${projectId}:${userId}`)
+      console.log("redisValue", redisValue)
+
+      const value = redisValue ? JSON.parse(redisValue) : null
+
+      if(value && value.type === "like") {
+        await redis.del(`like:${projectId}:${userId}`)
+        tempLikeCount = await redis.decr(`like:${projectId}:increment`)
+        type = "unlike"
+      } else {
+        await redis.set(`like:${projectId}:${userId}`, JSON.stringify({type: "like", timestamp: new Date().getTime()}))
+        tempLikeCount = await redis.incr(`like:${projectId}:increment`)
+      }
+      
+    }
+    
+    returnValue = {
+      status: 200,
+      message: type
+    }
     // const deleteKey = await redis.del(`like:${projectId}:${userId}`)
-    // let tempLikeCount = 0;
 
     // if(deleteKey <= 0) {
     //   const result = await redis.set(`like:${projectId}:${userId}`, "like")
@@ -76,53 +126,44 @@ export async function likeProject(projectOwner: string, projectUid: string, proj
     //     message: "unliked"
     //   }
     // }
-    // redis.get("like:", (err, result) => {
-    //     if (err) {
-    //         console.error(err);
-    //     } else {
-    //         console.log(result); // Prints "value"
+
+    // const resultRemove = await prisma.likes.deleteMany({
+    //   where: {
+    //     project_id: projectId,
+    //     user_id: userId
+    //   }
+    // })
+
+    // if(resultRemove.count != 1) {
+    //   const resultAdd = await prisma.likes.create({
+    //     data: {
+    //       project_id: projectId,
+    //       user_id: userId
     //     }
-    // });
-
-    const resultRemove = await prisma.likes.deleteMany({
-      where: {
-        project_id: projectId,
-        user_id: userId
-      }
-    })
-
-    if(resultRemove.count != 1) {
-      const resultAdd = await prisma.likes.create({
-        data: {
-          project_id: projectId,
-          user_id: userId
-        }
-      })
+    //   })
       
-      if(resultAdd.id){
-        returnValue = {
-          status: 200,
-          message: "sucessful liked this project"
-        }
-      } else{
-        throw new Error("Failed to like");
-      }
+    //   if(resultAdd.id){
+    //     returnValue = {
+    //       status: 200,
+    //       message: "sucessful liked this project"
+    //     }
+    //   } else{
+    //     throw new Error("Failed to like");
+    //   }
 
-    } else {
-      returnValue = {
-        status: 200,
-        message: "sucessful unlike"
-      }
+    // } else {
+    //   returnValue = {
+    //     status: 200,
+    //     message: "sucessful unlike"
+    //   }
 
-      type = "unlike"
-    }
+    //   type = "unlike"
+    // }
 
-
-    if(type == "like"){
-      const message = `<a href="${URL}/user/${usernameWhoDoTheAction}" rel="noopener noreferrer">${usernameWhoDoTheAction}</a> Liked your project <a href="${URL}/home/${projectTitle.split(" ").join("-").toLowerCase()}%E2%80%94${projectUid}" rel="noopener noreferrer">${projectTitle.toLowerCase()}</a>`
-      storeAndNotify(message, userId, projectOwner)
-    }
-
+    // if(type == "like"){
+    //   const message = `<a href="${URL}/user/${usernameWhoDoTheAction}" rel="noopener noreferrer">${usernameWhoDoTheAction}</a> Liked your project <a href="${URL}/home/${projectTitle.split(" ").join("-").toLowerCase()}%E2%80%94${projectUid}" rel="noopener noreferrer">${projectTitle.toLowerCase()}</a>`
+    //   storeAndNotify(message, userId, projectOwner)
+    // }
 
     const totalLikes = await prisma.likes.count({
       where: {
@@ -132,7 +173,7 @@ export async function likeProject(projectOwner: string, projectUid: string, proj
 
     return {...returnValue, 
       data: {
-        newTotalLiked: totalLikes
+        newTotalLiked: totalLikes + tempLikeCount
       } 
     }
   } catch (error) {
@@ -189,3 +230,88 @@ const combineTheLikes = (projectLikes: {_count:{Likes: number}}[]) => {
   let result = projectLikes.reduce((a,b) => ({_count: {Likes: a._count.Likes + b._count.Likes}}))
   return result._count.Likes
 }
+
+
+// export async function getLikedWithTempLikedByProjectUid(projectUid: string): Promise<returnDataType<{
+//   totalLikes: number,
+//   likedByAuthUser: "like"|"unlike"|null
+// }>> {
+
+//   // console.log("[action] fired", new Date().toISOString());
+//   const user = await auth();
+//   // console.log("[action] auth() resolved", new Date().toISOString(), user.isAuthenticated);
+
+//   // // const user = await auth()
+//   // if (user.sessionClaims) {
+//   //   console.log("[action] exp:", user.sessionClaims.exp, "iat:", user.sessionClaims.iat, "now:", Math.floor(Date.now() / 1000));
+//   // }
+//   const redis = new Redis()
+
+//   try {
+
+//     if(!user.isAuthenticated) {
+//       return {
+//         status: 500,
+//         message: "User not found"
+//       }
+//     }
+
+//     const userId = await getUserID(user.userId)
+
+//     const projectId = await getProjectIDbyUID(projectUid)
+
+//     if(projectId.status != 200 || !projectId.data?.id){
+//       throw new Error("Failed to get project id")
+//     }
+
+//     const result = await prisma.likes.findMany({
+//       select: {
+//         project_id: true,
+//         user_id: true
+//       },
+//       where: {
+//         project_id: projectId.data.id
+//       }
+//     })
+
+//     // console.log("inii", userId)
+
+//     const tempLikeCount = await redis.get(`like:${projectId.data.id}:increment`);
+
+//     const stringifiedTempLikedByAuthUser = await redis.get(`like:${projectId.data.id}:${userId.data?.id}`)
+
+//     const tempLikedByAuthUser = stringifiedTempLikedByAuthUser ? JSON.parse(stringifiedTempLikedByAuthUser) : null
+//     return {
+//       status: 200,
+//       message: "Successful retrieved total likes",
+//       data: {
+//         totalLikes: result.length + (tempLikeCount ? parseInt(tempLikeCount) : 0),
+//         likedByAuthUser: tempLikedByAuthUser?.type as "like"|"unlike"|null
+//       }
+//     };
+
+//   } catch(err) {
+//     return await serverSideErrorHandle(err)
+//   }
+// }
+
+// first refresh
+// [action] fired 2026-09-01T10:05:44.725Z
+// [action] auth() resolved 2026-09-01T10:05:44.735Z true
+
+// [action] fired 2026-09-01T10:05:45.128Z
+// [action] auth() resolved 2026-09-01T10:05:45.147Z true
+
+// [action] fired 2026-09-01T10:05:45.320Z
+// [action] auth() resolved 2026-09-01T10:05:45.328Z true
+
+
+// refresh second
+// [action] fired 2026-09-01T10:07:19.443Z
+// [action] auth() resolved 2026-09-01T10:07:19.465Z false
+
+// [action] fired 2026-09-01T10:07:19.657Z
+// [action] auth() resolved 2026-09-01T10:07:19.671Z false
+
+// [action] fired 2026-09-01T10:07:19.845Z
+// [action] auth() resolved 2026-09-01T10:07:19.855Z false

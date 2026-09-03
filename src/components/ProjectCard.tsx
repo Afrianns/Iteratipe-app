@@ -2,7 +2,7 @@
 
 import { bookmarkProject } from "@/services/bookmark.service";
 import { ProjectPreviewType, VISIBLE } from "@/types/types";
-import { Bookmark, Eye, GlobeLock, Heart, Layers } from "lucide-react";
+import { Bookmark, GlobeLock, Heart, Layers } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -10,12 +10,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { likeProject } from "@/services/like.service";
 import { useAuth } from "@clerk/nextjs";
+import { getItemWithTempItemByProjectUid } from "@/services/partial.service";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL 
 
 export default function ProjectCard({currentPath, projectData, imageName}: {currentPath: string, projectData: ProjectPreviewType, imageName: string}) {
 
-    const user = useAuth()
+    const { isSignedIn, userId, isLoaded } = useAuth()
 
     const [bookmark, setBookmark] = useState<boolean>(false)
     const [bookmarkCount, setBookmarkCount] = useState<number>(projectData._count.Bookmarks);
@@ -24,12 +25,45 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
     const [likeCount, setLikeCount] = useState<number>(projectData._count.Likes);
 
     useEffect(() => {
-        setBookmark(projectData.Bookmarks.length >= 1)
-        setLike(projectData.Likes.length >= 1)
-    }, [projectData])
+        if (!isLoaded) return;
+        
+        const fetchLikeStatus = async () => {
+            const result = await getItemWithTempItemByProjectUid(projectData.uid, "like");
+
+            let liked = projectData.Likes.length >= 1;
+            setLike(liked);
+            
+            if(result.status == 200 && result.data){
+                setLikeCount(result.data.totalItems)
+
+                if(result.data.ItemByAuthUser != null) {
+                    setLike(result.data.ItemByAuthUser == "like" ? true : false)
+                }
+            }
+        };
+
+
+        const fetchBookmarkStatus = async () => {
+            const result = await getItemWithTempItemByProjectUid(projectData.uid, "bookmark");
+            let bookmarked = projectData.Bookmarks.length >= 1;
+            setBookmark(bookmarked);
+            
+            if(result.status == 200 && result.data){
+                setBookmarkCount(result.data.totalItems)
+
+                if(result.data.ItemByAuthUser != null) {
+                    setBookmark(result.data.ItemByAuthUser == "bookmark" ? true : false)
+                }
+            }
+        }
+        
+        fetchLikeStatus()
+        fetchBookmarkStatus()
+
+    }, [projectData, isLoaded, userId]);
 
     const bookmarkThis = async () => {
-        if(!user.isSignedIn) return toast.warning("You need to signin first!")
+        if(!isSignedIn) return toast.warning("You need to signin first!")
 
         setBookmark(!bookmark)
         const result = await bookmarkProject(projectData.Users.username, projectData.uid, projectData.title)
@@ -44,7 +78,7 @@ export default function ProjectCard({currentPath, projectData, imageName}: {curr
     }
     
     const likeThis = async () => {
-        if(!user.isSignedIn) return toast.warning("You need to signin first!")
+        if(!isSignedIn) return toast.warning("You need to signin first!")
 
         console.log(projectData)
         setLike(!like)
