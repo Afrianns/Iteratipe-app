@@ -46,35 +46,6 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
 
   // for now store to db first
 
-
-  // const deleteKey = await redis.del(`bookmark:${projectId}:${userId}`)
-  // let tempBookmarkedCount = 0;
-
-  // if(deleteKey <= 0) {
-  //   const result = await redis.set(`bookmark:${projectId}:${userId}`, "bookmark")
-  //   tempBookmarkCount = await redis.incr(`bookmark:${projectId}:increment`)
-    
-  //   if(result){
-  //     returnValue = {
-  //       status: 200,
-  //       message: result
-  //     }
-  //   }
-  // } else{
-  //   tempBookmarkCount = await redis.decr(`bookmark:${projectId}:increment`)
-  //   returnValue = {
-  //     status: 200,
-  //     message: "removed bookmark"
-  //   }
-  // }
-  // redis.get("bookmark:", (err, result) => {
-  //     if (err) {
-  //         console.error(err);
-  //     } else {
-  //         console.log(result); // Prints "value"
-  //     }
-  // });
-
   try {
     const resultGetId = await getUserIdAndProjectId(projectUid)
   
