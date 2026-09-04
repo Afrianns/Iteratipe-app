@@ -21,6 +21,7 @@ export default function Profile({initialUser}: {initialUser: UserProjectPreviewT
     email: "",
     image_url: "",
     description: "",
+    instagram_link: "",
     facebook_link: "",
     twitter_link: "",
     website_link: "",
