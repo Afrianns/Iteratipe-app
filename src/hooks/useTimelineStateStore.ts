@@ -1,6 +1,5 @@
-import { updateNode } from '@/actions/nodes';
 import { modeEnum } from '@/types/enum';
-import { nodeDataType, setNode, timelineNodeType, TimelineStateType } from '@/types/types';
+import { setNode, timelineNodeType, TimelineStateType } from '@/types/types';
 import { addEdge, applyEdgeChanges, Connection, Edge, EdgeChange } from '@xyflow/react';
 import { create } from 'zustand'
 
@@ -16,12 +15,10 @@ export const useTimelineStateStore = create<TimelineStateType>()(
     lastGlobalNodes: [],
     lastGlobalEdges: [],
     
-    // temporary solution for sidebar state management, will be removed in future updates
     getNodeById: (id: string) => get().globalNodes.find((node) => node.id === id),
 
     changeMode: (mode: modeEnum) => set({ mode: mode}),
 
-    // last global nodes and edges are used to store the last state of the timeline before saving.
     setLastGlobalEdges: (newEdge: Edge[]) => set({ lastGlobalEdges: newEdge }),
     setLastGlobalNodes: (newNode: timelineNodeType[]) => set({ lastGlobalNodes: newNode }),
     setGlobalEdges: (newEdge: Edge[]) => set({ globalEdges: newEdge }),

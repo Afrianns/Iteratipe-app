@@ -3,7 +3,7 @@
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { serverSideErrorHandle } from "@/lib/serverErrorHandle";
-import { returnDataType, timelineNodeType } from "@/types/types";
+import { returnDataType } from "@/types/types";
 
 
 export const syncAndDeleteDBWithLocal = async <T extends { id: string }>(tbName: string, items: T[], projectUid: string, itemToReturn: string[]) => {

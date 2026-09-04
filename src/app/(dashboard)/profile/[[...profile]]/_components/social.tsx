@@ -39,8 +39,6 @@ export default function Social() {
     const getPersonalInformation = async () => {
       const user = await getUserSocial()
 
-      console.log("checking social links",user)
-
       if(user.status == 200 && user.data){
         setSocial({
           instagram_link: user.data.instagram_link || "",

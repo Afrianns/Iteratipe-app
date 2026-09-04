@@ -23,14 +23,14 @@ export default function Social({setStep, isPending}: {setStep: (param: "identity
       website: ""
     })
 
-  const [userSocialError, setUserSocialError] = useState<UserSocialErrorType>()
+  const [userSocialError, setUserSocialError] = useState<UserSocialErrorType>({})
 
   const validateSocialSection = () => {
     const result = onboardingUserSocial.safeParse(social)
 
     console.log(result)
     if(!result.success) {
-      setUserSocialError(z.flattenError(result.error).fieldErrors)
+      setUserSocialError(z.flattenError(result.error).fieldErrors as UserSocialErrorType)
     } else{
       setSocial(social)
       setUserSocialError({})

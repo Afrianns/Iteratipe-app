@@ -1,4 +1,3 @@
-import { VisibilityErrorsType, VisibilityType } from "@/types/types";
 import { ErrorMessageList } from "./ErrorMessageList";
 import Toggle from "./toggle";
 import { useContext } from "react";

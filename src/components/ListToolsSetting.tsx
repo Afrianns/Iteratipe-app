@@ -1,13 +1,6 @@
 
 export default function ListToolsSetting() {
 
-    // const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    // await delay(3000);
-    // setTimeout(() => {
-    //     console.log("Waiting...")
-    // }, 10000)
-
     const tags = ["Illustration", "Photoshop", "Figma", "Procreate"]
 
     return (

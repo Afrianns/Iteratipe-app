@@ -1,10 +1,6 @@
 import { generalDataType, generalSettingErrorsType } from "@/types/types";
 import { createContext, SetStateAction } from "react";
 
-
-// const generalData: generalDataType = 
-
-
 interface SettingContextType {
   generalSettings: generalDataType
   generalSettingErrors: generalSettingErrorsType
