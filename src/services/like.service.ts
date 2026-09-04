@@ -242,7 +242,6 @@ const combineTheLikes = (projectLikes: {_count:{Likes: number}}[]) => {
 //   // if (user.sessionClaims) {
 //   //   console.log("[action] exp:", user.sessionClaims.exp, "iat:", user.sessionClaims.iat, "now:", Math.floor(Date.now() / 1000));
 //   // }
-//   const redis = new Redis()
 
 //   try {
 

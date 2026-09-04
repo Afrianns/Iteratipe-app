@@ -3,7 +3,7 @@ import Redis from 'ioredis';
 const globalForRedis = global as unknown as { redis: Redis | undefined };
 
 // Vercel Storage Upstash integration automatically creates process.env.REDIS_URL
-const redisUrl = process.env.REDISKV_KV_URL;
+const redisUrl = process.env.REDISKV_REDIS_URL;
 
 export const redis =
   globalForRedis.redis ||
