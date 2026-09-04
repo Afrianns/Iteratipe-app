@@ -196,10 +196,15 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
 
 
 export async function getBookmarkedProject(): Promise<returnDataType<ProjectPreviewType[]>> {
-  const { userId } = await auth()
+  const { userId, isAuthenticated } = await auth()
   let userDbId: number = 0;
 
   try {
+
+      if(!userId && !isAuthenticated) {
+        throw new Error("User id not found. Please try again later!") 
+      }
+
       if(userId){
         const resultUserId = await getUserID(userId)
     
