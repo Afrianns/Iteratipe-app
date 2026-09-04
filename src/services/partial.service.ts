@@ -95,19 +95,20 @@ export async function getItemWithTempItemByProjectUid(projectUid: string, type: 
       }
     })
 
-    // console.log("inii", userId)
+    let tempItemCount = ""
+    let stringifiedTempItemByAuthUser = ""
 
-    const tempItemCount = await redis.get(`${type}:${projectId.data.id}:increment`);
+    if(user.isAuthenticated) {
+      tempItemCount = await redis.get(`${type}:${projectId.data.id}:increment`) || "";  
+      stringifiedTempItemByAuthUser = await redis.get(`${type}:${projectId.data.id}:${userId.data?.id}`) || ""
+    }
 
-    const stringifiedTempItemByAuthUser = await redis.get(`${type}:${projectId.data.id}:${userId.data?.id}`)
-
-    const tempItemByAuthUser = stringifiedTempItemByAuthUser ? JSON.parse(stringifiedTempItemByAuthUser) : null
     return {
       status: 200,
       message: "Successful retrieved total Items",
       data: {
         totalItems: result.length + (tempItemCount ? parseInt(tempItemCount) : 0),
-        ItemByAuthUser: tempItemByAuthUser?.type
+        ItemByAuthUser: (stringifiedTempItemByAuthUser ? JSON.parse(stringifiedTempItemByAuthUser) : null)
       }
     };
 

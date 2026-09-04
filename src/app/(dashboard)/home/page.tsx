@@ -14,7 +14,6 @@ import useMasonry from "@/hooks/useMasonry";
 import Header from "@/components/Header";
 import Link from "next/link";
 
-import Redis from "ioredis"
 import Activity from "./_components/Activity";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL
