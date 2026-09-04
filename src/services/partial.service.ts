@@ -6,7 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { getUserID } from "./user.service";
 import { getProjectIDbyUID } from "./projects.service";
 import { prisma } from "@/lib/db";
-import Redis from "ioredis";
+import { redis } from "@/lib/redis";
 
 export async function getUserIdAndProjectId(projectId: string): Promise<returnDataType<{
  user_id: number
@@ -65,7 +65,6 @@ export async function getItemWithTempItemByProjectUid(projectUid: string, type: 
   ItemByAuthUser: string|null
 }>> {
   const user = await auth();
-  const redis = new Redis()
 
   const prismaClient = prisma as any;
 

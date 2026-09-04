@@ -7,10 +7,9 @@ import { getUserID } from "./user.service";
 import { prisma } from "@/lib/db";
 import { getUserIdAndProjectId } from "./partial.service";
 
-import Redis from "ioredis";
-
 import storeAndNotify from "@/lib/notifications";
 import { getProjectIDbyUID } from "./projects.service";
+import { redis } from "@/lib/redis";
 
 type ReturnType = returnDataType<{newTotalLiked: number}>
 
@@ -22,8 +21,6 @@ export async function likeProject(projectOwner: string, projectUid: string, proj
   let projectId = 0
   let usernameWhoDoTheAction = ""
   let type = "like"
-
-  const redis = new Redis()
 
   const user = await auth()
 

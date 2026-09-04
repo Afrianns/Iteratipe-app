@@ -1,13 +1,11 @@
 import { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
-import Redis from "ioredis";
+import { redis } from "@/lib/redis";
 
 import { redirect } from "next/navigation";
 
 import z from "zod";
-
-const redis = new Redis()
 
 export async function GET(request: Request){
   const types = ["bookmark", "like"]

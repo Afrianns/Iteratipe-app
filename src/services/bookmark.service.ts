@@ -10,8 +10,8 @@ import { previewCardDataQuery } from "@/lib/prismaQuery";
 import { pusher } from "@/lib/pusher";
 import StoreAndNotify from "@/lib/notifications";
 import storeAndNotify from "@/lib/notifications";
-import Redis from "ioredis";
 import { getProjectIDbyUID } from "./projects.service";
+import { redis } from "@/lib/redis";
 
 type ReturnType = returnDataType<{newTotalBookmarked: number}>
 
@@ -23,8 +23,6 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
   let projectId = 0;
   let usernameWhoDoTheAction = ""
   let type = "bookmarked"
-
-  const redis = new Redis()
 
   let newBookmarked = 0
 
@@ -200,7 +198,6 @@ export async function bookmarkProject(projectOwner: string, projectUid: string, 
 export async function getBookmarkedProject(): Promise<returnDataType<ProjectPreviewType[]>> {
   const { userId } = await auth()
   let userDbId: number = 0;
-  const redis = new Redis()
 
   try {
       if(userId){
@@ -281,7 +278,6 @@ const mappingBookmarkedProjects = (bookmarkedProjects: {Projects: ProjectPreview
 //   bookmarkedByAuthUser: "bookmark"|"unbookmark"|null
 // }>> {
 //   const user = await auth();
-//   const redis = new Redis()
 
 //   try {
 
