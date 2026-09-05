@@ -16,7 +16,7 @@ export default function SidebarMenu({isOpen}: {isOpen: boolean }) {
         <> 
             {(isLoaded && isSignedIn) &&
                 <div className="flex justify-center">
-                    <Link href="/new" className={`flex-centering hovering-detail duration-300 hover:bg-secondary group transition-colors ${path === 'new' ? 'bg-secondary' : ''} whitespace-nowrap`}>
+                    <Link prefetch={false} href="/new" className={`flex-centering hovering-detail duration-300 hover:bg-secondary group transition-colors ${path === 'new' ? 'bg-secondary' : ''} whitespace-nowrap`}>
                         <Plus className={`menu-icon-style ${path === 'new' ? 'text-main' : ''}`} /> 
                         <span className={`max-md:hidden menu-name-style
                             ${
@@ -36,7 +36,7 @@ export default function SidebarMenu({isOpen}: {isOpen: boolean }) {
             </div>
             <ul className="max-md:space-x-5 md:space-y-3 gap-y-3 md:mt-10 w-full mx-auto max-md:flex">
                 <li>
-                    <Link className={`flex-centering hovering-detail duration-300 hover:bg-secondary group transition-colors ${path === 'home' ? 'bg-secondary' : ''} whitespace-nowrap `} href="/home">
+                    <Link prefetch={false} className={`flex-centering hovering-detail duration-300 hover:bg-secondary group transition-colors ${path === 'home' ? 'bg-secondary' : ''} whitespace-nowrap `} href="/home">
                         <House className={`menu-icon-style ${path === 'home' ? 'text-main' : ''}`} />
                         
                         <span className={`max-md:hidden menu-name-style ${
@@ -49,7 +49,7 @@ export default function SidebarMenu({isOpen}: {isOpen: boolean }) {
                         </span>
                     </Link>
                 </li>
-                <li><Link className={`flex-centering hovering-detail duration-300 hover:bg-secondary group ${path === 'explore' ? 'bg-secondary' : ''}`} href="/explore">
+                <li><Link prefetch={false} className={`flex-centering hovering-detail duration-300 hover:bg-secondary group ${path === 'explore' ? 'bg-secondary' : ''}`} href="/explore">
                     <Compass className={`menu-icon-style ${path == 'explore' ? 'text-main' : ''}`} />
                     <span className={`max-md:hidden menu-name-style ${
                         path === 'explore' ? 'text-main' : 'group-hover:text-main'
@@ -57,7 +57,7 @@ export default function SidebarMenu({isOpen}: {isOpen: boolean }) {
                         Explore
                     </span>
                 </Link></li>
-                <li><Link className={`flex-centering hovering-detail duration-300 hover:bg-secondary group ${path === 'collections' ? 'bg-secondary' : ''}`} href="/collections">
+                <li><Link prefetch={false} className={`flex-centering hovering-detail duration-300 hover:bg-secondary group ${path === 'collections' ? 'bg-secondary' : ''}`} href="/collections">
                     <FileStack className={`menu-icon-style ${path == 'collections' ? 'text-main' : ''}`} />
                     <span className={`max-md:hidden menu-name-style ${
                         path === 'collections' ? 'text-main' : 'group-hover:text-main'

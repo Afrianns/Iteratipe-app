@@ -20,10 +20,11 @@ export default async function HeaderHome() {
             quickStatus = result.data
     }
 
-    PopupMessage()
+    
 
     return (
         <>
+            <PopupMessage />
             <div className="card-style-secondary card-home-list-style">
                 <div>
                     <p className="text-sm text-main-text/40 font-bold">Total Projects.</p>

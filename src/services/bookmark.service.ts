@@ -202,7 +202,10 @@ export async function getBookmarkedProject(): Promise<returnDataType<ProjectPrev
   try {
 
       if(!userId && !isAuthenticated) {
-        throw new Error("User id not found. Please try again later!") 
+        return {
+          status: 401,
+          message: "User id not found. Please try again later!"
+        }
       }
 
       if(userId){
