@@ -246,6 +246,16 @@ export interface returnDataType<T> {
 export type Tab = "general" | "visibility"
 
 export interface DBSingleProjectByID {
+  Like: {
+    id: number
+    project_id: number
+    user_id: number
+  }[]
+  Bookmark: {
+    id: number
+    project_id: number
+    user_id: number
+  }[]
   ownerClerkId: string
   projectTitleInfo: DBProjectTitleInfo
   overviewInfo: OverviewInfo

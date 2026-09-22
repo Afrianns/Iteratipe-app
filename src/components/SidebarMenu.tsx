@@ -11,7 +11,6 @@ export default function SidebarMenu({isOpen}: {isOpen: boolean }) {
     const path = usePathname().split('/').filter((path) => path != "")[0]
 
     const { isLoaded, isSignedIn } = useAuth()
-
     return (
         <> 
             {(isLoaded && isSignedIn) &&

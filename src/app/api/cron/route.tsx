@@ -2,13 +2,39 @@ import { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { redis } from "@/lib/redis";
+import { NextRequest, NextResponse } from "next/server";
 
 import { redirect } from "next/navigation";
 
 import z from "zod";
 
-export async function GET(request: Request){
+export async function POST(request: NextRequest){
   const types = ["bookmark", "like"]
+
+  const auth = request.headers.get("authorization")
+
+  if (!auth || !auth.startsWith("Basic ")) {
+    return NextResponse.json(
+      { error: "Unauthorized: Missing Basic Auth Header" },
+      { status: 401 }
+    );
+  }
+
+  try {
+    const base64Credentials = auth.split(" ")[1];
+    const decodedCredentials = Buffer.from(base64Credentials, "base64").toString("utf-8");
+    
+    const [username, password] = decodedCredentials.split(":");
+
+    if (username !== process.env.NEXT_PUBLIC_CRON_NAME || password !== process.env.NEXT_PUBLIC_CRON_PASS) {
+      return NextResponse.json(
+        { error: "Forbidden: Invalid credentials" },
+        { status: 403 }
+      );
+    }
+  } catch (error) {
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 
   try {
     for(let type of types) {
@@ -85,10 +111,11 @@ export async function GET(request: Request){
 
     return Response.json({
       status: 200,
-      message: "Failed to update project. Please try again."
+      message: "No data to update project."
     }, {
       status: 200
     });
+
   } catch (error) {
     logger.error('Project update endpoint error', undefined, error);
     

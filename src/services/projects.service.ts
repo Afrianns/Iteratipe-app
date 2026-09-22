@@ -293,7 +293,7 @@ export async function getProjectDetailById(projectId: string): Promise<returnDat
                     mode: "insensitive"
                 }
             },
-            select:{ clerk_user_id: true }
+            select:{ clerk_user_id: true, id: true }
         })
 
 
@@ -311,7 +311,7 @@ export async function getProjectDetailById(projectId: string): Promise<returnDat
 
         let result = await prisma.projects.findFirst({
             where: {
-                uid: projectIdArr[1]
+                id: getInitialProjectInfo.id
             },
             include: {
                 Status: true,
@@ -337,6 +337,20 @@ export async function getProjectDetailById(projectId: string): Promise<returnDat
                             },
                             select: {
                                 id: true
+                            },
+                            take: 1
+                        },
+                        Likes: {
+                            where: {
+                                project_id: getInitialProjectInfo.id,
+                                user_id: userDbId
+                            },
+                            take: 1
+                        },
+                        Bookmarks: {
+                            where: {
+                                project_id: getInitialProjectInfo.id,
+                                user_id: userDbId
                             },
                             take: 1
                         }
@@ -372,6 +386,8 @@ export async function getProjectDetailById(projectId: string): Promise<returnDat
                 status: 200,
                 message: "Successfuly get project",
                 data: { 
+                    Like: result.Users.Likes,
+                    Bookmark: result.Users.Bookmarks,
                     ownerClerkId: result.clerk_user_id,
                     projectTitleInfo: {
                         title: result.title,

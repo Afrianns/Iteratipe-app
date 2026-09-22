@@ -21,6 +21,9 @@ import { useAuth } from '@clerk/nextjs';
 import Follow from './main/follow';
 import { simplifiedNodesAndEdges } from '@/lib/simplifiedNodesAndEdges';
 import { TimelineContext } from '@/contexts/timelineContext';
+import { toast } from 'sonner';
+import { bookmarkProject } from '@/services/bookmark.service';
+import { likeProject } from '@/services/like.service';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL 
 
@@ -95,12 +98,16 @@ export default function Main({ projectFromDB, projectID }: {projectFromDB: DBSin
     const { resetTimeline, setStartNode, setEndNode, setBothLastAndNewNodes, setBothLastAndNewEdges } = useTimelineStateStore()
     const [generalSettingErrors, setGeneralSettingErrors] = useState<generalSettingErrorsType>({})
     const [generalSettings, setGeneralSettings] = useState<generalDataType>(settings)
+    const [bookmark, setBookmark] = useState<boolean>(false)
+    const [like, setLike] = useState<boolean>(false)
 
     const projectId = projectID.split("%E2%80%94")[1];
 
     const { isSignedIn, isLoaded, userId } = useAuth()
 
     const [project, setProject] = useState<DBSingleProjectByID>({
+        Like: [],
+        Bookmark: [],
         ownerClerkId: "",
         projectTitleInfo: initialProjectTitleInfo,
         overviewInfo: initialOverviewDataInfo,
@@ -115,19 +122,10 @@ export default function Main({ projectFromDB, projectID }: {projectFromDB: DBSin
 
         if(isSignedIn == undefined) return
 
-        setProject(projectFromDB)
+        setLike(projectFromDB.Like.length >= 1)
+        setBookmark(projectFromDB.Bookmark.length >= 1)
 
-        // const getProjectByID = async () => {
-        //     const result = await getProjectDetailById(projectID)
-        //     if(result.status == 200 && result.data){
-        //         setProject(result.data)
-        //         return result.data
-        //     }
-            
-        //     if(result.status == 500){
-        //         toast.error(result.message)
-        //     }
-        // }
+        setProject(projectFromDB)
         
         const setTimelineData = (nodes: timelineNodeType[], edges: Edge[]) => {
             let containEND = false
@@ -204,6 +202,34 @@ export default function Main({ projectFromDB, projectID }: {projectFromDB: DBSin
         if(endCodition) setEndNode(resultCondition)
     }
 
+    const bookmarkThis = async () => {
+        if(!isSignedIn) return toast.warning("You need to signin first!")
+
+        setBookmark(!bookmark)
+        const result = await bookmarkProject("", projectId[1], "")
+        
+        if(result.status == 200 && result.data){
+            toast.success(`${result.message}: ${projectId[0].split("-").join(" ")}`)
+        } else{
+            toast.warning(result.message)
+            setBookmark(false)
+        }
+    }
+    
+    const likeThis = async () => {
+        if(!isSignedIn) return toast.warning("You need to signin first!")
+        setLike(!like)
+    
+        const result = await likeProject("", projectId[1], "")
+        
+        if(result.status == 200 && result.data){
+            toast.success(`${result.message}: ${projectId[0].split("-").join(" ")}`)
+        } else{
+            toast.warning(result.message)
+            setLike(false)
+        }
+    }
+
     return (
         <>
             <div className="h-min-screen w-full flex flex-col">
@@ -233,8 +259,13 @@ export default function Main({ projectFromDB, projectID }: {projectFromDB: DBSin
                                 </p>
                             </div>
                             <div className="flex-centering gap-x-2 ml-auto">
-                                <button className="button-style-tertiary"><Heart strokeWidth="3" className="w-4 h-4 text-main" /></button>
-                                <button className="button-style-tertiary"><Bookmark strokeWidth="3" className="w-4 h-4 text-main" /></button>
+                                <button onClick={likeThis} className={`button-style-tertiary ${like && "bg-main!"}`}>
+                                    <Heart strokeWidth="3" className={`w-4 h-4 ${like ? "fill-secondary text-secondary" : "text-main"}`} />
+                                </button>
+                                <button onClick={bookmarkThis} className={`button-style-tertiary ${bookmark && "bg-main!"}`}>
+                                    <Bookmark strokeWidth="3" className={`w-4 h-4 ${bookmark ? "fill-secondary text-secondary" : "text-main"}`} />
+                                </button>
+
                                 <Follow project={project} setProject={setProject} />
                             </div>
                         </div>
