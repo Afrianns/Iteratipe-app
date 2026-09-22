@@ -26,7 +26,7 @@ export async function POST(request: NextRequest){
     
     const [username, password] = decodedCredentials.split(":");
 
-    if (username !== process.env.NEXT_PUBLIC_CRON_NAME || password !== process.env.NEXT_PUBLIC_CRON_PASS) {
+    if (username !== process.env.CRON_NAME || password !== process.env.CRON_PASS) {
       return NextResponse.json(
         { error: "Forbidden: Invalid credentials" },
         { status: 403 }
